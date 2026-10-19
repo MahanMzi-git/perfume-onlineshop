@@ -1,0 +1,6 @@
+:root {
+  --rose-ivory: #F8EDEB; --dusty-rose: #D9B7B4; --aubergine: #4B2E45; --navy: #6B7B91; --copper: #B87552;
+  --bg: var(--rose-ivory); --surface: #fff8f6; --text: var(--aubergine); --muted: #5d4a58;
+  --font-sans: 'Vazirmatn', system-ui, sans-serif; --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --radius: 18px; --space: clamp(1rem, 3vw, 2rem);
+}
