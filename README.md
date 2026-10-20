@@ -6,7 +6,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - npm run dev: local Vite preview (default http://localhost:5173).
 - npm run build: TypeScript check and production bundle.
 - npm run preview: serve production output.
-- npm test: run catalog/search and dialog-focus regression tests (5 tests, no extra packages).
+- npm test: run catalog/search and dialog-focus regression tests (11 tests, no extra packages).
 
 ## Structure
 - src/data and src/types: existing typed demo catalog.
@@ -16,7 +16,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - public/images: local demo SVG artwork; hero-editorial.svg is an original illustration.
 - src/data/homepage.ts: announcement and educational content.
 
-Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, browser-local wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account/cart actions explain the unavailable functionality.
+Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, browser-local wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account actions explain the unavailable functionality; Step 2 adds an explicitly temporary demo bag.
 
 Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
 
@@ -37,3 +37,10 @@ Select several notes in the catalog note selector or on product cards. Results m
 
 ## Approved visual refinements
 Minimal, compact controls; equal-height white product cards with aligned price footers; 2px card lift on mouse hover; sage #D3DACC button hover and burgundy #8A4355 favourite-button hover. Reduced-motion disables the card movement.
+
+## Phase 1 — Step 2
+Frontend catalog, compound filters, shareable hash routes, 13 fragrance families, 20 notes, reusable product details, stock-aware volume/concentration variants and comparison of 2–3 products are implemented with centralized fictional data. Existing compact card geometry and approved hovers are preserved. Product image/name links and a small comparison control were approved by the owner.
+
+Routes: `#/catalog`, `#/families`, `#/notes`, `#/product/rose-voile`, `#/compare?ids=p1,p5`. Catalog filters, sort and pagination are encoded in the URL. Notes combine with AND; price, volume, concentration and availability must match the same variant. The demo bag is memory-only, caps quantities to mock stock, and never submits orders. Favourites and recently viewed IDs use browser-local storage.
+
+See [Step 2 implementation, QA and limitations](docs/phase-1-step-2.md). No dependency, migration, backend, real inventory, authentication or payment changes. The owner approved Step 2 and its follow-up refinements for publication on FixLandingPage.

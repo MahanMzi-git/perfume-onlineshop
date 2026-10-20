@@ -3,6 +3,11 @@ import type { NoteIcon, ScentNote } from '../types/fragrance';
 
 // Original, consistent 24px line illustrations; one glyph per library note.
 const glyphs: Record<NoteIcon, ReactNode> = {
+  lavender: <><path d="M12 22V4M12 7 8 5m4 6-5-3m5 7-5-3m5 7-4-2M12 9l4-3m-4 7 5-3m-5 7 5-3" /><ellipse cx="12" cy="3" rx="2" ry="1.5" /></>,
+  oud: <><path d="m4 18 2-9 9-6 5 5-4 12-8 2zM7 17l9-10M10 19l7-8M7 12l5-5" /></>,
+  patchouli: <><path d="M12 22V8M12 15C3 14 2 8 4 4c7 1 9 6 8 11zM12 18c8-1 10-5 8-10-6 0-8 5-8 10zM5 6l7 9m6-5-6 8" /></>,
+  vetiver: <path d="M12 2v11M7 3l3 10m7-10-3 10M5 7l4 7m10-7-4 7M12 13c-6 3-3 6-7 9m7-9c6 3 3 6 7 9m-7-9v10M10 15l-1 7m5-7 1 7" />,
+
   rose: <><path d="M12 14c-7 0-9-9-4-10 2-3 7-2 8 0 6 2 3 10-4 10zM9 7c0-4 7-3 6 1-1 4-7 3-6-1zM12 14v8M12 19c-5 0-6-4-6-4 4 0 6 4 6 4z" /></>,
   jasmine: <><path d="M12 10C4 2 8 0 12 7c4-7 8-5 3 3 9-1 10 3 1 4 5 6 2 9-3 2-3 8-7 6-4-1-8 0-8-4 0-4z" /><circle cx="12" cy="12" r="1.5" /></>,
   bergamot: <><path d="M10 7c-8-1-9 12-1 13 3 2 10 0 10-6 0-5-5-8-9-7zM12 7c-1-4 1-5 5-5-1 4-3 5-5 5zM7 11l-1 3m9-4 2 3" /></>,

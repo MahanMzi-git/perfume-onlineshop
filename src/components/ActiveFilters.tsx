@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { noteById } from '../data/scentNotes';
+import { temperatureLabels, sweetnessLabels, seasonLabels, occasionLabels, stockLabels, productTypeLabels } from '../data/catalogLabels';
 import type { Filters } from '../types/product';
 
 interface Props {
@@ -16,6 +17,16 @@ interface Props {
 export function ActiveFilters({ filters, wishlistOnly, count, onRemove, onRemoveNote, onReset }: Props) {
   const audienceNames = { women: 'زنانه', men: 'مردانه', unisex: 'یونیسکس' };
   const labels: [keyof Filters, string | undefined][] = [
+    ['minPrice', filters.minPrice !== undefined ? 'از ' + new Intl.NumberFormat('fa-IR').format(filters.minPrice) + ' تومان' : undefined],
+    ['maxPrice', filters.maxPrice !== undefined ? 'تا ' + new Intl.NumberFormat('fa-IR').format(filters.maxPrice) + ' تومان' : undefined],
+    ['volumeMl', filters.volumeMl ? new Intl.NumberFormat('fa-IR').format(filters.volumeMl) + ' میلی‌لیتر' : undefined],
+    ['concentration', filters.concentration],
+    ['temperature', filters.temperature && temperatureLabels[filters.temperature]],
+    ['sweetness', filters.sweetness && sweetnessLabels[filters.sweetness]],
+    ['season', filters.season && seasonLabels[filters.season]],
+    ['occasion', filters.occasion && occasionLabels[filters.occasion]],
+    ['stock', filters.stock && stockLabels[filters.stock]],
+    ['productType', filters.productType && productTypeLabels[filters.productType]],
     ['query', filters.query ? `جستجو: ${filters.query}` : undefined],
     ['audience', filters.audience && audienceNames[filters.audience]],
     ['brandId', brands.find(b => b.id === filters.brandId)?.name],

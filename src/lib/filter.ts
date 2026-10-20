@@ -1,6 +1,7 @@
 import type { Filters, Product } from '../types/product';
 import { brands } from '../data/brands';
 import { noteById } from '../data/scentNotes';
+import { matchingVariant } from './catalog';
 export const emptyFilters: Filters = { query: '' };
 export function normalizeSearch(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f\u064b-\u065f\u0670\u0640]/g, '')
@@ -17,8 +18,10 @@ export function filterProducts(list: Product[], f: Filters): Product[] {
     }
     return (!f.brandId || p.brandId === f.brandId) && (!f.familyId || p.fragranceFamilyIds.includes(f.familyId)) &&
       (!f.noteIds?.length || f.noteIds.every(noteId => p.scentNoteIds.includes(noteId))) && (!f.audience || p.targetAudience === f.audience) &&
-      (!f.concentration || p.concentration === f.concentration) && (f.minPrice === undefined || p.price >= f.minPrice) &&
-      (f.maxPrice === undefined || p.price <= f.maxPrice) && (f.niche === undefined || p.isNiche === f.niche) &&
+      !!matchingVariant(p, f) && (f.niche === undefined || p.isNiche === f.niche) &&
+      (!f.temperature || p.temperature === f.temperature) && (!f.sweetness || p.sweetness === f.sweetness) &&
+      (!f.season || p.seasons.includes(f.season)) && (!f.occasion || p.occasions.includes(f.occasion)) &&
+      (!f.productType || p.productType === f.productType) &&
       (!f.featured || p.isFeatured) && (!f.bestseller || p.isBestseller) && (!f.giftSet || !!p.isGiftSet);
   });
 }

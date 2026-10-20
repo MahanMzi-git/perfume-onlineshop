@@ -14,6 +14,7 @@ export const navLinks: NavLink[] = [
 ];
 
 interface Props {
+  catalogMode?: boolean;
   query: string;
   onQuery: (q: string) => void;
   onCategory: (id: string) => void;
@@ -23,7 +24,7 @@ interface Props {
   favouriteCount: number;
 }
 
-export function Header({ query, onQuery, onCategory, onAction, onSearch, activeCat, favouriteCount }: Props) {
+export function Header({ catalogMode = false, query, onQuery, onCategory, onAction, onSearch, activeCat, favouriteCount }: Props) {
   const [menu, setMenu] = useState(false);
   const [searching, setSearching] = useState(false);
   const header = useRef<HTMLElement>(null);
@@ -68,7 +69,6 @@ export function Header({ query, onQuery, onCategory, onAction, onSearch, activeC
           if (link.category || link.label === 'همهٔ عطرها') {
             event.preventDefault();
             onCategory(link.category ?? 'all');
-            onSearch();
           }
         }}>{link.label}</a>
       </li>)}</ul>
@@ -80,8 +80,8 @@ export function Header({ query, onQuery, onCategory, onAction, onSearch, activeC
         <input id="q" type="search" autoFocus maxLength={120} value={query} onChange={event => onQuery(event.target.value)} placeholder="مثلاً رز، Santal یا Maison…" />
         <button className="cta" type="submit">جستجو</button>
       </div>
-      <p className="search-help">نتیجه‌ها هم‌زمان به‌روز می‌شوند؛ برای رفتن به آن‌ها «جستجو» را بزنید.</p>
+      <p className="search-help">{catalogMode ? 'برای دیدن نتیجه‌ها در کاتالوگ، «جستجو» را بزنید.' : 'نتیجه‌ها هم‌زمان به‌روز می‌شوند؛ برای رفتن به آن‌ها «جستجو» را بزنید.'}</p>
     </form>}
-    <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} onCategory={onCategory} activeCat={activeCat} />
+    <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} onCategory={onCategory} activeCat={activeCat} catalogMode={catalogMode} />
   </header>;
 }
