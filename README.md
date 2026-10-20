@@ -6,6 +6,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - npm run dev: local Vite preview (default http://localhost:5173).
 - npm run build: TypeScript check and production bundle.
 - npm run preview: serve production output.
+- npm test: run catalog/search and dialog-focus regression tests (5 tests, no extra packages).
 
 ## Structure
 - src/data and src/types: existing typed demo catalog.
@@ -15,11 +16,11 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - public/images: local demo SVG artwork; hero-editorial.svg is an original illustration.
 - src/data/homepage.ts: announcement and educational content.
 
-Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, session-only wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account/cart actions explain the unavailable functionality.
+Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, browser-local wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account/cart actions explain the unavailable functionality.
 
-Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint or automated test scripts are configured.
+Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
 
-See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Changes are maintained on the codex/project-review branch; main is preserved until integration.
+See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Changes are maintained on the FixLandingPage branch; main is preserved until integration.
 
 ## Repository and scope
 Repository: https://github.com/MahanMzi-git/perfume-onlineshop
@@ -27,3 +28,12 @@ Repository: https://github.com/MahanMzi-git/perfume-onlineshop
 Node.js 18+ and npm are required. This phase is frontend-only. Future backend direction is Django/DRF with PostgreSQL; no backend dependencies are installed in this step. New roadmap steps require explicit assignment.
 
 Local configuration and generated files are excluded by .gitignore: node_modules, dist, build metadata, environment secrets, local screenshots, test reports, logs and editor files. Keep package-lock.json tracked and use npm ci for reproducible installs. Do not commit passwords, tokens or real customer data.
+
+## UI/UX audit
+The UI UX Pro Max audit preserves the approved identity and improves readable typography, touch targets, removable filters, Persian search, persistent favourites, note illustrations and keyboard navigation. See [observed findings, changed files, checks and limits](docs/ui-ux-audit.md). The owner approved this audit and its follow-up UI refinements for publication on FixLandingPage.
+
+## Multi-note discovery
+Select several notes in the catalog note selector or on product cards. Results must contain **all** selected notes (AND), while other active filters continue to apply. Every chosen note has its own removable chip. See [verification and changed files](docs/multi-note-filter.md).
+
+## Approved visual refinements
+Minimal, compact controls; equal-height white product cards with aligned price footers; 2px card lift on mouse hover; sage #D3DACC button hover and burgundy #8A4355 favourite-button hover. Reduced-motion disables the card movement.
