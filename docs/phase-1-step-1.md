@@ -1,5 +1,5 @@
 # Phase 1 / Step 1 — Homepage preview
-Date: 2026-10-20. Status: owner approved the local implementation on 2026-10-20. Local commit authorized; remote publication pending write access.
+Date: 2026-10-20. Status: owner approved the local implementation on 2026-10-20. Local commit authorized; GitHub write access verified; publication authorized by owner.
 
 ## Repository audit
 - React 18.3, TypeScript strict, Vite 5.4, lucide-react; plain global CSS.
@@ -46,7 +46,7 @@ Evidence: preview/*.jpg. Screenshots are local QA artifacts.
 - Scent-note icons remain per category; per-note redesign is outside this homepage step.
 - Policy/contact details require owner-provided information before real commerce.
 - Cross-browser/device testing and Lighthouse audit not performed.
-- No production deployment or GitHub write.
+- No production deployment. Source publication is authorized separately by owner.
 
 ## Review and next step
 Preview: http://127.0.0.1:5174/ while local Vite server is running.

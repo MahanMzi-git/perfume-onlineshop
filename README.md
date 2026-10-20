@@ -19,4 +19,11 @@ Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working loca
 
 Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint or automated test scripts are configured.
 
-See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Remote publication remains pending write access.
+See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Changes are maintained on the codex/project-review branch; main is preserved until integration.
+
+## Repository and scope
+Repository: https://github.com/MahanMzi-git/perfume-onlineshop
+
+Node.js 18+ and npm are required. This phase is frontend-only. Future backend direction is Django/DRF with PostgreSQL; no backend dependencies are installed in this step. New roadmap steps require explicit assignment.
+
+Local configuration and generated files are excluded by .gitignore: node_modules, dist, build metadata, environment secrets, local screenshots, test reports, logs and editor files. Keep package-lock.json tracked and use npm ci for reproducible installs. Do not commit passwords, tokens or real customer data.

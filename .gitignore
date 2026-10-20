@@ -1,9 +1,31 @@
+# Dependencies and production output
 node_modules/
 dist/
+dist-ssr/
 *.tsbuildinfo
+
+# Local environment and credentials
 .env
 .env.*
 !.env.example
-.DS_Store
+*.pem
+*.key
+
+# Local preview screenshots and test reports
+/preview/
+/playwright-report/
+/test-results/
+/coverage/
+
+# Logs and temporary files
 *.log
+npm-debug.log*
+*.tmp
+*.bak
+
+# Editor and operating-system files
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
