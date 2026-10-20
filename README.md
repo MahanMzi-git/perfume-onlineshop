@@ -1,31 +1,22 @@
-# Perfume Store — Homepage (Phase 1)
-
-Persian RTL luxury-perfume storefront homepage built with React, TypeScript and Vite. **All products, brands and prices are fictional demo data.**
-Not included: cart, checkout, auth, admin, backend, real contact details.
-
-## Prerequisites
-Node.js 18+ and npm.
+# Aroma — Persian perfume storefront
+A responsive Persian RTL demo storefront built with React 18, strict TypeScript and Vite. All products, brands, prices and bestseller labels are demo data.
 
 ## Commands
-```bash
-npm install
-npm run dev      # development server
-npm run build    # type-check + production build
-npm run preview  # preview the build
-```
+- npm ci: install locked dependencies.
+- npm run dev: local Vite preview (default http://localhost:5173).
+- npm run build: TypeScript check and production bundle.
+- npm run preview: serve production output.
 
 ## Structure
-- `src/data/` typed mock data: products, brands, scentNotes, fragranceFamilies, categories
-- `src/types/` shared types; `src/lib/filter.ts` pure filter function (brand, family, note, audience, concentration, price, niche, featured, bestseller, gift set, text query)
-- `src/components/` UI; `src/styles/` tokens + global CSS; `public/images/` local SVG demo artwork
+- src/data and src/types: existing typed demo catalog.
+- src/lib/filter.ts: product filters.
+- src/components: reusable storefront UI, native dialogs and mobile drawer.
+- src/styles/tokens.css: design tokens; global.css: shared styles and responsive boundaries (600/900/1200).
+- public/images: local demo SVG artwork; hero-editorial.svg is an original illustration.
+- src/data/homepage.ts: announcement and educational content.
 
-## Scent-note library
-`src/data/scentNotes.ts` is the single source of truth (id, name, slug, category, icon, description). Products store note **ids** only. `ScentNoteIcon` maps each category to one SVG glyph, so a note looks identical everywhere, and a future admin panel can assign notes by id.
-Niche positioning (`isNiche`) is independent of `authenticityStatus`, which is only set for verified products (none in the demo).
+Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, session-only wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account/cart actions explain the unavailable functionality.
 
-## Status
-Verification so far was done in an offline sandbox, so it is partial:
-- **Not run:** `npm install`, `npm run build` (`tsc -b` + Vite), the Vite dev server, Lighthouse. No `package-lock.json` exists yet; `npm install` will create it.
-- **Run:** the source was bundled with esbuild (Lucide icons stubbed) and checked in headless Chromium at 1440, 820 and 390 px: no horizontal overflow, no broken images or console errors, RTL/`lang="fa"` set, category / family / search / note filtering, reset and empty state, mobile menu open and Escape-to-close.
-- **Not verified:** TypeScript type-checking, real Lucide rendering, Vazirmatn / Cormorant Garamond (loaded from Google Fonts at runtime), keyboard-only walkthrough beyond a visible-focus check, measured contrast ratios (brand label colour adjusted by calculation).
-Artwork in `public/images/` is generated placeholder SVG illustration, not product photography.
+Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint or automated test scripts are configured.
+
+See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Remote publication remains pending write access.

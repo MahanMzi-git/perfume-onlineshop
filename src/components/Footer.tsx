@@ -1,13 +1,4 @@
-import { navLinks } from './Header';
 import { categories } from '../data/categories';
-export function Footer({ onCategory }: { onCategory: (id: string) => void }) {
-  return (
-    <footer className="footer"><div className="container foot-grid">
-      <div><p className="logo" dir="ltr">Aroma</p><p>نمونه فروشگاه عطر (نسخه نمایشی). اطلاعات تماس در مراحل بعدی اضافه می‌شود.</p></div>
-      <nav aria-label="پیوندهای فوتر"><h2>دسترسی سریع</h2><ul>{navLinks.map((l) => <li key={l.href + l.label}><a href={l.href}>{l.label}</a></li>)}</ul></nav>
-      <nav aria-label="دسته‌بندی‌ها"><h2>دسته‌بندی‌ها</h2><ul>{categories.map((c) => (
-        <li key={c.id}><a href="#products" onClick={() => onCategory(c.id)}>{c.label}</a></li>))}</ul></nav>
-      <div><h2>شبکه‌های اجتماعی</h2><p>به‌زودی</p></div>
-    </div></footer>
-  );
+export function Footer({ onCategory, onInfo }: { onCategory: (id: string) => void; onInfo: (id: string) => void }) {
+  return <footer className="footer"><div className="container foot-grid"><div className="footer-brand"><p className="logo" dir="ltr">AROMA<span>THE FRAGRANCE EDIT</span></p><p>روایتِ تو، به زبانِ رایحه.<br />فضایی برای شناخت و کشف دنیای عطر.</p><span className="badge">فروشگاه نمایشی</span></div><nav aria-label="خرید"><h2>دنیای آروما</h2><ul>{categories.filter(c => !c.scrollTo).map(c => <li key={c.id}><a href="#products" onClick={() => onCategory(c.id)}>{c.label}</a></li>)}</ul></nav><nav aria-label="راهنما"><h2>همراه شما</h2><ul><li><a href="#discovery">راهنمای رایحه‌ها</a></li><li><a href="#discovery-sets">ست‌های آشنایی</a></li><li><a href="#journal">مجلهٔ آروما</a></li><li><button onClick={() => onInfo('policies')}>ارسال و مرجوعی</button></li><li><button onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li></ul></nav><div><h2>در ارتباط بمانیم</h2><p>اطلاعات تماس و شبکه‌های اجتماعی<br />پس از تأیید فروشگاه اضافه می‌شوند.</p><button className="text-link" onClick={() => onInfo('contact')}>اطلاعات ارتباطی ↖</button></div></div><div className="container footer-bottom"><span>آروما · پیش‌نمایش رابط فروشگاه؛ خرید فعال نیست.</span><span dir="ltr">A LITTLE SCENT. A LASTING MEMORY.</span></div></footer>;
 }
