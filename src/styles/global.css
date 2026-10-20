@@ -1056,7 +1056,7 @@ h1, h2, h3 { text-wrap: balance; }
 p, .chip, .card h3 { overflow-wrap: anywhere; }
 button, a { touch-action: manipulation; }
 input, select { font-size: var(--text-body); border-color: var(--control-border); }
-button:not(.tile):not(.collection):not(.journal-card):not(.note):not(.note-filter-option):not(.removable-chip):not(.catalog-tab) { min-height: var(--control-min); }
+button:not(.tile):not(.collection):not(.journal-card):not(.note):not(.note-filter-option):not(.removable-chip):not(.catalog-tab):not(.card-compare) { min-height: var(--control-min); }
 button:active:not(:disabled) { filter: brightness(.93); }
 .announcement, .hero-caption, .brand-section small, .badge, .price small,
 .editorial-copy small, .footer-bottom { font-size: var(--text-caption); }
