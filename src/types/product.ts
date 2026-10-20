@@ -7,7 +7,7 @@ export interface Product {
   availability: 'demo'; authenticityStatus?: 'verified';
 }
 export interface Filters {
-  query: string; brandId?: string; familyId?: string; noteId?: string; audience?: Audience; concentration?: Concentration;
+  query: string; brandId?: string; familyId?: string; noteIds?: string[]; audience?: Audience; concentration?: Concentration;
   minPrice?: number; maxPrice?: number; niche?: boolean; featured?: boolean; bestseller?: boolean; giftSet?: boolean;
 }
 export interface ProductCategory { id: string; label: string; image: string; patch: Partial<Filters>; scrollTo?: string }

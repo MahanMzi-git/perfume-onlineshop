@@ -1,21 +1,19 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
-export interface NavLink { label: string; href: string; niche?: boolean }
-interface Props { links: NavLink[]; open: boolean; onClose: () => void; onNiche: () => void }
-export function MobileNavigation({ links, open, onClose, onNiche }: Props) {
+import { navigateToSection } from '../lib/navigation';
+import { containDialogFocus } from '../lib/dialogFocus';
+export interface NavLink { label: string; href: string; category?: string }
+interface Props { links: NavLink[]; open: boolean; onClose: () => void; onCategory: (id: string) => void; activeCat?: string }
+export function MobileNavigation({ links, open, onClose, onCategory, activeCat }: Props) {
+  const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (!open) return;
-    const h = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', h);
-    return () => window.removeEventListener('keydown', h);
-  }, [open, onClose]);
+    const previous = document.activeElement as HTMLElement | null;
+    ref.current?.showModal();
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { ref.current?.close(); document.body.style.overflow = overflow; previous?.focus(); };
+  }, [open]);
   if (!open) return null;
-  return (
-    <div className="mobile-nav" role="dialog" aria-modal="true" aria-label="منوی اصلی">
-      <button type="button" className="icon-btn" aria-label="بستن منو" onClick={onClose}><X /></button>
-      <nav><ul>{links.map((l) => (
-        <li key={l.href + l.label}><a href={l.href} onClick={() => { if (l.niche) onNiche(); onClose(); }}>{l.label}</a></li>
-      ))}</ul></nav>
-    </div>
-  );
+  return <dialog ref={ref} id="mobile-menu" className="mobile-nav" aria-label="منوی اصلی" onKeyDown={containDialogFocus} onCancel={onClose}><div className="drawer-top"><span className="logo" dir="ltr">AROMA</span><button className="icon-btn" aria-label="بستن منو" onClick={onClose}><X aria-hidden="true" /></button></div><p className="eyebrow">دنیای عطر، به انتخاب شما</p><nav><ul>{links.map(l => <li key={l.label}><a href={l.href} aria-current={l.category === activeCat && l.category ? 'true' : undefined} onClick={event => { event.preventDefault(); if (l.category) onCategory(l.category); else if (l.label === 'همهٔ عطرها') onCategory('all'); onClose(); navigateToSection(l.href.slice(1)); }}>{l.label}<span aria-hidden="true">↖</span></a></li>)}</ul></nav><a href="#journal" onClick={onClose}>مجلهٔ آروما</a></dialog>;
 }

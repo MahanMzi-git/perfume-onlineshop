@@ -6,7 +6,7 @@ const items = [
 ];
 export function BrandBenefits() {
   return (
-    <section id="about" className="section">
+    <section id="about" className="benefits-section">
       <div className="container benefits">{items.map(({ icon: I, t, d }) => (
         <div key={t}><I aria-hidden="true" /><h3>{t}</h3><p>{d}</p></div>
       ))}</div>

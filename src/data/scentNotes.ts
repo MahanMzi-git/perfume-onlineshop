@@ -1,7 +1,7 @@
-import type { ScentNote, NoteCategory } from '../types/fragrance';
+import type { ScentNote, NoteCategory, NoteIcon } from '../types/fragrance';
 // Central scent-note library. Products reference notes by id only; the icon comes from here.
-const n = (id: string, name: string, category: NoteCategory, description?: string): ScentNote =>
-  ({ id: `n-${id}`, name, slug: id, category, icon: category, description });
+const n = (id: NoteIcon, name: string, category: NoteCategory, description?: string): ScentNote =>
+  ({ id: `n-${id}`, name, slug: id, category, icon: id, description });
 export const scentNotes: ScentNote[] = [
   n('rose', 'گل رز', 'floral'), n('jasmine', 'یاس', 'floral'), n('bergamot', 'برگاموت', 'citrus'), n('lemon', 'لیمو', 'citrus'),
   n('cedar', 'سدر', 'woody'), n('sandalwood', 'صندل', 'woody'), n('seasalt', 'نمک دریا', 'aquatic'), n('amber', 'عنبر', 'amber'),
