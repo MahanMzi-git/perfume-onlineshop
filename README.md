@@ -1,4 +1,4 @@
-# Aroma — Persian perfume storefront
+# Aroma — perfume storefront
 A responsive Persian RTL demo storefront built with React 18, strict TypeScript and Vite. All products, brands, prices and bestseller labels are demo data.
 
 ## Commands
