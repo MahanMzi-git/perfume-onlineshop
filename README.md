@@ -44,3 +44,8 @@ Frontend catalog, compound filters, shareable hash routes, 13 fragrance families
 Routes: `#/catalog`, `#/families`, `#/notes`, `#/product/rose-voile`, `#/compare?ids=p1,p5`. Catalog filters, sort and pagination are encoded in the URL. Notes combine with AND; price, volume, concentration and availability must match the same variant. The demo bag is memory-only, caps quantities to mock stock, and never submits orders. Favourites and recently viewed IDs use browser-local storage.
 
 See [Step 2 implementation, QA and limitations](docs/phase-1-step-2.md). No dependency, migration, backend, real inventory, authentication or payment changes. The owner approved Step 2 and its follow-up refinements for publication on FixLandingPage.
+
+## Landing 3D orbit (local preview)
+The selected Three.js orbit study is integrated into the homepage hero and existing category tiles. It loads only on the homepage, keeps local SVG fallbacks and preserves category actions. See [motion study and integration notes](docs/three-motion-lab.md). Not yet committed or pushed.
+
+The current landing orbit uses seven optimized local photo cutouts (324,748 bytes total), subtle depth and soft shadows. Reference extraction/reconstruction and QA are documented in docs/three-motion-lab.md; source attribution is in public/images/orbit-photos/SOURCES.md.
