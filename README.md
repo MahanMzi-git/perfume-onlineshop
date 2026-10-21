@@ -46,6 +46,9 @@ Routes: `#/catalog`, `#/families`, `#/notes`, `#/product/rose-voile`, `#/compare
 See [Step 2 implementation, QA and limitations](docs/phase-1-step-2.md). No dependency, migration, backend, real inventory, authentication or payment changes. The owner approved Step 2 and its follow-up refinements for publication on FixLandingPage.
 
 ## Landing 3D orbit (local preview)
-The selected Three.js orbit study is integrated into the homepage hero and existing category tiles. It loads only on the homepage, keeps local SVG fallbacks and preserves category actions. See [motion study and integration notes](docs/three-motion-lab.md). Not yet committed or pushed.
+The selected Three.js orbit study is integrated into the homepage hero and existing category tiles. It loads only on the homepage, keeps local SVG fallbacks and preserves category actions. See [motion study and integration notes](docs/three-motion-lab.md). Published to FixLandingPage after owner approval.
 
 The current landing orbit uses seven optimized local photo cutouts (324,748 bytes total), subtle depth and soft shadows. Reference extraction/reconstruction and QA are documented in docs/three-motion-lab.md; source attribution is in public/images/orbit-photos/SOURCES.md.
+
+## Approved ribbon backdrop
+The homepage now uses three tapered ribbons and two muted burgundy dotted orbits rotating in opposite directions, with bounded randomized radii and phases sampled at mount. Uses the existing photo orbit, pause/reduced-motion clock and actual category docking. Tablet positioning was refined to keep bottles clear of the heading. See docs/orbit-backdrop-studies.md for QA and preview screenshots. Owner approved the final responsive composition, local Sahel typography and motion controls for release on FixLandingPage.

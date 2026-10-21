@@ -198,3 +198,24 @@ body:has(.home-orbit-stage[data-ready=true]) .category-orbit-dock img { visibili
  body:has(.home-orbit-stage[data-ready=true]) .orbit-hero .hero-art { position:absolute; inset: auto 0 0; margin:0; height:0; overflow:hidden; }
  .orbit-hero .hero-copy { padding-top:24px; }
 }
+
+/* Compact motion control; React owns the label and click state. */
+.home-orbit-pause { display:inline-flex; align-items:center; gap:7px; top:18px; left:clamp(16px,6vw,88px); margin:0; min-height:38px; padding:4px 11px 4px 5px; z-index:6; pointer-events:auto; border-color:#CFC4B4; background:#FCFAF6; box-shadow:0 2px 8px #201D1A08; font-size:.7rem; }
+.home-orbit-pause[hidden] { display:none; }
+.motion-control-icon { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:#E8E2D7; color:var(--text); }
+.home-orbit-pause[aria-pressed=true] .motion-control-icon { background:var(--sage); }
+.home-orbit-pause:hover { background:#D3DACC; }
+.home-orbit-pause:focus-visible { outline:2px solid #80683D; outline-offset:3px; }
+@media(max-width:700px) { .home-orbit-pause { top:10px; min-height:36px; padding-inline-end:9px; font-size:.65rem; } }
+.orbit-hero { position:relative; }
+/* Portrait tablet composition only; mobile and landscape/laptop remain unchanged. */
+@media (min-width:700px) and (max-width:1100px) and (max-aspect-ratio:9/10) {
+ .orbit-hero .hero-grid { position:relative; min-height:clamp(600px,56svh,780px); grid-template-columns:.7fr 1.6fr; gap:2rem; padding-top:120px; padding-bottom:36px; }
+ .orbit-hero .hero-copy { position:static; padding-block:35px; }
+ .orbit-hero .hero-copy h1 { position:absolute; top:67px; inset-inline:0; width:100%; margin:0; text-align:center; white-space:nowrap; font-size:clamp(1.9rem,3.7vw,2.65rem); line-height:1.6; }
+ .orbit-hero .hero-copy h1 br { display:none; }
+ .orbit-hero .hero-copy .eyebrow { position:absolute; top:33px; inset-inline:0; text-align:center; margin:0; }
+ .orbit-hero .hero-copy > p:not(.eyebrow) { font-size:.875rem; }
+ .orbit-hero .hero-actions { gap:18px; }
+ .orbit-hero .hero-caption { margin-top:30px; }
+}

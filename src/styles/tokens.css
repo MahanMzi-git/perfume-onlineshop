@@ -3,7 +3,7 @@
   --bg: #FCFAF6; --surface: #FFFFFF; --text: var(--charcoal); --muted: #6B6258;
   --line: #DDD5C9; --soft: #EDE7DD; --sage: #E3E7DE;
   --rose-ivory: var(--cream); --dusty-rose: var(--soft); --aubergine: var(--charcoal); --navy: var(--muted); --copper: #80683D;
-  --font-sans: 'Vazirmatn', Tahoma, sans-serif; --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Sahel', Tahoma, sans-serif; --font-serif: 'Cormorant Garamond', 'Sahel', Georgia, serif;
   --radius: 4px; --radius-pill: 999px; --shadow: 0 14px 45px #201D1A12;
   --space: clamp(1rem, 4vw, 4rem); --space-1: .5rem; --space-2: 1rem; --space-3: 1.5rem; --space-4: 2rem; --space-5: 4rem;
   /* Responsive boundaries: mobile 600px, tablet 900px, desktop 1200px. */
