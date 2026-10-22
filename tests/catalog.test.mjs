@@ -145,6 +145,46 @@ test('Catalog links round-trip filters and reject malformed numeric and enum par
 });
 
 const { addDemoBagItem } = load('lib/demoBag.ts');
+const { changeDemoBagItem, bagSummary } = load('lib/demoBag.ts');
+const { validateFields, contactFields, addressFields } = load('lib/customerForms.ts');
+test('Cart totals, capped discount and shipping use current variants and reject invalid lines', () => {
+  const product = products[0];
+  const variant = product.variants.find(v => v.stock >= 2);
+  const lines = [{ productId: product.id, variantId: variant.id, quantity: 2 }];
+  const total = bagSummary(lines, products, 'aroma10', 80000);
+  assert.equal(total.subtotal, variant.price * 2);
+  assert.equal(total.discount, Math.min(Math.round(variant.price * .2), 500000));
+  assert.equal(total.total, total.subtotal - total.discount + 80000);
+  assert.equal(bagSummary(lines, products, 'wrong').discount, 0);
+  for (const quantity of [0, -1, 1.5, Infinity, variant.stock + 1]) assert.ok(bagSummary([{ ...lines[0], quantity }], products).errors.length);
+  assert.ok(bagSummary([...lines, ...lines], products).errors.length);
+  assert.ok(bagSummary([{ ...lines[0], variantId: 'missing' }], products).errors.length);
+});
+test('Changing cart volume merges duplicate variants without exceeding stock or mutating the original', () => {
+  const product = { id: 'test', variants: [{ id: 'a', stock: 3, price: 10 }, { id: 'b', stock: 4, price: 20 }, { id: 'c', stock: 0, price: 30 }] };
+  const lines = [{ productId: 'test', variantId: 'a', quantity: 2 }, { productId: 'test', variantId: 'b', quantity: 1 }];
+  const changed = changeDemoBagItem(lines, product, 'a', 'b', 2);
+  assert.equal(changed.lines.length, 1); assert.equal(changed.lines[0].quantity, 3);
+  assert.equal(bagSummary(changed.lines, [product]).subtotal, 60);
+  assert.equal(lines.length, 2);
+  assert.equal(changeDemoBagItem(lines, product, 'a', 'b', 4).lines, lines);
+  assert.equal(changeDemoBagItem(lines, product, 'a', 'c', 1).lines, lines);
+  assert.equal(changeDemoBagItem(lines, product, 'a', 'a', NaN).lines, lines);
+});
+test('Persian checkout fields validate required values and normalize Iranian digits', () => {
+  assert.ok(validateFields(contactFields, {}).name);
+  assert.ok(validateFields(contactFields, { name: 'آزمایش', phone: '123' }).phone);
+  assert.equal(Object.keys(validateFields(contactFields, { name: 'کاربر نمونه', phone: '۰۹۱۲۳۴۵۶۷۸۹', email: '' })).length, 0);
+  assert.ok(validateFields(contactFields, { name: 'کاربر', phone: '09123456789', email: 'bad' }).email);
+  assert.equal(Object.keys(validateFields(addressFields, { province: 'نمونه', city: 'نمونه', address: 'خیابان آزمایشی پلاک یک', postal: '۱۲۳۴۵۶۷۸۹۰' })).length, 0);
+  assert.ok(validateFields(addressFields, { postal: '123' }).postal);
+});
+test('Customer routes resolve independently and reject unknown account sections', () => {
+  for (const page of ['cart', 'checkout']) assert.equal(parseRoute('#/' + page).page, page);
+  assert.equal(parseRoute('#/account/wishlist').slug, 'wishlist');
+  assert.equal(parseRoute('#/account/orders/DEMO-1001').params.get('orderId'), 'DEMO-1001');
+  assert.equal(parseRoute('#/account/unknown').page, 'not-found');
+});
 test('Demo bag does not exceed simulated stock or accept unknown variant IDs', () => {
   const product = products.find(p => p.id === 'p1');
   let lines = [];

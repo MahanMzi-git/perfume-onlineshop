@@ -4,13 +4,20 @@ import { scentNotes } from '../data/scentNotes';
 import type { Filters, SortOrder } from '../types/product';
 import { audienceLabels, occasionLabels, seasonLabels, sortLabels, stockLabels, sweetnessLabels, temperatureLabels, productTypeLabels } from '../data/catalogLabels';
 
-export type PageName = 'home' | 'catalog' | 'product' | 'families' | 'family' | 'notes' | 'note' | 'compare' | 'not-found';
+export type PageName = 'home' | 'catalog' | 'product' | 'families' | 'family' | 'notes' | 'note' | 'compare' | 'cart' | 'checkout' | 'account' | 'not-found';
 export interface Route { page: PageName; slug?: string; params: URLSearchParams }
 export function parseRoute(hash: string): Route {
   if (!hash.startsWith('#/')) return { page: 'home', params: new URLSearchParams() };
   const [path, query = ''] = hash.slice(2).split('?');
   const segments = path.split('/').filter(Boolean);
   const params = new URLSearchParams(query);
+  if (segments.length === 1 && ['cart', 'checkout'].includes(segments[0])) return { page: segments[0] as PageName, params };
+  if (segments[0] === 'account') {
+    if (segments.length === 1) return { page: 'account', slug: 'overview', params };
+    if (segments.length === 2 && ['overview', 'profile', 'addresses', 'orders', 'wishlist', 'cabinet', 'recent', 'preferences', 'reviews', 'support', 'notifications'].includes(segments[1])) return { page: 'account', slug: segments[1], params };
+    if (segments.length === 3 && segments[1] === 'orders') { params.set('orderId', segments[2]); return { page: 'account', slug: 'orders', params }; }
+    return { page: 'not-found', params };
+  }
   if (segments.length === 1 && ['catalog', 'families', 'notes', 'compare'].includes(segments[0])) {
     return { page: segments[0] as PageName, params };
   }
