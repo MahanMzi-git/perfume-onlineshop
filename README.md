@@ -6,7 +6,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - npm run dev: local Vite preview (default http://localhost:5173).
 - npm run build: TypeScript check and production bundle.
 - npm run preview: serve production output.
-- npm test: run catalog/search and dialog-focus regression tests (11 tests, no extra packages).
+- npm test: run catalog/search, dialog-focus, cart and customer-validation regression tests (17 tests, no extra packages).
 
 ## Structure
 - src/data and src/types: existing typed demo catalog.
@@ -16,7 +16,18 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - public/images: local demo SVG artwork; hero-editorial.svg is an original illustration.
 - src/data/homepage.ts: announcement and educational content.
 
-Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, browser-local wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Account actions explain the unavailable functionality; Step 2 adds an explicitly temporary demo bag.
+Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working local navigation/search, browser-local wishlist, educational dialogs and a newsletter UI that never sends or stores email. Native dialogs handle focus and Escape. Product/category images have local SVG fallbacks. Step 2 adds catalog discovery and an explicitly temporary demo bag; Step 3 expands that same bag into shopping and customer pages.
+
+## Phase 1 Step 3 — local shopping and customer preview
+
+- `#/cart`: shared in-memory cart, quantity and volume changes, removal, stock checks, capped demo coupon `AROMA10` (10%, up to 500,000 toman).
+- `#/checkout`: contact, address, demo shipping estimate, review and payment presentation. No payment gateway, order creation or payment-success claim.
+- `#/account`: overview, profile, addresses, fictional order examples/details, wishlist, personal fragrance cabinet, recently viewed products, fragrance preferences, reviews, support drafts and notification preferences.
+- Account forms, addresses, checkout information, cart, cabinet and preferences are in-memory only and reset on reload. Do not enter real personal data. Nothing is sent to a server. Existing wishlist and recent-product IDs retain their browser-local storage behavior.
+- Order fixtures are explicitly fictional and opt-in; cancellation changes only a local sample label. Reviews are local drafts and never affect catalog scores. Support does not send messages.
+- Existing product cards, landing motion, fonts and hover styles are reused. New layouts are scoped in `src/styles/customer.css`; no packages were added.
+
+See [Step 3 implementation, validation and remaining checks](docs/phase-1-step-3.md). This local preview awaits owner review; no Step 4 work has started.
 
 Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
 

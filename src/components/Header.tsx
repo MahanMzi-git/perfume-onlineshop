@@ -57,6 +57,11 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
     const frame = requestAnimationFrame(() => searchInput.current?.focus({ preventScroll: true }));
     return () => cancelAnimationFrame(frame);
   }, [searching]);
+  useLayoutEffect(() => {
+    const toggle = () => setSearching(current => !current);
+    window.addEventListener('aroma:toggle-search', toggle);
+    return () => window.removeEventListener('aroma:toggle-search', toggle);
+  }, []);
 
   function closeSearch() {
     setSearching(false);

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { ArrowUpLeft, BookOpen, FlaskConical, Gift, Leaf } from 'lucide-react';
 import { Header } from './components/Header';
+import { MobileIsland } from './components/MobileIsland';
 import { HeroSection } from './components/HeroSection';
 import { CategoryTile } from './components/CategoryTile';
 import { ProductCard } from './components/ProductCard';
@@ -21,12 +22,12 @@ import { StoreContext } from './components/StoreContext';
 import { CommercePages } from './components/CommercePages';
 import { DiscoveryNavigation } from './components/DiscoveryNavigation';
 import { ComparisonBar } from './components/ComparisonBar';
-import { DemoBag } from './components/DemoBag';
-import { addDemoBagItem, type BagLine } from './lib/demoBag';
+import { addDemoBagItem, changeDemoBagItem, type BagLine } from './lib/demoBag';
 import { getLastHomePosition, useHashLocation } from './lib/useHashLocation';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
 import './styles/catalog.css';
+import './styles/customer.css';
 import type { Product, ProductVariant, Filters, ProductCategory } from './types/product';
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
     return () => window.clearTimeout(timeout);
   }, [comparisonFeedback]);
   const [bagLines, setBagLines] = useState<BagLine[]>([]);
+  const [discountCode, setDiscountCode] = useState('');
   useEffect(() => {
     if (route.page === 'compare') {
       const ids = [...new Set((route.params.get('ids') ?? '').split(','))].filter(id => products.some(p => p.id === id)).slice(0, 3);
@@ -49,7 +51,7 @@ export default function App() {
   const routePath = hash.split('?')[0];
   useLayoutEffect(() => {
     const productTitle = route.page === 'product' ? products.find(p => p.slug === route.slug)?.name : undefined;
-    document.title = (productTitle ?? ({ home: 'فروشگاه عطر', product: 'جزئیات عطر', 'not-found': 'صفحه پیدا نشد', catalog: 'کاتالوگ عطرها', families: 'کتابخانهٔ رایحه', family: 'خانوادهٔ رایحه', notes: 'واژه‌نامه نت‌ها', note: 'شناخت نت', compare: 'مقایسهٔ عطرها' }[route.page] ?? 'فروشگاه عطر')) + ' | آروما';
+    document.title = (productTitle ?? ({ cart: 'سبد خرید', checkout: 'تسویه‌حساب نمایشی', account: 'حساب نمایشی', home: 'فروشگاه عطر', product: 'جزئیات عطر', 'not-found': 'صفحه پیدا نشد', catalog: 'کاتالوگ عطرها', families: 'کتابخانهٔ رایحه', family: 'خانوادهٔ رایحه', notes: 'واژه‌نامه نت‌ها', note: 'شناخت نت', compare: 'مقایسهٔ عطرها' }[route.page] ?? 'فروشگاه عطر')) + ' | آروما';
     if (route.page === 'home' && consumeHomeReturn()) {
       const position = getLastHomePosition();
       window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
@@ -116,13 +118,14 @@ export default function App() {
   };
   const selectCatId = (id: string) => { if (id === 'all') { reset(); navigateToSection('products'); return; } const c = categories.find(x => x.id === id); if (c) selectCat(c); };
   const action = (id: string) => {
-    if (id === 'wishlist' && route.page !== 'home') { location.hash = catalogHref({}, { wishlist: true }); return; }
-    if (id === 'wishlist') { setFilters(emptyFilters); setWishlistOnly(true); navigateToSection('products'); }
+    if (id === 'wishlist') location.hash = '#/account/wishlist';
+    else if (id === 'account') location.hash = '#/account';
+    else if (id === 'cart') location.hash = '#/cart';
     else setModal(id);
   };
   const curated = (familyId: string) => { reset(); setFilters({ query: '', familyId }); navigateToSection('products'); };
   const article = modal?.startsWith('article-') ? articles[Number(modal.slice(8))] : undefined;
-  return <StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag }}>
+  return <StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag, bagLines, discountCode, setDiscountCode, removeBag: variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId)), changeBag: (product, fromId, toId, quantity) => { const result = changeDemoBagItem(bagLines, product, fromId, toId, quantity); setBagLines(result.lines); return result.message; } }}>
     <a className="skip" href="#main-content" onClick={event => { event.preventDefault(); const main = document.getElementById('main-content'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); main.scrollIntoView({ block: 'start' }); } }}>پرش به محتوای اصلی</a>
     <div className="announcement">{announcement}</div>
     <Header catalogMode={route.page !== 'home'} query={filters.query} onQuery={query => { setWishlistOnly(false); set({ query }); }} onCategory={id => { if (route.page === 'home') selectCatId(id); else location.hash = catalogHref(categories.find(c => c.id === id)?.patch ?? {}); }} onAction={action} activeCat={activeCat} favouriteCount={favourites.length} onSearch={query => { if (route.page === 'home') navigateToSection('products'); else location.hash = catalogHref({ query: query ?? filters.query }); }} />
@@ -149,8 +152,9 @@ export default function App() {
       <BrandBenefits />
       <section className="newsletter container"><div><p className="eyebrow">LET’S STAY INSPIRED</p><h2>نامه‌ای از دنیای رایحه‌ها</h2><p>فرم نمایشی خبرنامه؛ ایمیل شما ذخیره یا ارسال نمی‌شود.</p></div><form onSubmit={e => { e.preventDefault(); setSignup(true); }}><label htmlFor="newsletter-email">ایمیل شما</label><div className="search-row"><input id="newsletter-email" type="email" autoComplete="email" maxLength={254} aria-describedby="newsletter-status" dir="ltr" placeholder="you@example.com" required value={email} onChange={e => { setEmail(e.target.value); setSignup(false); }} /><button className="cta" type="submit">امتحان فرم</button></div><p id="newsletter-status" className="form-status" role="status">{signup ? 'فرمت ایمیل معتبر است؛ در این نسخه هیچ اطلاعاتی ارسال یا ذخیره نشد.' : 'فقط برای پیش‌نمایش تجربهٔ عضویت'}</p></form></section>
     </> : <CommercePages route={route} comparisonIds={comparisonIds} />}</main><ComparisonBar /><Footer onCategory={selectCatId} onInfo={setModal} />
+    <MobileIsland route={route} favouriteCount={favourites.length} bagCount={bagLines.reduce((sum, line) => sum + line.quantity, 0)} />
     {modal && <Dialog title={article?.title ?? ({ account: 'حساب کاربری', cart: 'سبد خرید', samples: 'ست کشف رایحه چیست؟', contact: 'ارتباط با آروما', policies: 'شرایط و حریم خصوصی' }[modal] ?? 'اطلاعات آروما')} onClose={() => setModal(undefined)}>
-      {modal === 'cart' ? <DemoBag lines={bagLines} onRemove={variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId))} /> : <p>{article?.text ?? ({ account: 'ورود و ثبت‌نام در این مرحله فعال نیست. این پیش‌نمایش حساب واقعی یا احراز هویت ندارد.', cart: 'این نسخه برای آشنایی با طراحی فروشگاه است. افزودن به سبد، سفارش و پرداخت در مرحله‌های بعد ساخته می‌شوند.', samples: 'ست کشف رایحه مجموعه‌ای از نمونه‌های کوچک برای مقایسه و آشنایی است. پیش از خرید یک بطری کامل، می‌توان تغییر رایحه روی پوست را تجربه کرد. این بخش فعلاً معرفی است و موجودی واقعی ندارد.', contact: 'اطلاعات فروشنده، شماره تماس، نشانی و شبکه‌های اجتماعی پس از تأیید مالک فروشگاه درج می‌شوند. در این نسخه کانال ارتباطی فعالی معرفی نشده است.', policies: 'این سایت نسخهٔ نمایشی است و خریدی در آن انجام نمی‌شود. شرایط ارسال، مرجوعی و حریم خصوصی باید پیش از راه‌اندازی فروش واقعی توسط مالک فروشگاه تکمیل شوند. فرم خبرنامه داده‌ای ارسال نمی‌کند.' }[modal])}</p>}<button className="cta" onClick={() => setModal(undefined)}>متوجه شدم</button>
+      {<p>{article?.text ?? ({ account: 'ورود و ثبت‌نام در این مرحله فعال نیست. این پیش‌نمایش حساب واقعی یا احراز هویت ندارد.', cart: 'این نسخه برای آشنایی با طراحی فروشگاه است. افزودن به سبد، سفارش و پرداخت در مرحله‌های بعد ساخته می‌شوند.', samples: 'ست کشف رایحه مجموعه‌ای از نمونه‌های کوچک برای مقایسه و آشنایی است. پیش از خرید یک بطری کامل، می‌توان تغییر رایحه روی پوست را تجربه کرد. این بخش فعلاً معرفی است و موجودی واقعی ندارد.', contact: 'اطلاعات فروشنده، شماره تماس، نشانی و شبکه‌های اجتماعی پس از تأیید مالک فروشگاه درج می‌شوند. در این نسخه کانال ارتباطی فعالی معرفی نشده است.', policies: 'این سایت نسخهٔ نمایشی است و خریدی در آن انجام نمی‌شود. شرایط ارسال، مرجوعی و حریم خصوصی باید پیش از راه‌اندازی فروش واقعی توسط مالک فروشگاه تکمیل شوند. فرم خبرنامه داده‌ای ارسال نمی‌کند.' }[modal])}</p>}<button className="cta" onClick={() => setModal(undefined)}>متوجه شدم</button>
     </Dialog>}
   </StoreContext.Provider>;
 }

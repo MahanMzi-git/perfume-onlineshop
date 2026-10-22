@@ -484,9 +484,13 @@ input[type=checkbox]{
   border:1px solid #CFC7B9;
   border-radius:50%;
   background:#F7F4EE}
+.family-icon svg{
+  transition:color .18s ease}
 .family-grid button:hover .family-icon,.family-grid button[aria-pressed=true] .family-icon{
   background:#E1D7C6;
   border-color:#80683D}
+.family-grid button:hover .family-icon svg,.family-grid button[aria-pressed=true] .family-icon svg{
+  color:#A66A50}
 .editorial-panel{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -1230,10 +1234,11 @@ button.note-filter-option { display:inline-flex; align-items:center; gap:6px; mi
   .brand-list button:hover { text-decoration:none; }
   .journal-card:hover { background:transparent; color:var(--text); }
   .journal-card:hover .text-link { color:var(--accent-text); }
+  .family-grid button:not(:disabled):hover { background:transparent; box-shadow:none; }
 }
 .card:focus-within { border-color:var(--accent-text); }
 @media (prefers-reduced-motion:reduce) {
-  .card { transition:none; }
+  .card,.family-icon svg { transition:none; }
   .card:hover { transform:none; }
 }
 @media (hover:hover) and (pointer:fine) {
