@@ -249,3 +249,9 @@ body:has(.home-orbit-stage[data-ready=true]) .category-orbit-dock img { visibili
  .header-cart { position:relative; z-index:2; }
 }
 @media(prefers-reduced-motion:reduce) { .header-search-slot,.header-search-slot .inline-search,.inline-search input,.inline-search-toggle,.inline-search-toggle svg,.inline-search-close,.header .logo,.header .menu-btn,.header .header-secondary { transition:none!important; } }
+/* A focused input inside the sticky header must not be scrolled below its own header padding. */
+html:has(.header.is-searching) { scroll-padding-top:0; }
+.home-orbit-pause { width:44px; height:44px; min-height:44px; padding:0; justify-content:center; border:0; border-radius:50%; background:transparent; box-shadow:none; color:#493B2C; }
+.home-orbit-pause .motion-control-icon,.home-orbit-pause[aria-pressed=true] .motion-control-icon { width:28px; height:28px; background:transparent; color:inherit; }
+.home-orbit-pause:hover { background:transparent; color:#201D1A; }
+.home-orbit-pause svg { width:17px; height:17px; stroke-width:2.5; }

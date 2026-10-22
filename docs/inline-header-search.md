@@ -12,3 +12,19 @@ Latest color selection: owner replaced the pale burgundy trial with sage #D3DACC
 
 Owner approved sage in-row search and authorized push to FixLandingPage. Release includes only Header.tsx, App.tsx, catalog.css and search documentation. Final build, automated test and whitespace results recorded at release.
 Release verification: npm run build passed; npm test 11/11 passed; git diff --check passed. Upstream main includes previous release via PR #5; no unrelated tree differences before this search change.
+
+## Follow-up: typing must preserve page position
+
+Reproduced on the notes library using native keyboard events: scrollY was 1542 before typing, 1474 after `s`, and 1406 after `a`. The root scroll-padding reserved space for the sticky header, causing browser caret scrolling to repeatedly move the page upward. While the header search is open, catalog.css now sets root scroll-padding-top to zero; the existing padding returns automatically on close. Header dimensions, search animation, colors, and route/back restoration are unchanged.
+
+After the fix, native 
+`, `t`, and `a` each preserved scrollY at exactly 1406. Enter submitted Santal to #/catalog?query=Santal, returned one product, closed the search, and restored computed root padding to 90.6667px. npm run build (TypeScript and Vite) and git diff --check passed. No new dependencies or configuration changes. Physical mobile keyboard behavior has not been verified for this follow-up. This fix is awaiting owner review; no commit or push. Suggested commit: fix: preserve scroll position while typing in header search. Next: owner review before release; pending wishlist and other roadmap work remain out of scope.
+
+## Landing controls follow-up
+Owner requested icon-only motion control and journal links to return to the landing top. Removed visible pause/play text, retained dynamic Persian accessible labels and pressed state, and used a 44px circular target. Header, footer and mobile journal links now invoke home navigation, including repeated clicks. Home navigation explicitly scrolls to top smoothly, respecting reduced-motion. Browser verified journal click from a scrolled home page reached #home at scrollY 0, and pause changed to play with aria-pressed true; resumed afterward. Build passed, 11/11 tests passed, whitespace check passed. Cross-page and physical-device checks remain unverified. No dependencies changed; no push. Suggested commit: fix: simplify motion control and return journal links to landing top.
+
+Follow-up refinement: removed both control backgrounds, border and shadow; retained a 44px target, keyboard focus outline and darker 17px icon. Journal return from a routed page now restores the last landing departure position before smooth scrolling to top; browser Back still uses entry-specific restoration. Verified mobile-menu product-to-home return: landing visible at scrollY 3037.33 immediately after click, then 0; animation ready=true, transparent control background and 0px border. Build passed and existing 11 tests passed. Physical-device and reduced-motion setting tests remain unverified. No push.
+
+Search clear/close refinement: the X clears a nonempty query and refocuses the input without scrolling; when already empty, it closes search. Accessible label changes between clear and close. Browser verified Santal -> X gives empty value, open=true and focus=header-query; second X gives open=false. TypeScript/Vite build passed. No styling or dependency changes; no push. Suggested commit: fix: clear search text before closing header search.
+
+Owner approved all follow-up changes and authorized release to FixLandingPage on 2026-10-22. Validation: latest TypeScript/Vite build passed, existing suite 11/11 passed, and git diff --check passed. No new dependencies or configuration changes. Next: owner merge/review; subsequent roadmap work requires a separate request.

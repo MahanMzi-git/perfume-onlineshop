@@ -17,5 +17,5 @@ export function FragranceOrbit() {
     }).catch(() => setReady(false));
     return () => { disposed = true; observer.disconnect(); cleanup?.(); };
   }, []);
-  return <><div ref={host} className="home-orbit-stage" aria-hidden="true" /><button type="button" className="home-orbit-pause" hidden={!ready} aria-pressed={paused} aria-label={paused ? 'پخش انیمیشن' : 'توقف انیمیشن'} onClick={() => host.current?.dispatchEvent(new Event('aroma:toggle-motion'))}><span className="motion-control-icon" aria-hidden="true">{paused ? <Play size={13} /> : <Pause size={13} />}</span><span>{paused ? 'ادامهٔ حرکت' : 'مکث حرکت'}</span></button></>;
+  return <><div ref={host} className="home-orbit-stage" aria-hidden="true" /><button type="button" className="home-orbit-pause" hidden={!ready} aria-pressed={paused} aria-label={paused ? 'پخش انیمیشن' : 'توقف انیمیشن'} onClick={() => host.current?.dispatchEvent(new Event('aroma:toggle-motion'))}><span className="motion-control-icon" aria-hidden="true">{paused ? <Play size={13} /> : <Pause size={13} />}</span></button></>;
 }

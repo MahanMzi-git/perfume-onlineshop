@@ -1,3 +1,4 @@
+import { navigateToSection } from '../lib/navigation';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Search, User, ShoppingBag, Menu, Heart, X } from 'lucide-react';
 import { MobileNavigation, type NavLink } from './MobileNavigation';
@@ -62,6 +63,15 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
     searchToggle.current?.focus({ preventScroll: true });
   }
 
+  function clearOrCloseSearch() {
+    if (query.length > 0) {
+      onQuery('');
+      searchInput.current?.focus({ preventScroll: true });
+      return;
+    }
+    closeSearch();
+  }
+
   return <header ref={header} className={`header ${searching ? 'is-searching' : ''}`}>
     <div className="bar container">
       <button className="icon-btn menu-btn" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label="باز کردن منو" aria-expanded={menu} aria-controls={menu ? 'mobile-menu' : undefined} onClick={() => setMenu(true)}><Menu aria-hidden="true" /></button>
@@ -73,7 +83,7 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
             <label className="sr" htmlFor="header-query">جستجوی عطر، برند یا نت</label>
             <input ref={searchInput} id="header-query" type="search" disabled={!searching} maxLength={120} value={query} onChange={event => onQuery(event.target.value)} placeholder="عطر، برند یا نت دلخواهت…" autoComplete="off" />
             <button type="submit" hidden disabled={!searching}>جستجو</button>
-            <button type="button" className="icon-btn inline-search-close" disabled={!searching} aria-label="بستن جستجو" onClick={closeSearch}><X size={16} aria-hidden="true" /></button>
+            <button type="button" className="icon-btn inline-search-close" disabled={!searching} aria-label={query.length > 0 ? 'پاک کردن عبارت جستجو' : 'بستن جستجو'} onClick={clearOrCloseSearch}><X size={16} aria-hidden="true" /></button>
             <button ref={searchToggle} type="button" className="icon-btn inline-search-toggle" aria-label={searching ? 'نمایش نتایج جستجو' : 'جستجو'} aria-expanded={searching} aria-controls="header-query" onClick={event => { if (!searching) setSearching(true); else event.currentTarget.form?.requestSubmit(); }}><Search aria-hidden="true" /></button>
           </form>
         </div>
@@ -93,7 +103,7 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
           }
         }}>{link.label}</a>
       </li>)}</ul>
-      <a href="#journal">مجلهٔ آروما <span aria-hidden="true">↖</span></a>
+      <a href="#home" onClick={event => { event.preventDefault(); navigateToSection('home'); }}>مجلهٔ آروما <span aria-hidden="true">↖</span></a>
     </nav>
     <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} onCategory={onCategory} activeCat={activeCat} catalogMode={catalogMode} />
   </header>;

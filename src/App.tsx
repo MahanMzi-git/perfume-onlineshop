@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { ArrowUpLeft, BookOpen, FlaskConical, Gift, Leaf } from 'lucide-react';
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
@@ -14,7 +14,7 @@ import { products } from './data/products';
 import { announcement, articles } from './data/homepage';
 import { NoteFilters } from './components/NoteFilters';
 import { ActiveFilters } from './components/ActiveFilters';
-import { navigateToSection } from './lib/navigation';
+import { consumeHomeReturn, navigateToSection } from './lib/navigation';
 import { useFavourites } from './lib/useFavourites';
 import { emptyFilters, filterProducts } from './lib/filter';
 import { StoreContext } from './components/StoreContext';
@@ -23,7 +23,7 @@ import { DiscoveryNavigation } from './components/DiscoveryNavigation';
 import { ComparisonBar } from './components/ComparisonBar';
 import { DemoBag } from './components/DemoBag';
 import { addDemoBagItem, type BagLine } from './lib/demoBag';
-import { useHashLocation } from './lib/useHashLocation';
+import { getLastHomePosition, useHashLocation } from './lib/useHashLocation';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
 import './styles/catalog.css';
@@ -47,14 +47,27 @@ export default function App() {
     }
   }, [hash]);
   const routePath = hash.split('?')[0];
-  useEffect(() => {
+  useLayoutEffect(() => {
     const productTitle = route.page === 'product' ? products.find(p => p.slug === route.slug)?.name : undefined;
     document.title = (productTitle ?? ({ home: 'فروشگاه عطر', product: 'جزئیات عطر', 'not-found': 'صفحه پیدا نشد', catalog: 'کاتالوگ عطرها', families: 'کتابخانهٔ رایحه', family: 'خانوادهٔ رایحه', notes: 'واژه‌نامه نت‌ها', note: 'شناخت نت', compare: 'مقایسهٔ عطرها' }[route.page] ?? 'فروشگاه عطر')) + ' | آروما';
+    if (route.page === 'home' && consumeHomeReturn()) {
+      const position = getLastHomePosition();
+      window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
+      let secondFrame = 0;
+      const frame = requestAnimationFrame(() => {
+        secondFrame = requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
+      });
+      return () => { cancelAnimationFrame(frame); cancelAnimationFrame(secondFrame); };
+    }
     if (restoredScroll) {
       const frame = requestAnimationFrame(() => window.scrollTo({ left: restoredScroll.x, top: restoredScroll.y, behavior: 'instant' }));
       return () => cancelAnimationFrame(frame);
     }
     if (route.page === 'home') {
+      if (hash === '#home') {
+        requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
+        return;
+      }
       if (['#home', '#products', '#brands', '#discovery', '#about', '#gifts', '#journal', '#discovery-sets'].includes(hash)) {
         requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' }));
       }
