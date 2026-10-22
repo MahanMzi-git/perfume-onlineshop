@@ -5,6 +5,8 @@ type HashLocation = { hash: string; restoredScroll?: Position };
 const entryKey = 'aromaNavigationEntry';
 let sequence = 0;
 const positions = new Map<string, Position>();
+let lastHomePosition: Position = { x: 0, y: 0 };
+export function getLastHomePosition() { return lastHomePosition; }
 function newEntry() { return Date.now().toString(36) + '-' + (++sequence); }
 
 export function useHashLocation(): HashLocation {
@@ -15,11 +17,17 @@ export function useHashLocation(): HashLocation {
     let currentEntry = newEntry();
     let currentHash = location.hash;
     history.replaceState({ ...history.state, [entryKey]: currentEntry }, '');
-    const save = () => positions.set(currentEntry, { x: window.scrollX, y: window.scrollY });
+    const save = () => {
+      const position = { x: window.scrollX, y: window.scrollY };
+      positions.set(currentEntry, position);
+    };
     save();
     const onChange = () => {
       const targetEntry = history.state?.[entryKey] as string | undefined;
       if (targetEntry === currentEntry && location.hash === currentHash) return;
+      if (!currentHash.startsWith('#/') && location.hash.startsWith('#/')) {
+        lastHomePosition = positions.get(currentEntry) ?? { x: 0, y: 0 };
+      }
       const restoredScroll = targetEntry && targetEntry !== currentEntry ? positions.get(targetEntry) : undefined;
       currentEntry = targetEntry && positions.has(targetEntry) ? targetEntry : newEntry();
       currentHash = location.hash;

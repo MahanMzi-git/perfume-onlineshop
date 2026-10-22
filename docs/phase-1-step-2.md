@@ -67,3 +67,6 @@ Selecting or removing a scent note now brings the updated products into view aft
 Refined note-filter scroll destination to the active-filter/result region rather than the whole homepage product section. The existing document scroll padding keeps results below the sticky mobile header, omitting the section title and selector toolbar above.
 
 Final release checks: npm test 11/11 passed; npm run build passed; git diff --check passed. No new dependencies, secrets or backend integration.
+
+## In-row header search preview
+The rejected dropdown search trial is replaced by a same-row expanding field. One magnifier rotates and travels right; mobile temporarily hides logo/menu/account/wishlist while retaining cart access. See docs/inline-header-search.md for behavior and validation. Local preview pending owner approval; no push.
