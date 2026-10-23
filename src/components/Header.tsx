@@ -23,9 +23,10 @@ interface Props {
   onSearch: (query?: string) => void;
   activeCat?: string;
   favouriteCount: number;
+  bagCount: number;
 }
 
-export function Header({ catalogMode = false, query, onQuery, onCategory, onAction, onSearch, activeCat, favouriteCount }: Props) {
+export function Header({ catalogMode = false, query, onQuery, onCategory, onAction, onSearch, activeCat, favouriteCount, bagCount }: Props) {
   const [menu, setMenu] = useState(false);
   const [searching, setSearching] = useState(false);
   const [compact, setCompact] = useState(() => matchMedia('(max-width:600px)').matches);
@@ -96,7 +97,7 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
         <button className="icon-btn wishlist-action header-secondary" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label={`علاقه‌مندی‌ها، ${new Intl.NumberFormat('fa-IR').format(favouriteCount)} عطر`} onClick={() => onAction('wishlist')}>
           <Heart aria-hidden="true" /><span className="wishlist-count" aria-hidden="true">{new Intl.NumberFormat('fa-IR').format(favouriteCount)}</span>
         </button>
-        <button className="icon-btn header-cart" aria-label="سبد خرید" onClick={() => onAction('cart')}><ShoppingBag aria-hidden="true" /></button>
+        <button className="icon-btn wishlist-action header-cart" aria-label={`سبد خرید، ${new Intl.NumberFormat('fa-IR').format(bagCount)} کالا`} onClick={() => onAction('cart')}><ShoppingBag aria-hidden="true" />{bagCount > 0 && <span className="wishlist-count" aria-hidden="true">{new Intl.NumberFormat('fa-IR').format(bagCount)}</span>}</button>
       </div>
     </div>
     <nav className="desktop-nav container" aria-label="ناوبری اصلی">
