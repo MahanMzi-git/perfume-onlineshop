@@ -1,9 +1,11 @@
 import { products } from '../data/products';
+import { isCardStudy } from '../data/cardStudyImages';
 import { sortLabels } from '../data/catalogLabels';
 import { ActiveFilters } from '../components/ActiveFilters';
 import { AdvancedFilters } from '../components/AdvancedFilters';
 import { NoteFilters } from '../components/NoteFilters';
 import { ProductGrid } from '../components/ProductGrid';
+import { LuxurySelect } from '../components/LuxurySelect';
 import { useStore } from '../components/StoreContext';
 import { filterProducts } from '../lib/filter';
 import { sortProducts } from '../lib/catalog';
@@ -39,10 +41,10 @@ export function CatalogPage({ params }: { params: URLSearchParams }) {
   return <section className="step2-page container section" aria-labelledby="catalog-title">
     <nav className="breadcrumbs" aria-label="مسیر صفحه"><a href="#home">خانه</a><span>/</span><span>کاتالوگ</span></nav>
     <p className="eyebrow">THE FRAGRANCE CATALOG</p><h1 id="catalog-title">{wishlistOnly ? 'علاقه‌مندی‌های شما' : 'عطر بعدی‌ات را کشف کن.'}</h1>
-    <p className="page-intro">هشت عطر خیالی، با مشخصات قابل مقایسه. قیمت، موجودی، تاریخ و امتیازها صرفاً برای پیش‌نمایش‌اند.</p>
+    <p className="page-intro">{isCardStudy ? 'نام و عکس عطرها واقعی و نت‌ها برگرفته از معرفی برندند؛ قیمت، حجم‌های انتخابی، موجودی و ویژگی‌های خرید صرفاً نمایشی‌اند.' : 'هشت عطر خیالی، با مشخصات قابل مقایسه. قیمت، موجودی، تاریخ و امتیازها صرفاً برای پیش‌نمایش‌اند.'}</p>
     <div className="catalog-search-sort">
       <label>جستجوی نام، برند یا نت<input type="search" maxLength={120} value={filters.query} onChange={e => update({ query: e.target.value }, true)} placeholder="نام عطر، برند یا نت…" /></label>
-      <label>مرتب‌سازی<select value={sort} onChange={e => { location.hash = catalogHref(filters, { sort: e.target.value as SortOrder, wishlist: wishlistOnly }); }}>{Object.entries(sortLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+      <LuxurySelect label="مرتب‌سازی" value={sort} options={Object.entries(sortLabels).map(([value, label]) => ({ value, label }))} onChange={value => { location.hash = catalogHref(filters, { sort: value as SortOrder, wishlist: wishlistOnly }); }} />
     </div>
     <AdvancedFilters filters={filters} onChange={patch => update(patch, patch.minPrice !== undefined || patch.maxPrice !== undefined)} />
     <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />

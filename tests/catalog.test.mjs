@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import { test } from 'node:test';
 import ts from 'typescript';
 
+// Keep these original-catalog regression cases on their explicit legacy fixture.
+// Approved-default coverage is in approved-catalog.test.mjs and browser QA.
 // Compile only the existing pure TypeScript catalog modules in memory.
 // No browser, additional test dependency, or generated project files are needed.
 const root = path.resolve('src');
@@ -21,6 +23,7 @@ function load(relativePath) {
   });
   vm.runInNewContext(outputText, {
     module, exports: module.exports, document: testDocument, URLSearchParams,
+    window: { location: { search: '?cardPreview=legacy' } },
     require: specifier => {
       assert.ok(specifier.startsWith('.'), 'Only local catalog modules are allowed');
       return load(path.relative(root, path.resolve(path.dirname(filename), specifier + '.ts')));
@@ -176,7 +179,8 @@ test('Persian checkout fields validate required values and normalize Iranian dig
   assert.ok(validateFields(contactFields, { name: 'آزمایش', phone: '123' }).phone);
   assert.equal(Object.keys(validateFields(contactFields, { name: 'کاربر نمونه', phone: '۰۹۱۲۳۴۵۶۷۸۹', email: '' })).length, 0);
   assert.ok(validateFields(contactFields, { name: 'کاربر', phone: '09123456789', email: 'bad' }).email);
-  assert.equal(Object.keys(validateFields(addressFields, { province: 'نمونه', city: 'نمونه', address: 'خیابان آزمایشی پلاک یک', postal: '۱۲۳۴۵۶۷۸۹۰' })).length, 0);
+  assert.equal(Object.keys(validateFields(addressFields, { province: 'تهران', city: 'تهران', address: 'خیابان آزمایشی پلاک یک', postal: '۱۲۳۴۵۶۷۸۹۰' })).length, 0);
+  assert.ok(validateFields(addressFields, { province:'تهران',city:'شیراز',address:'خیابان آزمایشی پلاک یک',postal:'۱۲۳۴۵۶۷۸۹۰' }).city);
   assert.ok(validateFields(addressFields, { postal: '123' }).postal);
 });
 test('Customer routes resolve independently and reject unknown account sections', () => {

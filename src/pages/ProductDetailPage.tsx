@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Heart, Flower2, Sun, Leaf, Snowflake, Coffee, BriefcaseBusiness, Moon, Sparkles } from 'lucide-react';
 import { products } from '../data/products';
+import { isCardStudy } from '../data/cardStudyImages';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { noteById } from '../data/scentNotes';
@@ -8,6 +9,7 @@ import { occasionLabels, seasonLabels, sweetnessLabels, temperatureLabels } from
 import { DemoImage } from '../components/DemoImage';
 import { ScentNoteIcon } from '../components/ScentNoteIcon';
 import { ProductGrid } from '../components/ProductGrid';
+import { LuxurySelect } from '../components/LuxurySelect';
 import { useStore } from '../components/StoreContext';
 import { priceText, demoRating } from '../lib/catalog';
 import { loadProductIds, saveProductIds } from '../lib/storage';
@@ -34,22 +36,22 @@ export function ProductDetailPage({ product, params }: { product: Product; param
   const score = demoRating(product);
   return <section className="step2-page container section">
     <nav className="breadcrumbs" aria-label="مسیر صفحه"><a href="#home">خانه</a><span>/</span><a href="#/catalog">کاتالوگ</a><span>/</span><bdi>{product.name}</bdi></nav>
-    <span className="badge">محصول خیالی · موجودی، قیمت و نظرها نمایشی‌اند</span>
+    <span className="badge">{isCardStudy ? 'عطر واقعی · قیمت، حجم‌های انتخابی و موجودی نمایشی' : 'محصول خیالی · موجودی، قیمت و نظرها نمایشی‌اند'}</span>
     <div className="detail-grid">
       <div className="detail-gallery">
         <div className={'detail-main-image ' + (image.view === 'detail' ? 'image-detail' : '')}><DemoImage src={image.src} alt={image.alt} width={400} height={500} /></div>
         <div className="gallery-thumbnails" role="group" aria-label="تصاویر محصول">{product.gallery.map((item, i) => <button className="step-action" key={item.view} aria-pressed={galleryIndex === i} onClick={() => setGalleryIndex(i)}><DemoImage src={item.src} alt="" width={50} height={60} /><span>{item.view === 'bottle' ? 'نمای بطری' : 'برش نزدیک'}</span></button>)}</div>
-        <p className="fine-print">تصویرسازی محلی نمایشی؛ نمای دوم برش نزدیک همان تصویر است.</p>
+        <p className="fine-print">{isCardStudy ? 'عکس مرجع ارسالی برای آزمون طراحی فروشگاه.' : 'تصویرسازی محلی نمایشی؛ نمای دوم برش نزدیک همان تصویر است.'}</p>
       </div>
       <div className="detail-information">
         <p className="eyebrow" dir="ltr">{brand?.name}</p><h1 dir="ltr">{product.name}</h1>
-        <p>{product.description}</p>
+        <p className="detail-description">{product.description}</p>
         {params.has('variant') && !requestedVariant && <p role="status" className="fine-print">نسخهٔ درخواستی پیدا نشد؛ نسخهٔ پایه نمایش داده می‌شود.</p>}
         <div className="variant-selectors">
-          <label>حجم (میلی‌لیتر)<select value={variant.volumeMl} onChange={e => { const volume = Number(e.target.value); const next = product.variants.find(v => v.volumeMl === volume && v.concentration === variant.concentration) ?? product.variants.find(v => v.volumeMl === volume)!; chooseVariant(next.id); }}>{volumes.map(volume => <option key={volume} value={volume}>{new Intl.NumberFormat('fa-IR').format(volume)}</option>)}</select></label>
-          <label>غلظت<select value={variant.concentration} onChange={e => { const next = product.variants.find(v => v.concentration === e.target.value && v.volumeMl === variant.volumeMl) ?? product.variants.find(v => v.concentration === e.target.value)!; chooseVariant(next.id); }}>{concentrations.map(value => <option key={value} value={value}>{value}</option>)}</select></label>
+          <LuxurySelect label="حجم (میلی‌لیتر)" value={String(variant.volumeMl)} options={volumes.map(volume => ({ value: String(volume), label: new Intl.NumberFormat('fa-IR').format(volume) }))} onChange={value => { const volume = Number(value); const next = product.variants.find(v => v.volumeMl === volume && v.concentration === variant.concentration) ?? product.variants.find(v => v.volumeMl === volume)!; chooseVariant(next.id); }} />
+          <LuxurySelect label="غلظت" value={variant.concentration} options={concentrations.map(value => ({ value, label: value }))} onChange={value => { const next = product.variants.find(v => v.concentration === value && v.volumeMl === variant.volumeMl) ?? product.variants.find(v => v.concentration === value)!; chooseVariant(next.id); }} />
         </div>
-        <p className="fine-print">فقط ترکیب‌های تعریف‌شده نمایش داده می‌شوند؛ اگر ترکیب فعلی وجود نداشته باشد، نزدیک‌ترین نسخهٔ معتبر انتخاب می‌شود.</p>
+        <p className="fine-print detail-variant-note">فقط ترکیب‌های تعریف‌شده نمایش داده می‌شوند؛ اگر ترکیب فعلی وجود نداشته باشد، نزدیک‌ترین نسخهٔ معتبر انتخاب می‌شود.</p>
         <div className="detail-price" aria-live="polite"><strong>{priceText(variant.price)}</strong>{variant.compareAtPrice && variant.compareAtPrice > variant.price && <><del>{priceText(variant.compareAtPrice)}</del><span className="badge">تخفیف نمایشی</span></>}<p>{variant.stock > 0 ? 'موجودی نمایشی: ' + new Intl.NumberFormat('fa-IR').format(variant.stock) : 'این حجم و غلظت ناموجودِ نمایشی است.'}</p></div>
         <div className="detail-actions">
           <button className="step-action step-primary" disabled={variant.stock === 0} onClick={() => setFeedback(store.addToBag(product, variant))}>افزودن به سبد نمایشی</button>
@@ -65,7 +67,7 @@ export function ProductDetailPage({ product, params }: { product: Product; param
         </div>
       </div>
     </div>
-    <section className="detail-section"><h2>هرم نت‌ها</h2><p>این تقسیم‌بندی یک راهنمای نمایشی است؛ نت مشترک، رایحهٔ یکسان یا زمان‌بندی ثابت را تضمین نمی‌کند.</p><div className="pyramid-grid">{([['top', 'نت‌های آغازین'], ['middle', 'نت‌های میانی'], ['base', 'نت‌های پایه']] as const).map(([key, label]) => <div className="pyramid-level" key={key}><h3>{label}</h3><ul>{product.notePyramid[key].map(id => { const n = noteById(id)!; return <li key={id}><a href={'#/notes/' + n.slug}><ScentNoteIcon note={n} decorative size={20} />{n.name}</a></li>; })}</ul></div>)}</div></section>
+    <section className="detail-section"><h2>{isCardStudy ? 'نت‌های منتخب' : 'هرم نت‌ها'}</h2><p>{isCardStudy ? 'این نت‌ها از معرفی عطر انتخاب شده‌اند؛ فهرست کامل یا ترتیب تبخیر نیستند.' : 'این تقسیم‌بندی یک راهنمای نمایشی است؛ نت مشترک، رایحهٔ یکسان یا زمان‌بندی ثابت را تضمین نمی‌کند.'}</p><div className="pyramid-grid">{([['top', 'نت‌های آغازین'], ['middle', 'نت‌های میانی'], ['base', 'نت‌های پایه']] as const).filter(([key]) => !isCardStudy || key === 'middle').map(([key, label]) => <div className="pyramid-level" key={key}><h3>{isCardStudy ? 'شناخت رایحه' : label}</h3><ul>{product.notePyramid[key].map(id => { const n = noteById(id)!; return <li key={id}><a href={'#/notes/' + n.slug}><ScentNoteIcon note={n} decorative size={20} />{n.name}</a></li>; })}</ul></div>)}</div></section>
     <section className="detail-section"><h2>نظرها و امتیازهای نمونه · کاملاً نمایشی</h2><p>این متن‌ها و امتیازها متعلق به خریداران واقعی نیستند و صرفاً نمونهٔ رابط‌اند.</p>{score !== undefined ? <><p className="demo-rating">میانگین نمونه: {new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 }).format(score)} از ۵</p><div className="review-grid">{product.reviews.map((review, i) => <article className="demo-review" key={review.id}><h3>نمونهٔ طراحی {new Intl.NumberFormat('fa-IR').format(i + 1)}</h3><span>امتیاز نمایشی: {new Intl.NumberFormat('fa-IR').format(review.score)} از ۵</span><p>{review.text}</p></article>)}</div></> : <p className="empty">برای این محصول حتی نظر نمونه هم تعریف نشده است.</p>}</section>
     <div className="detail-policies"><details><summary>اطلاعات ارسال</summary><p>هزینه، روش و زمان ارسال هنوز توسط مالک فروشگاه تأیید نشده است؛ سفارش واقعی ثبت نمی‌شود.</p></details><details><summary>مرجوعی و شرایط</summary><p>قوانین فروش و مرجوعی پیش از راه‌اندازی خرید واقعی تکمیل می‌شوند. این صفحه یک پیش‌نمایش است.</p></details></div>
     {related.length > 0 && <section className="related-section"><h2>عطرهای هم‌خانواده · نمایشی</h2><ProductGrid list={related} /></section>}

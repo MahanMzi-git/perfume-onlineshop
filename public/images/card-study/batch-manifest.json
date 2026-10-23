@@ -1,0 +1,66 @@
+[
+  {
+    "index": 1,
+    "file": "batch-1.jpg",
+    "src": "/images/card-study/batch-1.jpg",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWdndxsxJT9-8-wFeAiD6hrrtraF6ZVUtcpVDyn_Hyww&s=10",
+    "bytes": 40421,
+    "sha256": "a8173b9f206efc86d93c6365194001e429ae14ab37eaa4d006cde717d9289b78"
+  },
+  {
+    "index": 2,
+    "file": "batch-2.jpg",
+    "src": "/images/card-study/batch-2.jpg",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqAXFADC0kESBTk9EMH6uSGAnYpDtxagmRijaFV-JJUQ&s=10",
+    "bytes": 59107,
+    "sha256": "9aced078326fe09a944973953d62f8beb035a231f605d0e577ada4c5333fdc9a"
+  },
+  {
+    "index": 3,
+    "file": "batch-3.jpg",
+    "src": "/images/card-study/batch-3.jpg",
+    "source": "https://befrsh.com/cdn/shop/files/creed-aventus_800x800_41104991-5d33-4069-b2f9-06b18131640b.png?v=1779735220",
+    "bytes": 101873,
+    "sha256": "20c621381450ce912ccdaee19520c29580edd3ac3aed7f76ce4325a621362864"
+  },
+  {
+    "index": 4,
+    "file": "batch-4.webp",
+    "src": "/images/card-study/batch-4.webp",
+    "source": "https://kaneen.com/media/catalog/product//C/o/Coco-Mademoiselle_-Perfume-By-Chanel-EDP-For-Women-100-ml-1-08fb3b41.webp",
+    "bytes": 120834,
+    "sha256": "ae94471646a98e9280608e818ae8c91414f37ea50f613a40187cb7aac64ed166"
+  },
+  {
+    "index": 5,
+    "file": "batch-5.jpg",
+    "src": "/images/card-study/batch-5.jpg",
+    "source": "https://homesouq.qa/cdn/shop/files/Experience_Miss_Dior_Eau_de_Parfum_100ml_in_a_graceful_hand-held_presentation_with_floral_elegance_Homesouq_Qatar.webp?v=1784903851&width=1024",
+    "bytes": 74752,
+    "sha256": "92220e0f6d744001ea0a7cc7faedc5e4ae1dd0e926d53febc1850bc0bb454d4f"
+  },
+  {
+    "index": 6,
+    "file": "batch-6.jpg",
+    "src": "/images/card-study/batch-6.jpg",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0F7GEVkFyFXU_PDVTr3n4zQg7nQyZ3GbQkprLlxF3TWl0hWoPLPgJ-mM2&s=10",
+    "bytes": 22747,
+    "sha256": "7fef8deb6cc171f7db4c64783d5e57ae1533ad3a51dd1f5234835a62837940b4"
+  },
+  {
+    "index": 7,
+    "file": "batch-7.jpg",
+    "src": "/images/card-study/batch-7.jpg",
+    "source": "https://img.ltwebstatic.com/v4/p/spmp/2026/06/26/dc/1782443978ff810337c2a28fb37abe6ddd22b1927c_thumbnail_750x999.jpg",
+    "bytes": 100704,
+    "sha256": "3d95d3ac2a13f6ed7aac63d16906116f2a7e5e071b96818c07a6a96737fca150"
+  },
+  {
+    "index": 8,
+    "file": "batch-8.jpg",
+    "src": "/images/card-study/batch-8.jpg",
+    "source": "https://www.faces.eg/dw/image/v2/BJSM_PRD/on/demandware.static/-/Sites-faces-master-catalog/default/dw4b535c09/product/3616302038633_10/3616302038633_10.jpg?sw=800&sh=800",
+    "bytes": 151274,
+    "sha256": "b38091b70a30d11bf51c9edaf6b238ba99667e2046704e5e6e0163a65efb1141"
+  }
+]

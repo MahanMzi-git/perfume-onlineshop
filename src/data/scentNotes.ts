@@ -1,4 +1,5 @@
 import type { ScentNote, NoteCategory, NoteIcon } from '../types/fragrance';
+import { isCardStudy } from './cardStudyImages';
 const descriptions: Record<NoteIcon, string> = {
   rose: 'برداشت گلی با حال‌وهوای رز؛ وجه تازه یا پودری آن به ترکیب بستگی دارد.',
   jasmine: 'برداشت گلی با تداعی گل‌های سفید؛ شدت آن در هر ترکیب متفاوت است.',
@@ -20,6 +21,8 @@ const descriptions: Record<NoteIcon, string> = {
   oud: 'برداشت چوبی و عمیق، با وجه دودی در این پروفایل نمایشی.',
   patchouli: 'برداشت خاکی و سبز، برای شناخت وجه عمیق‌تر بعضی ترکیب‌ها.',
   vetiver: 'برداشت چوبی و علفی؛ در این مجموعه نمایندهٔ وجه خشک‌تر رایحه است.',
+  apricot: 'برداشت میوه‌ای و نرم با تداعی زردآلو؛ در هر ترکیب متفاوت است.',
+  tuberose: 'برداشت گلی سفید با تداعی گل مریم؛ شدت و بافت آن به ترکیب بستگی دارد.',
 };
 // Central scent-note library. Products reference notes by id only; the icon comes from here.
 const n = (id: NoteIcon, name: string, category: NoteCategory, description?: string): ScentNote =>
@@ -30,5 +33,6 @@ export const scentNotes: ScentNote[] = [
   n('pear', 'گلابی', 'fruity'), n('pepper', 'فلفل', 'spicy'), n('vanilla', 'وانیل', 'gourmand'), n('musk', 'مشک', 'musk'),
   n('lavender', 'اسطوخودوس', 'green'), n('oud', 'عود', 'woody'), n('patchouli', 'پچولی', 'green'), n('vetiver', 'وتیور', 'woody'),
   n('mint', 'نعنا', 'green'), n('iris', 'زنبق', 'powdery'), n('leather', 'چرم', 'leather'), n('incense', 'بخور', 'smoky'),
+  ...(isCardStudy ? [n('apricot','زردآلو','fruity'),n('tuberose','مریم','floral')] : []),
 ];
 export const noteById = (id: string) => scentNotes.find((x) => x.id === id);
