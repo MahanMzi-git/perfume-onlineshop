@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "src": "/images/card-study/reference-01.jpg",
+    "file": "reference-01.jpg",
+    "bytes": 18719,
+    "sha256": "1026e4e2914d249202db67619116fa6952a19d60aa137d26e702034a19ff060a",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNdiiUAZe61ZcQTAZe2CZjg0rP5GnEHJdI0SfP30q6Jw&s=10"
+  },
+  {
+    "id": 2,
+    "src": "/images/card-study/reference-02.jpg",
+    "file": "reference-02.jpg",
+    "bytes": 12719,
+    "sha256": "1c404f563f251e23d85fd5dce81550600143446655cc56e73b3a166e3525a514",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpZpcAu3nLl-MwN_mdjASqsXuJjZP7qsv8514ELlSQ2w&s=10"
+  },
+  {
+    "id": 3,
+    "src": "/images/card-study/reference-03.jpg",
+    "file": "reference-03.jpg",
+    "bytes": 12091,
+    "sha256": "897eeed8490283b44ca80ecbbc030672fd0de57eda0572f01e8153ed0b68c4a4",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQB6VtlpYm7hftdEUctEpxbGUr0mbPebPBzpnrTdBQK2A&s=10"
+  },
+  {
+    "id": 4,
+    "src": "/images/card-study/reference-04.jpg",
+    "file": "reference-04.jpg",
+    "bytes": 14011,
+    "sha256": "8cd4069b383f620800842f75ee30ad1fecd92f4c63d8b7d9712108b0d2cce86a",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxLxXUyDVt_k_5VDnMevR7YCrSUOgFo5qlOAwhJxarWQ&s=10"
+  },
+  {
+    "id": 5,
+    "src": "/images/card-study/reference-05.jpg",
+    "file": "reference-05.jpg",
+    "bytes": 11198,
+    "sha256": "65389d90d54eff4d502a582975df0f9f8c78997509dd6ebac6e72a0e7d9032a2",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFi6ac76I9yFquY5q8mGIr213zvmThwWR-XtU1orbFRQ&s=10"
+  },
+  {
+    "id": 6,
+    "src": "/images/card-study/reference-06.jpg",
+    "file": "reference-06.jpg",
+    "bytes": 14937,
+    "sha256": "4ec63e25922f0f6407e51641440124058e755081c81a6cabe50a9e13adb6cf40",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRssVP_xIj7Sm4SRfFgOLXTHTzRGlg55i8k_FdN9WrkFA&s=10"
+  },
+  {
+    "id": 7,
+    "src": "/images/card-study/reference-07.jpg",
+    "file": "reference-07.jpg",
+    "bytes": 10263,
+    "sha256": "e40ea5e7a036da9c51d6b8d1e9e05aae1601bc71449b7042d995af2ab9dd0cb8",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBXjhnxCL2misLzwMDQn78H7aiaYaZ7tdePL6jwm_QNA&s"
+  },
+  {
+    "id": 8,
+    "src": "/images/card-study/reference-08.jpg",
+    "file": "reference-08.jpg",
+    "bytes": 13144,
+    "sha256": "c5a5d4f8848d9c90dff36e3c3960ebb2a8ada855e6650e8f2fadce72bbfee805",
+    "source": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREcaeDCxrer6weclWiSlF3vv2AmuQhoY8dV6smxWBEow&s=10"
+  },
+  {
+    "id": 9,
+    "src": "/images/card-study/reference-09.png",
+    "file": "reference-09.png",
+    "bytes": 539715,
+    "sha256": "328b6a928b7060a5f29a4496ebd7f2d1c10f5833a127cfd95b246a74a265b9d6",
+    "source": "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1755532511-screenshot-2025-08-18-at-11-54-45-am-68a34ccddda66.png?crop=1xw:1xh;center,top&resize=980:*"
+  },
+  {
+    "id": 10,
+    "src": "/images/card-study/reference-10.webp",
+    "file": "reference-10.webp",
+    "bytes": 11570,
+    "sha256": "237368616320cba064fe487358b1e0721f4475afc30aed70b85a0d7fd5308755",
+    "source": "User-provided pasted image data URL"
+  },
+  {
+    "id": 11,
+    "src": "/images/card-study/reference-11.jpg",
+    "file": "reference-11.jpg",
+    "bytes": 85031,
+    "sha256": "e0d88d1225a138b78709f6a6795746e88d917cdd940e86280881111c9b6ce40e",
+    "source": "Owner-supplied local JPEG: bleu-de-chanel-eau-de-pafum-vaporisateur.jpg (2026-10-23)"
+  },
+  {
+    "id": 12,
+    "src": "/images/card-study/reference-12.jpg",
+    "file": "reference-12.jpg",
+    "bytes": 57591,
+    "sha256": "c14c178cb67ff992c215b43a33a1bd47c67e27373fffd717eec2a1fd969f69cb",
+    "source": "Owner-supplied portrait JPEG: bleu-de-chanel-eau-de-pafum-vaporisateur.jpg (2026-10-23)"
+  }
+]

@@ -47,7 +47,13 @@ The UI UX Pro Max audit preserves the approved identity and improves readable ty
 Select several notes in the catalog note selector or on product cards. Results must contain **all** selected notes (AND), while other active filters continue to apply. Every chosen note has its own removable chip. See [verification and changed files](docs/multi-note-filter.md).
 
 ## Approved visual refinements
-Minimal, compact controls; equal-height white product cards with aligned price footers; 2px card lift on mouse hover; sage #D3DACC button hover and burgundy #8A4355 favourite-button hover. Reduced-motion disables the card movement.
+The approved default now uses equal-height photo cards, nine real-name fragrance references, two to four sourced notes and a content-linked black gradient. Photos fill the card field with individually balanced framing; price badges use an 80%-black background. Compact controls, sage #D3DACC button hover, burgundy #8A4355 favourite hover and reduced-motion support remain. Prices, volume options, inventory and shopping behaviour remain demo data. See [current card implementation and sources](docs/real-photo-cards.md).
+
+No special query is needed. `?cardPreview=legacy` retains the earlier fictional catalog for comparison. Earlier documentation below describes that catalog; current example routes include `#/product/bleu-de-chanel`, `#/product/coco-mademoiselle` and `#/compare?ids=study-p1,study-p3`. Old stored demo IDs may no longer appear in favourites/recent views because the approved reference catalog uses distinct IDs.
+
+Photo-card add actions now animate the bag into a check and expose inline plus/minus quantity controls using the shared demo cart. See [behaviour and QA](docs/card-cart-control.md).
+
+Account/checkout addresses now use dependent Iranian province/city lists (31 provinces; 1,478 unique province/city names from the MIT-licensed 1404 snapshot). Forms support boundary-aware arrow navigation, the cart uses compact rows, checkout has visual step/shipping icons, and the mobile menu is a floating panel with a blurred backdrop. See [implementation and responsive QA](docs/shopping-mobile-polish.md) and [geography provenance](docs/iran-locations-source.md). Shopping and customer data remain frontend demos.
 
 ## Phase 1 — Step 2
 Frontend catalog, compound filters, shareable hash routes, 13 fragrance families, 20 notes, reusable product details, stock-aware volume/concentration variants and comparison of 2–3 products are implemented with centralized fictional data. Existing compact card geometry and approved hovers are preserved. Product image/name links and a small comparison control were approved by the owner.

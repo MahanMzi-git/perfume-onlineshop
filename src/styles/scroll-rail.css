@@ -1,0 +1,15 @@
+.scroll-rail {
+  position:absolute; z-index:2; top:5px; bottom:5px; left:-10px; right:auto;
+  writing-mode:vertical-lr; direction:ltr; appearance:none; -webkit-appearance:none;
+  width:24px!important; height:calc(100% - 10px); min-height:0!important;
+  margin:0!important; padding:0!important; border:0!important; border-radius:0;
+  background:transparent; cursor:pointer; touch-action:none;
+}
+.scroll-rail[hidden] { display:none; }
+.scroll-rail::-webkit-slider-runnable-track { width:1px; height:100%; background:#D3C9BC; border:0; }
+.scroll-rail::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:6px; height:11px; margin-left:-2.5px; border:0; border-radius:999px; background:#80683D; }
+.scroll-rail::-moz-range-track { width:1px; height:100%; background:#D3C9BC; border:0; }
+.scroll-rail::-moz-range-thumb { width:6px; height:11px; border:0; border-radius:999px; background:#80683D; }
+.scroll-rail:focus-visible { outline:0; box-shadow:none; }
+.scroll-rail:focus-visible::-webkit-slider-thumb { box-shadow:0 0 0 2px #FFFDF9,0 0 0 3px #80683D; }
+.scroll-rail:focus-visible::-moz-range-thumb { box-shadow:0 0 0 2px #FFFDF9,0 0 0 3px #80683D; }

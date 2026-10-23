@@ -1,4 +1,5 @@
 import type { Audience, Concentration, Product, ProductVariant } from '../types/product';
+import { createCardStudyProducts, isCardStudy } from './cardStudyImages';
 
 // Every profile, price, stock count, date and review below is fictional demo content.
 type Profile = Pick<Product, 'description' | 'temperature' | 'sweetness' | 'seasons' | 'occasions' | 'notePyramid'>;
@@ -40,7 +41,7 @@ function p(i: number, name: string, brandId: string, price: number, audience: Au
     ...extra,
   };
 }
-export const products: Product[] = [
+const demoProducts: Product[] = [
   p(1, 'Rose Voile', 'b-aurelle', 4800000, 'women', ['f-floral'], 'EDP', { isFeatured: true }),
   p(2, 'Nuit Aubergine', 'b-nocturne', 9200000, 'unisex', ['f-amber', 'f-spicy'], 'Extrait', { isNiche: true }),
   p(3, 'Cuir Doré', 'b-nocturne', 8600000, 'men', ['f-woody', 'f-leather'], 'Parfum', { isNiche: true, isGiftSet: true }),
@@ -50,4 +51,5 @@ export const products: Product[] = [
   p(7, 'Jardin Vert', 'b-aurelle', 3600000, 'unisex', ['f-citrus', 'f-green', 'f-aromatic'], 'EDT', { isBestseller: false }),
   p(8, 'Ambre Épicé', 'b-sel', 6800000, 'men', ['f-amber', 'f-spicy'], 'EDP', { isNiche: true }),
 ];
+export const products: Product[] = isCardStudy ? createCardStudyProducts(demoProducts) : demoProducts;
 export const productBySlug = (slug?: string) => products.find(product => product.slug === slug);

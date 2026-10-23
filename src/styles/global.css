@@ -46,6 +46,12 @@ p{
 :focus-visible{
   outline:3px solid #80683D;
   outline-offset:4px}
+main h1:focus-visible {
+  width:fit-content;
+  max-width:100%;
+  border-radius:3px;
+  outline-width:2px;
+  outline-offset:5px}
 ::selection{
   background:#D8C6A5;
   color:var(--text)}
@@ -1148,6 +1154,10 @@ button.note, .note { font-size:var(--text-caption); min-height:32px; padding:4px
   .footer .foot-grid > div:last-child { grid-column:1/-1; }
   .gift-banner { padding:25px; }
   .hero-art figcaption { font-size:8px; }
+  body:has(.orbit-hero) .discovery-navigation { display:none; }
+  .discovery-navigation { flex-wrap:nowrap; overflow-x:auto; overscroll-behavior-inline:contain; scrollbar-width:none; }
+  .discovery-navigation::-webkit-scrollbar { display:none; }
+  .footer { padding-bottom:calc(86px + env(safe-area-inset-bottom)); }
 }
 @media (max-width:350px) {
   .bar { flex-wrap:wrap; justify-content:space-between; }
@@ -1208,6 +1218,10 @@ button.note-filter-option { display:inline-flex; align-items:center; gap:6px; mi
 @media (max-width:600px) {
   .card { padding:8px; border-radius:10px; }
   .grid { column-gap:10px; row-gap:16px; }
+  .card .notes { gap:8px 6px; margin-bottom:10px; }
+  .card .notes .note { min-height:28px; padding:2px 5px; gap:3px; font-size:.75rem; line-height:1.45; white-space:nowrap; }
+  .card .notes .note svg { width:13px; height:13px; }
+  .card .card-img .card-compare { top:58px; inset-inline-start:6px; }
   .card .price { font-size:.875rem; }
   .card .price small { font-size:.75rem; }
 }

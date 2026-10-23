@@ -3,14 +3,11 @@ import { fragranceFamilies } from '../data/fragranceFamilies';
 import { products } from '../data/products';
 import { audienceLabels, occasionLabels, productTypeLabels, seasonLabels, stockLabels, sweetnessLabels, temperatureLabels } from '../data/catalogLabels';
 import type { Filters } from '../types/product';
+import { LuxurySelect } from './LuxurySelect';
 
 interface Props { filters: Filters; onChange: (patch: Partial<Filters>) => void }
 export function AdvancedFilters({ filters, onChange }: Props) {
-  const select = (key: keyof Filters, label: string, options: { value: string; label: string }[]) => <label key={key}>{label}
-    <select value={String(filters[key] ?? '')} onChange={e => onChange({ [key]: e.target.value ? key === 'volumeMl' ? Number(e.target.value) : e.target.value : undefined })}>
-      <option value="">همه</option>{options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-    </select>
-  </label>;
+  const select = (key: keyof Filters, label: string, options: { value: string; label: string }[]) => <LuxurySelect key={key} label={label} value={String(filters[key] ?? '')} options={[{ value: '', label: 'همه' }, ...options]} onChange={value => onChange({ [key]: value ? key === 'volumeMl' ? Number(value) : value : undefined })} />;
   const entries = (labels: Record<string, string>) => Object.entries(labels).map(([value, label]) => ({ value, label }));
   const volumes = [...new Set(products.flatMap(p => p.variants.map(v => v.volumeMl)))].sort((a, b) => a - b);
   return <details className="advanced-filters">
