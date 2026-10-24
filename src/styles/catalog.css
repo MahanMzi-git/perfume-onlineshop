@@ -296,3 +296,16 @@ html:has(.header.is-searching) { scroll-padding-top:0; }
     inset-inline:0;
   }
 }
+
+/* Compact shoe identity shared with the approved product cards. */
+.detail-identity { display:flex; align-items:center; justify-content:space-between; gap:16px; min-width:0; }
+.detail-identity-text { min-width:0; flex:1; }
+.detail-identity-text h1 { margin:8px 0 16px; overflow-wrap:anywhere; }
+.detail-identity-text .eyebrow { margin:0; }
+.detail-audience { width:52px; flex:0 0 52px; margin:0; text-align:center; color:#5B3924; }
+.detail-audience .card-audience-shoe { display:block; width:34px; height:28px; margin:0 auto; }
+.detail-audience figcaption { margin-top:4px; font-size:.75rem; line-height:1.5; }
+@media (max-width:600px) {
+  .detail-information > .detail-identity { order:1; gap:12px; }
+  .detail-identity-text h1 { margin-bottom:12px; }
+}
