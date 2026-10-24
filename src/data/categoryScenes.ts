@@ -9,4 +9,3 @@ export const categoryScenes: Record<string, CategoryScene> = {
   gifts: { image:'gifts-red-table.jpg', bottle:'baccarat.webp', aspect:736/981, surfaceX:.51, surfaceY:.67, zoom:1.15 },
 };
 export const categorySurfaceRatio = .80;
-
