@@ -70,3 +70,45 @@
 @media (prefers-reduced-motion:reduce) {
   .mobile-island { transition:none; }
 }
+
+/* Match the island breakpoint exactly: keep only account access in the resting header. */
+@media (max-width:600px) {
+  .header .bar { display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:8px; flex-wrap:nowrap; }
+  .header .bar > .logo { justify-self:center; margin:0; }
+  .header .bar .actions { width:44px; flex-basis:auto; margin:0; gap:0; justify-content:center; }
+  .header .header-account, .header .menu-btn { width:44px; min-width:44px; min-height:44px; }
+  .header .actions > .wishlist-action { display:none; }
+  .header .header-search-slot, .header.is-searching .header-search-slot { display:block; position:static; width:0; height:44px; }
+  .header .header-search-slot .inline-search { left:0; right:auto; width:44px; visibility:hidden; pointer-events:none; background:transparent; box-shadow:none; transition:none; }
+  .header.is-searching .header-search-slot .inline-search { visibility:visible; pointer-events:auto; width:100%; animation:mobile-search-expand .46s cubic-bezier(.22,.7,.2,1) .3s both; }
+  .header.is-searching .inline-search:focus-within { outline:none; }
+  .header.is-searching .inline-search-toggle { left:calc(100% - 44px); transition:none; animation:mobile-search-handoff .001s .3s both; }
+  .header.is-searching .inline-search-toggle svg { transform:none; transition:none; }
+  .header.is-searching .inline-search input { visibility:visible; opacity:0; transition:none; animation:mobile-search-handoff .18s .55s both; }
+  .header.is-searching .inline-search-close { animation:mobile-search-handoff .15s .55s both; transition:none; }
+  .header.is-searching .header-account { visibility:visible; opacity:1; pointer-events:none; animation:mobile-profile-handoff .3s linear forwards; transition:none; }
+  .header-account-symbol { display:grid; place-items:center; }
+  .header-account-symbol svg { grid-area:1 / 1; transform-origin:center; transition:transform .3s ease, opacity .2s ease; }
+  .header .header-account-search { display:block; opacity:0; transform:rotate(110deg) scale(.5); }
+  .header.is-searching .header-account-user { opacity:0; transform:rotate(-110deg) scale(.5); }
+  .header.is-searching .header-account-search { opacity:1; transform:rotate(0) scale(1); }
+  .header.is-searching .inline-search-close { width:44px; min-width:44px; }
+  .header.is-searching .inline-search input { left:44px; right:46px; width:calc(100% - 90px); }
+}
+
+.header-account-search { display:none; }
+@keyframes mobile-profile-handoff {
+  0%,99% { opacity:1; visibility:visible; }
+  100% { opacity:0; visibility:hidden; }
+}
+@keyframes mobile-search-handoff { from { opacity:0; } to { opacity:1; } }
+@keyframes mobile-search-expand {
+  from { width:44px; background:transparent; box-shadow:none; }
+  to { width:100%; background:#D3DACC; box-shadow:inset 0 0 0 1px #B7C2AE; }
+}
+@media (max-width:600px) and (prefers-reduced-motion:reduce) {
+  .header-account-symbol svg { transition:none; }
+  .header.is-searching .header-account { animation:none; opacity:0; visibility:hidden; }
+  .header.is-searching .header-search-slot .inline-search { animation:none; background:#D3DACC; box-shadow:inset 0 0 0 1px #B7C2AE; }
+  .header.is-searching .inline-search-toggle, .header.is-searching .inline-search input, .header.is-searching .inline-search-close { animation:none; opacity:1; }
+}
