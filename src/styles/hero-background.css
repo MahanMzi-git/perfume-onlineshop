@@ -1,12 +1,7 @@
-/* Approved temporary wall photograph, displayed horizontally behind the existing orbit. */
+/* Approved terracotta photograph in its native landscape orientation. */
 .hero-background {
-  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden; container-type:size;
-  background-image:url('/images/hero/landing-wall.jpg'); background-size:cover; background-position:center;
-}
-.hero-background::before {
-  content:""; position:absolute; left:50%; top:50%; width:100cqh; height:100cqw;
-  background-image:inherit; background-size:cover; background-repeat:no-repeat; background-position:center;
-  transform:translate(-50%,-50%) rotate(90deg);
+  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  background-image:url('/images/hero/landing-terracotta.jpg'); background-size:cover; background-position:center bottom;
 }
 .hero-background::after {
   content:""; position:absolute; inset:0;
@@ -17,4 +12,12 @@
 }
 @media (min-width:700px) and (max-width:1100px) and (max-aspect-ratio:9/10) {
   .hero-background::after { background:linear-gradient(to bottom, rgb(247 244 238 / 90%) 0%, rgb(247 244 238 / 70%) 22%, transparent 42%), linear-gradient(to left, rgb(247 244 238 / 78%) 0%, rgb(247 244 238 / 10%) 52%); }
+}
+
+/* Keep motion controls visible over the darker image area. */
+@media (min-width:701px) {
+  .orbit-hero .home-orbit-pause { color:#F7F4EE; }
+}
+@media (min-width:700px) and (max-width:1100px) and (max-aspect-ratio:9/10) {
+  .orbit-hero .home-orbit-pause { color:#493B2C; }
 }
