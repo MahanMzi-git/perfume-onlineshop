@@ -138,9 +138,6 @@
 .card-cart-count { font-size:.8125rem; line-height:1; font-variant-numeric:tabular-nums; }
 .card-cart-icon { display:block; position:relative; width:16px; height:16px; }
 .card-cart-icon svg { position:absolute; inset:0; transition:transform .32s cubic-bezier(.2,.7,.2,1),opacity .22s ease; }
-.card-cart-check { opacity:0; transform:rotate(100deg) scale(.45); }
-.card-cart-control[data-added=true] .card-cart-bag { opacity:0; transform:rotate(-150deg) scale(.45); }
-.card-cart-control[data-added=true] .card-cart-check { opacity:1; transform:rotate(0deg) scale(1); }
 @media(prefers-reduced-motion:reduce) { .card-cart-icon svg { transition:none; } }
 @media(min-width:601px) {
   .card-cart-control .card-cart-stepper { grid-template-columns:28px 20px 28px; }
@@ -156,3 +153,9 @@
 /* Keep the approved shoe mark in the brand row without wrapping the name. */
 .card-brand-row { display:flex; align-items:center; justify-content:space-between; gap:6px; }
 .card-brand-row .card-audience-shoe { margin:0; color:#FFF; filter:drop-shadow(0 1px 2px rgb(0 0 0 / 70%)); }
+
+/* A product-level mark remains visible when another volume is in the shared cart. */
+.card-cart-bag { inset:0 auto auto 0; }
+.card-cart-icon .card-cart-presence { inset:auto -5px -4px auto; box-sizing:content-box; padding:1px; border:1px solid #9B7428; border-radius:50%; background:#9B7428; color:#F5F0E8; stroke-width:2.6; animation:card-cart-confirm .24s ease both; }
+@keyframes card-cart-confirm { from { opacity:0; transform:rotate(-65deg) scale(.45); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { .card-cart-icon .card-cart-presence { animation:none; } }
