@@ -9,6 +9,7 @@ import './styles/mobile-island.css';
 import './styles/product-card-preview.css';
 import './styles/audience-icon.css';
 import './styles/hero-background.css';
+import './styles/category-scenes.css';
 import './styles/mobile-navigation.css';
 import './styles/scroll-rail.css';
 createRoot(document.getElementById('root')!).render(<StrictMode><CustomerProvider><App /></CustomerProvider></StrictMode>);

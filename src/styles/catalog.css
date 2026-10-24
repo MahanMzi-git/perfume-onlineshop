@@ -199,7 +199,7 @@
 .home-orbit-pause { position:absolute; z-index:4; left:6vw; margin-top:24px; padding:6px 12px; border:1px solid var(--line); border-radius:24px; background:var(--bg); font-size:.75rem; }
 body:has(.home-orbit-stage[data-ready=true]) .orbit-hero .hero-art { visibility:hidden; }
 .category-orbit-dock { width:100%; height:calc(100% - 42px); }
-body:has(.home-orbit-stage[data-ready=true]) .category-orbit-dock img { visibility:hidden; }
+body:has(.home-orbit-stage[data-ready=true]) .category-orbit-dock .category-dock-bottle { visibility:hidden; }
 .tile > span { z-index:4; }
 @media(max-width:700px) {
  .orbit-hero .hero-grid { min-height:max(100svh,800px); display:block; position:relative; }
