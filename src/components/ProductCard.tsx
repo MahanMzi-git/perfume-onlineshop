@@ -5,6 +5,7 @@ import { Check, Heart, Scale } from 'lucide-react';
 import { useStore } from './StoreContext';
 import type { Product, ProductVariant } from '../types/product';
 import { brands } from '../data/brands';
+import { AudienceIcon } from './AudienceIcon';
 import { cardStudyImages, isCardStudy } from '../data/cardStudyImages';
 import { ScentNoteList } from './ScentNoteList';
 import { CardCartControl } from './CardCartControl';
@@ -18,7 +19,7 @@ export function ProductCard({ product, onNote, selectedNoteIds, displayVariant, 
   const studyImage = photoPreview ? cardStudyImages[product.id] : undefined;
   const variant = displayVariant ?? product.variants.find(item => item.price === product.price && item.concentration === product.concentration) ?? product.variants[0];
   const information = <>
-    <p className="brand" dir="ltr">{brand?.name}</p>
+    <p className="brand card-brand-row" dir="ltr"><span>{brand?.name}</span><AudienceIcon audience={product.targetAudience} /></p>
     <h3 dir="ltr"><a className="card-detail-link" href={detailHref}>{product.name}</a> <small>{displayVariant?.concentration ?? product.concentration}</small></h3>
     <ScentNoteList noteIds={product.scentNoteIds} onSelect={onNote} selectedNoteIds={selectedNoteIds} />
   </>;

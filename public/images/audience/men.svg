@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="64" viewBox="1 5 126 52" fill="none">
+  <title>Men’s Oxford shoe</title>
+  <g stroke="#3B261A" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 42C5 37 12 34 23 32C35 29 46 23 57 12C61 8 64 9 69 12C79 18 86 21 94 21C103 21 112 17 119 15C123 22 125 30 123 39C111 43 101 43 91 44C77 45 69 49 55 52C38 55 19 52 5 48Z" fill="#fff" fill-opacity="0"/>
+    <path d="M5 44C20 48 38 52 55 49C69 47 77 42 91 41C102 40 113 40 123 37"/>
+    <path d="M5 48C22 53 39 56 55 53C69 51 77 47 91 46L95 46L95 51L123 51L123 40C113 43 102 44 91 44C77 45 69 49 55 52C38 55 19 52 5 48Z" fill="#3B261A" stroke="none"/>
+    <path d="M91 46L95 46L95 51L123 51L123 40"/>
+    <path d="M32 29C34 34 36 41 37 49"/>
+    <path d="M77 17C88 25 100 27 119 15"/>
+    <path d="M50 20L55 25M56 14L61 19" stroke-width="3.2"/>
+  </g>
+</svg>

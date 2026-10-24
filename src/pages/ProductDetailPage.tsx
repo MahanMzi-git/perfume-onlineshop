@@ -5,7 +5,8 @@ import { isCardStudy } from '../data/cardStudyImages';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { noteById } from '../data/scentNotes';
-import { occasionLabels, seasonLabels, sweetnessLabels, temperatureLabels } from '../data/catalogLabels';
+import { audienceLabels, occasionLabels, seasonLabels, sweetnessLabels, temperatureLabels } from '../data/catalogLabels';
+import { AudienceIcon } from '../components/AudienceIcon';
 import { DemoImage } from '../components/DemoImage';
 import { ScentNoteIcon } from '../components/ScentNoteIcon';
 import { ProductGrid } from '../components/ProductGrid';
@@ -44,7 +45,10 @@ export function ProductDetailPage({ product, params }: { product: Product; param
         <p className="fine-print">{isCardStudy ? 'عکس مرجع ارسالی برای آزمون طراحی فروشگاه.' : 'تصویرسازی محلی نمایشی؛ نمای دوم برش نزدیک همان تصویر است.'}</p>
       </div>
       <div className="detail-information">
-        <p className="eyebrow" dir="ltr">{brand?.name}</p><h1 dir="ltr">{product.name}</h1>
+        <div className="detail-identity">
+          <div className="detail-identity-text"><p className="eyebrow" dir="ltr">{brand?.name}</p><h1 dir="ltr">{product.name}</h1></div>
+          <figure className="detail-audience"><AudienceIcon audience={product.targetAudience} decorative /><figcaption>{audienceLabels[product.targetAudience]}</figcaption></figure>
+        </div>
         <p className="detail-description">{product.description}</p>
         {params.has('variant') && !requestedVariant && <p role="status" className="fine-print">نسخهٔ درخواستی پیدا نشد؛ نسخهٔ پایه نمایش داده می‌شود.</p>}
         <div className="variant-selectors">
