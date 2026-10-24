@@ -66,7 +66,8 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
 
   function closeSearch() {
     setSearching(false);
-    searchToggle.current?.focus({ preventScroll: true });
+    const returnTarget = compact ? document.querySelector<HTMLButtonElement>('.mobile-island button[aria-controls="header-query"]') : searchToggle.current;
+    returnTarget?.focus({ preventScroll: true });
   }
 
   function clearOrCloseSearch() {
@@ -93,7 +94,7 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
             <button ref={searchToggle} type="button" className="icon-btn inline-search-toggle" aria-label={searching ? 'نمایش نتایج جستجو' : 'جستجو'} aria-expanded={searching} aria-controls="header-query" onClick={event => { if (!searching) setSearching(true); else event.currentTarget.form?.requestSubmit(); }}><Search aria-hidden="true" /></button>
           </form>
         </div>
-        <button className="icon-btn header-secondary" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label="حساب کاربری" onClick={() => onAction('account')}><User aria-hidden="true" /></button>
+        <button className="icon-btn header-secondary header-account" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label="حساب کاربری" onClick={() => onAction('account')}><span className="header-account-symbol"><User className="header-account-user" aria-hidden="true" /><Search className="header-account-search" aria-hidden="true" /></span></button>
         <button className="icon-btn wishlist-action header-secondary" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label={`علاقه‌مندی‌ها، ${new Intl.NumberFormat('fa-IR').format(favouriteCount)} عطر`} onClick={() => onAction('wishlist')}>
           <Heart aria-hidden="true" /><span className="wishlist-count" aria-hidden="true">{new Intl.NumberFormat('fa-IR').format(favouriteCount)}</span>
         </button>
