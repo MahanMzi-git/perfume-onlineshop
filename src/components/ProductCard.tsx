@@ -1,7 +1,8 @@
 import { DemoImage } from './DemoImage';
 
 import { type CSSProperties } from 'react';
-import { Check, Heart, Scale } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { CompareIcon } from './CompareIcon';
 import { useStore } from './StoreContext';
 import type { Product, ProductVariant } from '../types/product';
 import { brands } from '../data/brands';
@@ -31,8 +32,7 @@ export function ProductCard({ product, onNote, selectedNoteIds, displayVariant, 
           <Heart aria-hidden="true" size={18} fill={fav ? 'currentColor' : 'none'} />
         </button>
         <button type="button" className="card-compare" aria-pressed={compared} aria-label={`${compared ? 'حذف از' : 'افزودن به'} مقایسه: ${product.name}`} title={compared ? 'حذف از مقایسه' : 'افزودن به مقایسه'} onClick={() => store.toggleComparison(product.id)}>
-          <Scale aria-hidden="true" size={17} />
-          {compared && <span className="compare-check" aria-hidden="true"><Check size={8} /></span>}
+          <CompareIcon selected={compared} />
         </button>
       </div>
       {photoPreview ? <>

@@ -1,0 +1,20 @@
+.information-page { min-height:60vh; }
+.information-lead { font-size:clamp(1.5rem,4vw,2.5rem); color:var(--copper); }
+.collection-intro { font-size:1.05rem; max-width:60ch; line-height:1.9; }
+.information-grid,.brand-directory { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-block:32px; }
+.information-card { padding:clamp(20px,3vw,32px); background:var(--cream); border-radius:22px; min-width:0; }
+.information-card > svg { color:var(--copper); }
+.information-card h2 { font-size:1.15rem; margin:14px 0 10px; }
+.information-card p { line-height:2; font-size:.95rem; }
+.brand-directory-link { display:grid; grid-template-columns:minmax(0,1fr) 24px; gap:14px; align-content:center; min-height:150px; transition:background-color .18s; }
+.brand-directory-link > span { font-family:var(--font-serif); font-size:1.65rem; overflow-wrap:anywhere; }
+.brand-directory-link > small { grid-row:2; }
+.brand-directory-link > svg { grid-column:2; grid-row:1/3; align-self:center; }
+.brand-directory-link:hover { background:#E3E7DE; }
+.contact-layout { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:24px; margin-top:30px; align-items:start; }
+.information-page textarea { width:100%; min-height:110px; font:inherit; padding:12px; border:1px solid var(--line); background:var(--bg); resize:vertical; }
+@media(max-width:900px) { .information-grid,.brand-directory { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .information-grid,.brand-directory,.contact-layout { grid-template-columns:1fr; gap:16px; } }
+@media(prefers-reduced-motion:reduce) { .brand-directory-link { transition:none; } }
+
+.information-page .step-action,.form-studio .step-action { min-height:44px; }

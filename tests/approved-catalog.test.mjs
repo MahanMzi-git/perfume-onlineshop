@@ -41,7 +41,7 @@ test('Approved catalog has local photos, valid brands and notes, and consistent 
     assert.ok(p.scentNoteIds.every(id=>scentNotes.some(n=>n.id===id)));
     assert.ok(fs.existsSync(path.join('public',p.image)));
     assert.equal(p.gallery[0].src,p.image);
-    assert.equal(p.availability,'demo');assert.equal(p.reviews.length,0);
+    assert.equal(p.availability,'demo');assert.ok(p.reviews.length >= 2);assert.ok(p.reviews.every(review => Number.isInteger(review.score) && review.score >= 1 && review.score <= 5 && review.id.includes('-sample-')));
     assert.equal(p.variants[0].price,p.price);
     for(const v of p.variants) {assert.ok(!variantIds.has(v.id));variantIds.add(v.id);assert.equal(v.concentration,p.concentration);}
   }

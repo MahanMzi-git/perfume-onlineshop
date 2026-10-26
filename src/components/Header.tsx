@@ -1,32 +1,34 @@
-import { navigateToSection } from '../lib/navigation';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Search, User, ShoppingBag, Menu, Heart, X } from 'lucide-react';
+import { useStore } from './StoreContext';
+import { comparisonHref } from '../lib/routes';
+import { CompareIcon } from './CompareIcon';
 import { MobileNavigation, type NavLink } from './MobileNavigation';
 
 export const navLinks: NavLink[] = [
-  { label: 'همهٔ عطرها', href: '#products' },
-  { label: 'زنانه', href: '#products', category: 'women' },
-  { label: 'مردانه', href: '#products', category: 'men' },
-  { label: 'یونیسکس', href: '#products', category: 'unisex' },
-  { label: 'برندها', href: '#brands' },
-  { label: 'دنیای رایحه‌ها', href: '#discovery' },
-  { label: 'عطرهای نیش', href: '#products', category: 'niche' },
-  { label: 'هدیه و ست‌ها', href: '#gifts' },
+  { label: 'همهٔ عطرها', href: '#/catalog' },
+  { label: 'زنانه', href: '#/collections/women', category: 'women' },
+  { label: 'مردانه', href: '#/collections/men', category: 'men' },
+  { label: 'یونیسکس', href: '#/collections/unisex', category: 'unisex' },
+  { label: 'برندها', href: '#/brands' },
+  { label: 'دنیای رایحه‌ها', href: '#/families' },
+  { label: 'عطرهای نیش', href: '#/collections/niche', category: 'niche' },
+  { label: 'هدیه و ست‌ها', href: '#/collections/gifts', category: 'gifts' },
+  { label: 'دربارهٔ ما', href: '#/about' },
+  { label: 'ارتباط با ما', href: '#/contact' },
 ];
 
 interface Props {
-  catalogMode?: boolean;
   query: string;
   onQuery: (q: string) => void;
-  onCategory: (id: string) => void;
   onAction: (action: string) => void;
   onSearch: (query?: string) => void;
-  activeCat?: string;
   favouriteCount: number;
   bagCount: number;
 }
 
-export function Header({ catalogMode = false, query, onQuery, onCategory, onAction, onSearch, activeCat, favouriteCount, bagCount }: Props) {
+export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bagCount }: Props) {
+  const { comparisonIds } = useStore();
   const [menu, setMenu] = useState(false);
   const [searching, setSearching] = useState(false);
   const [compact, setCompact] = useState(() => matchMedia('(max-width:600px)').matches);
@@ -103,15 +105,10 @@ export function Header({ catalogMode = false, query, onQuery, onCategory, onActi
     </div>
     <nav className="desktop-nav container" aria-label="ناوبری اصلی">
       <ul>{navLinks.map(link => <li key={link.label}>
-        <a href={link.href} aria-current={link.category && link.category === activeCat ? 'true' : undefined} onClick={event => {
-          if (link.category || link.label === 'همهٔ عطرها') {
-            event.preventDefault();
-            onCategory(link.category ?? 'all');
-          }
-        }}>{link.label}</a>
-      </li>)}</ul>
-      <a href="#home" onClick={event => { event.preventDefault(); navigateToSection('home'); }}>مجلهٔ آروما <span aria-hidden="true">↖</span></a>
+        <a href={link.href} aria-current={location.hash.split('?')[0] === link.href ? 'page' : undefined}>{link.label}</a>
+      </li>)}<li><a href={comparisonHref(comparisonIds)}><CompareIcon /> مقایسهٔ عطرها ({new Intl.NumberFormat('fa-IR').format(comparisonIds.length)})</a></li></ul>
+      <a href="#/journal">مجلهٔ آروما <span aria-hidden="true">↖</span></a>
     </nav>
-    <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} onCategory={onCategory} activeCat={activeCat} catalogMode={catalogMode} />
+    <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} />
   </header>;
 }
