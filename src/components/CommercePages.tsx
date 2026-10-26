@@ -1,3 +1,7 @@
+import { InformationPage } from '../pages/InformationPages';
+import { FormStudioPage } from '../pages/FormStudioPage';
+import { collections } from '../data/collections';
+import { brands } from '../data/brands';
 import { CatalogPage } from '../pages/CatalogPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
 import { LibraryNotFound, LibraryPage } from '../pages/LibraryPage';
@@ -9,6 +13,16 @@ import { CustomerPage } from '../pages/CustomerPages';
 
 export function CommercePages({ route, comparisonIds }: { route: Route; comparisonIds: string[] }) {
   switch (route.page) {
+    case 'about': case 'contact': case 'brands': case 'journal': return <InformationPage key={route.page} page={route.page} />;
+    case 'form-studio': return <FormStudioPage />;
+    case 'collection': {
+      const collection = collections.find(item => item.slug === route.slug);
+      return collection ? <CatalogPage params={route.params} collection={collection} baseHref={'#/collections/' + collection.slug} /> : <LibraryNotFound />;
+    }
+    case 'brand': {
+      const brand = brands.find(item => item.id === route.slug);
+      return brand ? <CatalogPage params={route.params} collection={{ slug: brand.id, title: 'عطرهای ' + brand.name, intro: 'مجموعهٔ عطرهای این برند را مرور و مقایسه کنید.', filters: { brandId: brand.id } }} baseHref={'#/brands/' + brand.id} /> : <LibraryNotFound />;
+    }
     case 'cart': return <CartPage />;
     case 'checkout': return <CheckoutPage />;
     case 'account': return <CustomerPage key={route.slug + (route.params.get('orderId') ?? '')} section={route.slug} orderId={route.params.get('orderId') ?? undefined} />;

@@ -1,0 +1,32 @@
+/* One connected RTL stepper for cart, checkout and fictional order tracking. */
+.order-progress { display:flex; list-style:none; padding:0; margin:24px 0 32px; isolation:isolate; }
+.order-progress > li { position:relative; flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; color:var(--muted); }
+.order-progress > li:not(:last-child)::after { content:''; position:absolute; top:22px; inset-inline-start:50%; width:100%; height:1px; background:var(--line); z-index:-1; }
+.order-progress > li[data-state=complete]::after { background:#9D865D; }
+.order-progress-symbol { width:44px; height:44px; flex:none; display:grid; place-items:center; position:relative; border:1px solid var(--line); border-radius:50%; background:var(--bg); }
+.order-progress [data-state=current] { color:#493B2C; font-weight:600; }
+.order-progress [data-state=current] .order-progress-symbol { background:#E3E7DE; border-color:#80683D; box-shadow:0 0 0 4px #B59A6918; }
+.order-progress [data-state=complete] .order-progress-symbol { background:#F1E8D9; border-color:#9D865D; color:#6E562B; }
+.order-progress-check { position:absolute; inset-inline-end:-3px; bottom:-1px; width:16px; height:16px; padding:2px; border-radius:50%; background:#80683D; color:#FCFAF6; }
+.order-progress-label { font-size:.8125rem; padding-inline:3px; line-height:1.7; }
+.order-tracking { container-type:inline-size; padding-top:18px; margin-top:22px; border-top:1px solid var(--line); }
+.order-tracking-heading { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.order-tracking-heading h3 { margin:0; font-size:1rem; }
+.order-tracking-heading > svg { color:#80683D; }
+.tracking-description { color:var(--muted); }
+.checkout-completion { margin-block:18px; }
+.checkout-completion > svg { color:#80683D; }
+@media(max-width:600px) {
+ .order-progress-symbol { width:30px; height:30px; }
+ .order-progress-symbol > svg:not(.order-progress-check) { width:16px; height:16px; }
+ .order-progress > li:not(:last-child)::after { top:15px; }
+ .order-progress-label { font-size:.75rem; padding-inline:1px; }
+ .order-progress { margin:22px 0 28px; }
+}
+@container(max-width:520px) {
+ .order-progress-tracking { flex-direction:column; gap:0; margin-bottom:16px; }
+ .order-progress-tracking > li { flex-direction:row; gap:14px; text-align:start; min-height:60px; }
+ .order-progress-tracking .order-progress-symbol { width:36px; height:36px; }
+ .order-progress-tracking > li:not(:last-child)::after { width:1px; height:100%; inset-inline-start:18px; top:30px; }
+ .order-progress-tracking .order-progress-label { font-size:.875rem; }
+}

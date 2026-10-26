@@ -29,7 +29,11 @@ export function createCardStudyProducts(demos: Product[]): Product[] {
     const variants = base.variants.filter(v => v.concentration === base.concentration).map((v, i) => ({ ...v, id:`${id}-${i}-EDP`, concentration:'EDP' as const }));
     return { ...base, id, name, slug:name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-'), brandId:reference.brandId, image:reference.src,
       concentration:'EDP', targetAudience:reference.audience, fragranceFamilyIds:reference.families, scentNoteIds:reference.noteIds,
-      variants, isGiftSet:false, productType:'perfume', reviews:[],
+      variants, isGiftSet:false, productType:'perfume', reviews:[
+        { id:`${id}-sample-1`, score:5, text:'نمونهٔ دیدگاه برای بررسی طراحی؛ این متن تجربهٔ خریدار واقعی نیست.' },
+        { id:`${id}-sample-2`, score:index % 3 === 0 ? 3 : 4, text:'متن آزمایشی دوم برای نمایش بخش امتیاز و نظر؛ بدون خرید واقعی.' },
+        ...(index % 2 ? [{ id:`${id}-sample-3`, score:4, text:'نمونهٔ سومِ رابط دیدگاه‌ها، صرفاً برای تست.' }] : []),
+      ],
       gallery:[{src:reference.src,alt:reference.alt,view:'bottle'}],
       notePyramid:{top:[],middle:reference.noteIds,base:[]},
       description:'عکس و نام این عطر واقعی است؛ نت‌های منتخب از معرفی برند استخراج شده‌اند و ترتیب تبخیر را نشان نمی‌دهند. قیمت، حجم‌ها، موجودی و سایر ویژگی‌های خرید صرفاً برای آزمون رابط نمایشی هستند.' + (id === 'study-p6' ? ' نت‌های این نمونه مربوط به نسخهٔ گلی میس دیور پیش از بازفرمولاسیون جدید است.' : ''),

@@ -5,9 +5,9 @@ import { audienceLabels, occasionLabels, productTypeLabels, seasonLabels, stockL
 import type { Filters } from '../types/product';
 import { LuxurySelect } from './LuxurySelect';
 
-interface Props { filters: Filters; onChange: (patch: Partial<Filters>) => void }
-export function AdvancedFilters({ filters, onChange }: Props) {
-  const select = (key: keyof Filters, label: string, options: { value: string; label: string }[]) => <LuxurySelect key={key} label={label} value={String(filters[key] ?? '')} options={[{ value: '', label: 'همه' }, ...options]} onChange={value => onChange({ [key]: value ? key === 'volumeMl' ? Number(value) : value : undefined })} />;
+interface Props { lockedKeys?: (keyof Filters)[]; filters: Filters; onChange: (patch: Partial<Filters>) => void }
+export function AdvancedFilters({ filters, onChange, lockedKeys = [] }: Props) {
+  const select = (key: keyof Filters, label: string, options: { value: string; label: string }[]) => lockedKeys.includes(key) ? null : <LuxurySelect key={key} label={label} value={String(filters[key] ?? '')} options={[{ value: '', label: 'همه' }, ...options]} onChange={value => onChange({ [key]: value ? key === 'volumeMl' ? Number(value) : value : undefined })} />;
   const entries = (labels: Record<string, string>) => Object.entries(labels).map(([value, label]) => ({ value, label }));
   const volumes = [...new Set(products.flatMap(p => p.variants.map(v => v.volumeMl)))].sort((a, b) => a - b);
   return <details className="advanced-filters">
@@ -18,8 +18,8 @@ export function AdvancedFilters({ filters, onChange }: Props) {
       {select('familyId', 'خانوادهٔ بویایی', fragranceFamilies.map(f => ({ value: f.id, label: f.name })))}
       {select('concentration', 'غلظت', ['EDT', 'EDP', 'Parfum', 'Extrait'].map(value => ({ value, label: value })))}
       {select('volumeMl', 'حجم', volumes.map(v => ({ value: String(v), label: new Intl.NumberFormat('fa-IR').format(v) + ' میلی‌لیتر' })))}
-      <label>حداقل قیمت (تومان)<input type="number" inputMode="numeric" min="0" step="100000" value={filters.minPrice ?? ''} onChange={e => onChange({ minPrice: e.target.value === '' ? undefined : Math.max(0, Number(e.target.value)) })} /></label>
-      <label>حداکثر قیمت (تومان)<input type="number" inputMode="numeric" min="0" step="100000" value={filters.maxPrice ?? ''} onChange={e => onChange({ maxPrice: e.target.value === '' ? undefined : Math.max(0, Number(e.target.value)) })} /></label>
+      <label>حداقل قیمت (تومان)<input placeholder="مبلغ به تومان" type="number" inputMode="numeric" min="0" step="100000" value={filters.minPrice ?? ''} onChange={e => onChange({ minPrice: e.target.value === '' ? undefined : Math.max(0, Number(e.target.value)) })} /></label>
+      <label>حداکثر قیمت (تومان)<input placeholder="مبلغ به تومان" type="number" inputMode="numeric" min="0" step="100000" value={filters.maxPrice ?? ''} onChange={e => onChange({ maxPrice: e.target.value === '' ? undefined : Math.max(0, Number(e.target.value)) })} /></label>
       {select('temperature', 'طبع نمایشی', entries(temperatureLabels))}
       {select('sweetness', 'شیرینی نمایشی', entries(sweetnessLabels))}
       {select('season', 'فصل پیشنهادی', entries(seasonLabels))}

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Heart, Flower2, Sun, Leaf, Snowflake, Coffee, BriefcaseBusiness, Moon, Sparkles } from 'lucide-react';
+import { Star, Heart, Flower2, Sun, Leaf, Snowflake, Coffee, BriefcaseBusiness, Moon, Sparkles } from 'lucide-react';
 import { products } from '../data/products';
 import { isCardStudy } from '../data/cardStudyImages';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { noteById } from '../data/scentNotes';
 import { audienceLabels, occasionLabels, seasonLabels, sweetnessLabels, temperatureLabels } from '../data/catalogLabels';
+import { ProductReviewForm } from '../components/ProductReviewForm';
+import { CompareIcon } from '../components/CompareIcon';
 import { AudienceIcon } from '../components/AudienceIcon';
 import { DemoImage } from '../components/DemoImage';
 import { ScentNoteIcon } from '../components/ScentNoteIcon';
@@ -46,7 +48,7 @@ export function ProductDetailPage({ product, params }: { product: Product; param
       </div>
       <div className="detail-information">
         <div className="detail-identity">
-          <div className="detail-identity-text"><p className="eyebrow" dir="ltr">{brand?.name}</p><h1 dir="ltr">{product.name}</h1></div>
+          <div className="detail-identity-text"><p className="eyebrow" dir="ltr">{brand?.name}</p><h1 dir="ltr">{product.name}</h1>{score !== undefined && <button className="detail-rating" onClick={() => { const target = document.getElementById('product-reviews'); target?.scrollIntoView({ behavior:matchMedia('(prefers-reduced-motion:reduce)').matches ? 'instant' : 'smooth',block:'start' }); target?.focus({preventScroll:true}); }} aria-label="مشاهدهٔ امتیازها و نظرهای نمایشی"><Star size={18} fill="currentColor" aria-hidden="true" /><strong>{new Intl.NumberFormat('fa-IR',{maximumFractionDigits:1}).format(score)} از ۵</strong><span>({new Intl.NumberFormat('fa-IR').format(product.reviews.length)} رأی نمایشی)</span></button>}</div>
           <figure className="detail-audience"><AudienceIcon audience={product.targetAudience} decorative /><figcaption>{audienceLabels[product.targetAudience]}</figcaption></figure>
         </div>
         <p className="detail-description">{product.description}</p>
@@ -60,7 +62,7 @@ export function ProductDetailPage({ product, params }: { product: Product; param
         <div className="detail-actions">
           <button className="step-action step-primary" disabled={variant.stock === 0} onClick={() => setFeedback(store.addToBag(product, variant))}>افزودن به سبد نمایشی</button>
           <button className="step-action detail-favourite" aria-pressed={store.favourites.includes(product.id)} onClick={() => store.toggleFavourite(product.id)}><Heart aria-hidden="true" size={16} fill={store.favourites.includes(product.id) ? 'currentColor' : 'none'} />علاقه‌مندی</button>
-          <button className="step-action" aria-pressed={store.comparisonIds.includes(product.id)} onClick={() => store.toggleComparison(product.id)}>مقایسهٔ این عطر</button>
+          <button className="step-action detail-compare" aria-pressed={store.comparisonIds.includes(product.id)} onClick={() => store.toggleComparison(product.id)}><CompareIcon selected={store.comparisonIds.includes(product.id)} />{store.comparisonIds.includes(product.id) ? 'در لیست مقایسه' : 'مقایسهٔ این عطر'}</button>
         </div>
         <p className="local-feedback" role="status">{feedback}</p>
         <dl className="profile-facts"><div><dt>طبع نمایشی</dt><dd>{temperatureLabels[product.temperature]}</dd></div><div><dt>شیرینی نمایشی</dt><dd>{sweetnessLabels[product.sweetness]}</dd></div><div><dt>قیمت هر میلی‌لیتر</dt><dd>{priceText(Math.round(variant.price / variant.volumeMl))}</dd></div></dl>
@@ -72,7 +74,7 @@ export function ProductDetailPage({ product, params }: { product: Product; param
       </div>
     </div>
     <section className="detail-section"><h2>{isCardStudy ? 'نت‌های منتخب' : 'هرم نت‌ها'}</h2><p>{isCardStudy ? 'این نت‌ها از معرفی عطر انتخاب شده‌اند؛ فهرست کامل یا ترتیب تبخیر نیستند.' : 'این تقسیم‌بندی یک راهنمای نمایشی است؛ نت مشترک، رایحهٔ یکسان یا زمان‌بندی ثابت را تضمین نمی‌کند.'}</p><div className="pyramid-grid">{([['top', 'نت‌های آغازین'], ['middle', 'نت‌های میانی'], ['base', 'نت‌های پایه']] as const).filter(([key]) => !isCardStudy || key === 'middle').map(([key, label]) => <div className="pyramid-level" key={key}><h3>{isCardStudy ? 'شناخت رایحه' : label}</h3><ul>{product.notePyramid[key].map(id => { const n = noteById(id)!; return <li key={id}><a href={'#/notes/' + n.slug}><ScentNoteIcon note={n} decorative size={20} />{n.name}</a></li>; })}</ul></div>)}</div></section>
-    <section className="detail-section"><h2>نظرها و امتیازهای نمونه · کاملاً نمایشی</h2><p>این متن‌ها و امتیازها متعلق به خریداران واقعی نیستند و صرفاً نمونهٔ رابط‌اند.</p>{score !== undefined ? <><p className="demo-rating">میانگین نمونه: {new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 }).format(score)} از ۵</p><div className="review-grid">{product.reviews.map((review, i) => <article className="demo-review" key={review.id}><h3>نمونهٔ طراحی {new Intl.NumberFormat('fa-IR').format(i + 1)}</h3><span>امتیاز نمایشی: {new Intl.NumberFormat('fa-IR').format(review.score)} از ۵</span><p>{review.text}</p></article>)}</div></> : <p className="empty">برای این محصول حتی نظر نمونه هم تعریف نشده است.</p>}</section>
+    <section id="product-reviews" tabIndex={-1} className="detail-section"><h2>نظرها و امتیازهای نمونه · کاملاً نمایشی</h2><p>این متن‌ها و امتیازها متعلق به خریداران واقعی نیستند و صرفاً نمونهٔ رابط‌اند.</p>{score !== undefined ? <><p className="demo-rating">میانگین نمونه: {new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 }).format(score)} از ۵</p><div className="review-grid">{product.reviews.map((review, i) => <article className="demo-review" key={review.id}><h3>نمونهٔ طراحی {new Intl.NumberFormat('fa-IR').format(i + 1)}</h3><span>امتیاز نمایشی: {new Intl.NumberFormat('fa-IR').format(review.score)} از ۵</span><p>{review.text}</p></article>)}</div></> : <p className="empty">برای این محصول حتی نظر نمونه هم تعریف نشده است.</p>}<ProductReviewForm product={product} /></section>
     <div className="detail-policies"><details><summary>اطلاعات ارسال</summary><p>هزینه، روش و زمان ارسال هنوز توسط مالک فروشگاه تأیید نشده است؛ سفارش واقعی ثبت نمی‌شود.</p></details><details><summary>مرجوعی و شرایط</summary><p>قوانین فروش و مرجوعی پیش از راه‌اندازی خرید واقعی تکمیل می‌شوند. این صفحه یک پیش‌نمایش است.</p></details></div>
     {related.length > 0 && <section className="related-section"><h2>عطرهای هم‌خانواده · نمایشی</h2><ProductGrid list={related} /></section>}
     {recent.length > 0 && <section className="related-section"><h2>آخرین بازدیدهای شما در این مرورگر</h2><ProductGrid list={recent} /></section>}

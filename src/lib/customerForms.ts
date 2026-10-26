@@ -1,8 +1,16 @@
 import { iranProvinces } from '../data/iranLocations';
 export type FieldValues = Record<string, string>;
-export interface CustomerField { name: string; label: string; kind?: 'email' | 'phone' | 'postal' | 'textarea' | 'province' | 'city'; optional?: boolean; min?: number }
+export interface CustomerField { name: string; label: string; kind?: 'email' | 'phone' | 'postal' | 'textarea' | 'province' | 'city'; optional?: boolean; min?: number; placeholder?: string }
 export const contactFields: CustomerField[] = [{ name: 'name', label: 'نام گیرنده', min: 2 }, { name: 'phone', label: 'شماره همراه', kind: 'phone' }, { name: 'email', label: 'ایمیل (اختیاری)', kind: 'email', optional: true }];
 export const addressFields: CustomerField[] = [{ name: 'province', label: 'استان', kind:'province' }, { name: 'city', label: 'شهر', kind:'city' }, { name: 'address', label: 'نشانی، پلاک و واحد', kind: 'textarea', min: 10 }, { name: 'postal', label: 'کد پستی ۱۰ رقمی', kind: 'postal' }];
+export function fieldPlaceholder(field: CustomerField): string {
+  if (field.placeholder) return field.placeholder;
+  if (field.kind === 'phone') return '0915 XXX XXXX';
+  if (field.kind === 'email') return 'example.email@gmail.com';
+  if (field.kind === 'postal') return 'کد ۱۰ رقمی، بدون خط تیره';
+  const examples: Record<string, string> = { name: 'نام و نام خانوادگی', address: 'خیابان، کوچه، پلاک و واحد', subject: 'موضوعی که می‌خواهید مطرح کنید', message: 'چطور می‌توانیم کمک کنیم؟', text: 'تجربهٔ خود از این رایحه را بنویسید…' };
+  return examples[field.name] ?? field.label;
+}
 export function latinDigits(value: string) { return value.replace(/[۰-۹]/g, char => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(char))).replace(/[٠-٩]/g, char => String('٠١٢٣٤٥٦٧٨٩'.indexOf(char))); }
 export function validateFields(fields: CustomerField[], values: FieldValues) {
   const errors: FieldValues = {};

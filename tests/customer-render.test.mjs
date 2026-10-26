@@ -63,3 +63,55 @@ test('Cart and checkout render empty, valid and missing-variant states without c
   assert.ok(render(CartPage, {}, [invalid]).includes('حذف قلم نامعتبر'));
   assert.ok(render(CheckoutPage, {}, [invalid]).includes('سبد نیاز به اصلاح دارد'));
 });
+
+
+test('Independent menu pages resolve and collection scope survives conflicting URL filters', () => {
+  const { parseRoute } = load(path.join(root, 'lib/routes.ts'));
+  const { collections } = load(path.join(root, 'data/collections.ts'));
+  const { CatalogPage } = load(path.join(root, 'pages/CatalogPage.tsx'));
+  for (const page of ['about', 'contact', 'brands', 'journal', 'form-studio']) assert.equal(parseRoute('#/' + page).page, page);
+  assert.equal(parseRoute('#/collections/men').page, 'collection');
+  const collection = collections.find(item => item.slug === 'men');
+  const html = render(CatalogPage, { collection, baseHref: '#/collections/men', params: new URLSearchParams('audience=women') });
+  assert.ok(html.includes('عطرهای مردانه'));
+  assert.ok(html.includes('Sauvage'));
+  assert.ok(!html.includes('Coco Mademoiselle'));
+});
+
+test('Order tracking distinguishes preparation, delivery and cancellation without creating orders', () => {
+  const pending = render(CustomerPage, { section: 'orders', orderId: 'DEMO-1001' });
+  const delivered = render(CustomerPage, { section: 'orders', orderId: 'DEMO-1002' });
+  assert.ok(pending.includes('aria-current="step"'));
+  assert.ok(pending.includes('بسته‌بندی'));
+  assert.equal((delivered.match(/data-state="complete"/g) ?? []).length, 5);
+  assert.ok(delivered.includes('دادهٔ کاملاً ساختگی'));
+});
+
+
+test('Review eligibility rejects visitors, unpurchased, preparing and cancelled orders', () => {
+  const { canReviewDemoProduct, validReviewDraft } = load(path.join(root, 'lib/reviewEligibility.ts'));
+  const { demoOrders } = load(path.join(root, 'data/demoOrders.ts'));
+  const delivered = demoOrders.find(order => order.stage === 'delivered');
+  const preparing = demoOrders.find(order => order.stage === 'packing');
+  assert.equal(canReviewDemoProduct({showDemoOrders:false,cancelled:[]},delivered.productId),false);
+  assert.equal(canReviewDemoProduct({showDemoOrders:true,cancelled:[]},preparing.productId),false);
+  assert.equal(canReviewDemoProduct({showDemoOrders:true,cancelled:[]},'missing'),false);
+  assert.equal(canReviewDemoProduct({showDemoOrders:true,cancelled:[delivered.id]},delivered.productId),false);
+  assert.equal(canReviewDemoProduct({showDemoOrders:true,cancelled:[]},delivered.productId),true);
+  for (const score of [0,6,2.5,NaN]) assert.equal(validReviewDraft(score,'A long demo review'),false);
+  assert.equal(validReviewDraft(4,'short'),false);
+  assert.equal(validReviewDraft(4,'x'.repeat(501)),false);
+  assert.equal(validReviewDraft(4,'A long demo review'),true);
+});
+
+test('All real-product previews have consistent sample ratings and a gated review form', () => {
+  const { ProductDetailPage } = load(path.join(root, 'pages/ProductDetailPage.tsx'));
+  for (const product of products) {
+    assert.ok(product.reviews.length >= 2);
+    const html = render(ProductDetailPage,{product,params:new URLSearchParams()});
+    assert.ok(html.includes('رأی نمایشی'));
+    assert.ok(html.includes('دیدگاه مخصوص خریداران'));
+    assert.ok(!html.includes('ذخیرهٔ دیدگاه نمایشی'));
+    assert.ok(html.includes('compare-symbol'));
+  }
+});
