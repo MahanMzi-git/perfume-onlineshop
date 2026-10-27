@@ -1,42 +1,32 @@
-.mobile-island { display:none; }
+.mobile-island { @apply tw:hidden; }
 
 @media (max-width:600px) {
   body { padding-bottom:calc(78px + env(safe-area-inset-bottom)); }
   .mobile-island {
-    position:fixed;
-    z-index:25;
+    @apply tw:fixed tw:z-[25];
     left:50%;
     bottom:max(12px, env(safe-area-inset-bottom));
     transform:translateX(-50%);
-    display:grid;
+    @apply tw:grid;
     grid-template-columns:repeat(4, 58px);
-    align-items:center;
-    justify-content:center;
-    gap:4px;
+    @apply tw:items-center tw:justify-center tw:gap-[4px];
     width:max-content;
     max-width:calc(100vw - 24px);
-    min-height:58px;
+    @apply tw:min-h-[58px];
     padding:5px 8px;
     border:1px solid #D8D0C4;
-    border-radius:22px;
+    @apply tw:rounded-[22px];
     background:#FCFAF6E6;
     box-shadow:0 10px 30px #201D1A1A;
     transition:opacity .22s ease, transform .22s ease;
   }
   .mobile-island :is(a,button) {
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:2px;
-    width:58px;
-    min-width:0;
-    height:48px;
-    min-height:48px;
+    @apply tw:relative tw:flex;
+    @apply tw:flex-col tw:items-center tw:justify-center tw:gap-[2px] tw:w-[58px] tw:min-w-0 tw:h-[48px];
+    @apply tw:min-h-[48px];
     padding:3px 2px;
     border:0;
-    border-radius:16px;
+    @apply tw:rounded-[16px];
     background:transparent;
     color:#51483E;
     font:inherit;
@@ -47,23 +37,20 @@
   .mobile-island :is(a,button):hover { background:#D3DACC; color:#201D1A; }
   .mobile-island :is(a,button):active { background:#D3DACC; }
   body:has(.header.is-searching) .mobile-island button { background:#D3DACC; color:#201D1A; }
-  .mobile-island svg { width:18px; height:18px; stroke-width:1.8; }
-  .mobile-island-icon { position:relative; display:grid; place-items:center; }
+  .mobile-island svg { @apply tw:w-[18px] tw:h-[18px]; stroke-width:1.8; }
+  .mobile-island-icon { @apply tw:relative tw:grid tw:place-items-center; }
   .mobile-island-icon b {
-    position:absolute;
+    @apply tw:absolute;
     top:-7px;
     inset-inline-start:-10px;
-    display:grid;
-    place-items:center;
-    min-width:16px;
-    height:16px;
+    @apply tw:grid tw:place-items-center tw:min-w-[16px] tw:h-[16px];
     padding-inline:3px;
-    border-radius:999px;
+    @apply tw:rounded-[999px];
     background:#8A4355;
     color:white;
     font-size:.56rem;
     line-height:1;
-    font-weight:600;
+    @apply tw:font-semibold;
   }
 }
 
@@ -73,30 +60,30 @@
 
 /* Match the island breakpoint exactly: keep only account access in the resting header. */
 @media (max-width:600px) {
-  .header .bar { display:grid; grid-template-columns:44px minmax(0,1fr) 44px; gap:8px; flex-wrap:nowrap; }
+  .header .bar { @apply tw:grid; grid-template-columns:44px minmax(0,1fr) 44px; @apply tw:gap-[8px] tw:flex-nowrap; }
   .header .bar > .logo { justify-self:center; margin:0; }
-  .header .bar .actions { width:44px; flex-basis:auto; margin:0; gap:0; justify-content:center; }
-  .header .header-account, .header .menu-btn { width:44px; min-width:44px; min-height:44px; }
-  .header .actions > .wishlist-action { display:none; }
-  .header .header-search-slot, .header.is-searching .header-search-slot { display:block; position:static; width:0; height:44px; }
-  .header .header-search-slot .inline-search { left:0; right:auto; width:44px; visibility:hidden; pointer-events:none; background:transparent; box-shadow:none; transition:none; }
-  .header.is-searching .header-search-slot .inline-search { visibility:visible; pointer-events:auto; width:100%; animation:mobile-search-expand .46s cubic-bezier(.22,.7,.2,1) .3s both; }
+  .header .bar .actions { @apply tw:w-[44px]; flex-basis:auto; margin:0; @apply tw:gap-0 tw:justify-center; }
+  .header .header-account, .header .menu-btn { @apply tw:w-[44px] tw:min-w-[44px]; @apply tw:min-h-[44px]; }
+  .header .actions > .wishlist-action { @apply tw:hidden; }
+  .header .header-search-slot, .header.is-searching .header-search-slot { @apply tw:block tw:static tw:w-0 tw:h-[44px]; }
+  .header .header-search-slot .inline-search { left:0; right:auto; @apply tw:w-[44px] tw:invisible tw:pointer-events-none; background:transparent; box-shadow:none; transition:none; }
+  .header.is-searching .header-search-slot .inline-search { @apply tw:visible tw:pointer-events-auto tw:w-[100%]; animation:mobile-search-expand .46s cubic-bezier(.22,.7,.2,1) .3s both; }
   .header.is-searching .inline-search:focus-within { outline:none; }
   .header.is-searching .inline-search-toggle { left:calc(100% - 44px); transition:none; animation:mobile-search-handoff .001s .3s both; }
   .header.is-searching .inline-search-toggle svg { transform:none; transition:none; }
-  .header.is-searching .inline-search input { visibility:visible; opacity:0; transition:none; animation:mobile-search-handoff .18s .55s both; }
+  .header.is-searching .inline-search input { @apply tw:visible tw:opacity-0; transition:none; animation:mobile-search-handoff .18s .55s both; }
   .header.is-searching .inline-search-close { animation:mobile-search-handoff .15s .55s both; transition:none; }
-  .header.is-searching .header-account { visibility:visible; opacity:1; pointer-events:none; animation:mobile-profile-handoff .3s linear forwards; transition:none; }
-  .header-account-symbol { display:grid; place-items:center; }
+  .header.is-searching .header-account { @apply tw:visible tw:opacity-100 tw:pointer-events-none; animation:mobile-profile-handoff .3s linear forwards; transition:none; }
+  .header-account-symbol { @apply tw:grid tw:place-items-center; }
   .header-account-symbol svg { grid-area:1 / 1; transform-origin:center; transition:transform .3s ease, opacity .2s ease; }
-  .header .header-account-search { display:block; opacity:0; transform:rotate(110deg) scale(.5); }
-  .header.is-searching .header-account-user { opacity:0; transform:rotate(-110deg) scale(.5); }
-  .header.is-searching .header-account-search { opacity:1; transform:rotate(0) scale(1); }
-  .header.is-searching .inline-search-close { width:44px; min-width:44px; }
+  .header .header-account-search { @apply tw:block tw:opacity-0; transform:rotate(110deg) scale(.5); }
+  .header.is-searching .header-account-user { @apply tw:opacity-0; transform:rotate(-110deg) scale(.5); }
+  .header.is-searching .header-account-search { @apply tw:opacity-100; transform:rotate(0) scale(1); }
+  .header.is-searching .inline-search-close { @apply tw:w-[44px] tw:min-w-[44px]; }
   .header.is-searching .inline-search input { left:44px; right:46px; width:calc(100% - 90px); }
 }
 
-.header-account-search { display:none; }
+.header-account-search { @apply tw:hidden; }
 @keyframes mobile-profile-handoff {
   0%,99% { opacity:1; visibility:visible; }
   100% { opacity:0; visibility:hidden; }
@@ -108,7 +95,7 @@
 }
 @media (max-width:600px) and (prefers-reduced-motion:reduce) {
   .header-account-symbol svg { transition:none; }
-  .header.is-searching .header-account { animation:none; opacity:0; visibility:hidden; }
+  .header.is-searching .header-account { animation:none; @apply tw:opacity-0 tw:invisible; }
   .header.is-searching .header-search-slot .inline-search { animation:none; background:#D3DACC; box-shadow:inset 0 0 0 1px #B7C2AE; }
-  .header.is-searching .inline-search-toggle, .header.is-searching .inline-search input, .header.is-searching .inline-search-close { animation:none; opacity:1; }
+  .header.is-searching .inline-search-toggle, .header.is-searching .inline-search input, .header.is-searching .inline-search-close { animation:none; @apply tw:opacity-100; }
 }

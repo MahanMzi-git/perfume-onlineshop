@@ -29,8 +29,6 @@ import { addDemoBagItem, changeDemoBagItem, type BagLine } from './lib/demoBag';
 import { getLastHomePosition, useHashLocation } from './lib/useHashLocation';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
-import './styles/catalog.css';
-import './styles/customer.css';
 import type { Product, ProductVariant, Filters, ProductCategory } from './types/product';
 
 export default function App() {

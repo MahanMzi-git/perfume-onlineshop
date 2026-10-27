@@ -1,4 +1,4 @@
-.card-audience-shoe { display:inline-block; width:30px; height:24px; flex-shrink:0; vertical-align:middle; background:currentColor; opacity:1; mask-repeat:no-repeat; mask-position:center; mask-size:contain; -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; }
-.card-audience-men { width:34px; mask-image:url('/images/audience/men.svg'); -webkit-mask-image:url('/images/audience/men.svg'); }
+.card-audience-shoe { @apply tw:inline-block tw:w-[30px] tw:h-[24px] tw:shrink-0; vertical-align:middle; background:currentColor; @apply tw:opacity-100; mask-repeat:no-repeat; mask-position:center; mask-size:contain; -webkit-mask-repeat:no-repeat; -webkit-mask-position:center; -webkit-mask-size:contain; }
+.card-audience-men { @apply tw:w-[34px]; mask-image:url('/images/audience/men.svg'); -webkit-mask-image:url('/images/audience/men.svg'); }
 .card-audience-women { mask-image:url('/images/audience/women.svg'); -webkit-mask-image:url('/images/audience/women.svg'); }
-.card-audience-unisex { width:34px; mask-image:url('/images/audience/unisex.svg'); -webkit-mask-image:url('/images/audience/unisex.svg'); }
+.card-audience-unisex { @apply tw:w-[34px]; mask-image:url('/images/audience/unisex.svg'); -webkit-mask-image:url('/images/audience/unisex.svg'); }
