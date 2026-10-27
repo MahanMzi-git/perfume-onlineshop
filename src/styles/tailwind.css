@@ -1,0 +1,54 @@
+/* One compiled entry for the whole storefront. No Preflight: the approved
+   element defaults, form appearance and typography remain authoritative.
+   Prefix utilities to avoid collisions with existing names such as .grid. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw) source(none);
+
+/* Preserve the pre-migration CSS evaluation order (App styles, then main). */
+@import "./catalog.css" layer(components);
+@import "./customer.css" layer(components);
+@import "./tokens.css" layer(components);
+@import "./global.css" layer(components);
+@import "./luxury-select.css" layer(components);
+@import "./mobile-island.css" layer(components);
+@import "./product-card-preview.css" layer(components);
+@import "./audience-icon.css" layer(components);
+@import "./hero-background.css" layer(components);
+@import "./category-scenes.css" layer(components);
+@import "./mobile-navigation.css" layer(components);
+@import "./scroll-rail.css" layer(components);
+@import "./information-pages.css" layer(components);
+@import "./form-fields.css" layer(components);
+@import "./order-progress.css" layer(components);
+@import "./comparison-reviews.css" layer(components);
+@import "./storefront-refinements.css" layer(components);
+
+/* Scan application sources, not experimental previews or generated output. */
+@source "../";
+
+/* Keep Tailwind's design tokens tied to the existing approved theme. */
+@theme inline {
+  --color-aroma-cream: var(--cream);
+  --color-aroma-charcoal: var(--charcoal);
+  --color-aroma-gold: var(--gold);
+  --color-aroma-white: var(--white);
+  --color-aroma-bg: var(--bg);
+  --color-aroma-surface: var(--surface);
+  --color-aroma-text: var(--text);
+  --color-aroma-muted: var(--muted);
+  --color-aroma-line: var(--line);
+  --color-aroma-soft: var(--soft);
+  --color-aroma-sage: var(--sage);
+  --color-aroma-copper: var(--copper);
+  --font-aroma-sans: var(--font-sans);
+  --font-aroma-serif: var(--font-serif);
+  --radius-aroma: var(--radius);
+  --radius-aroma-pill: var(--radius-pill);
+  --shadow-aroma: var(--shadow);
+}
+@theme {
+  --breakpoint-sm: 601px;
+  --breakpoint-md: 901px;
+  --breakpoint-lg: 1201px;
+}

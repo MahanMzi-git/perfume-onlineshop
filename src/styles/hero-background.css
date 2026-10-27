@@ -1,10 +1,10 @@
 /* Approved terracotta photograph in its native landscape orientation. */
 .hero-background {
-  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  @apply tw:absolute; inset:0; @apply tw:z-[0] tw:pointer-events-none tw:overflow-hidden;
   background-image:url('/images/hero/landing-terracotta.jpg'); background-size:cover; background-position:center bottom;
 }
 .hero-background::after {
-  content:""; position:absolute; inset:0;
+  content:""; @apply tw:absolute; inset:0;
   background:linear-gradient(to left, rgb(247 244 238 / 90%) 0%, rgb(247 244 238 / 76%) 30%, rgb(247 244 238 / 16%) 63%, rgb(247 244 238 / 4%) 100%);
 }
 @media (max-width:700px) {

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { categoryScenes, categorySurfaceRatio } from '../data/categoryScenes';
 import { DemoImage } from './DemoImage';
 import type { ProductCategory } from '../types/product';
@@ -14,7 +15,7 @@ export function CategoryTile({ category, active, onSelect }: Props) {
         <DemoImage className="category-dock-bottle" src={scene ? `/images/orbit-photos/${scene.bottle}` : category.image} alt="" width={400} height={500} loading="lazy" />
         {scene && <i className="category-landing-point" data-orbit-landing aria-hidden="true" />}
       </div>
-      <span>{category.label}</span>
+      <span className="category-caption">{category.label}<ArrowUpRight size={13} aria-hidden="true" /></span>
     </button>
   );
 }

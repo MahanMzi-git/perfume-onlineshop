@@ -1,17 +1,17 @@
 /* One common contact line for all podiums; crop each photo around its measured surface. */
-.tile .category-orbit-dock { position:absolute; top:0; left:0; overflow:hidden; container-type:size; }
+.tile .category-orbit-dock { @apply tw:absolute; top:0; left:0; @apply tw:overflow-hidden; container-type:size; }
 .category-podium-scene {
   --scene-width:max(calc(100cqw * var(--scene-zoom)), calc(100cqh * var(--scene-cover-aspect)));
   --scene-height:calc(var(--scene-width) / var(--scene-aspect));
 }
 .tile .category-podium-scene {
-  position:absolute; width:var(--scene-width); height:var(--scene-height); max-width:none;
+  @apply tw:absolute tw:w-[var(--scene-width)] tw:h-[var(--scene-height)]; max-width:none;
   left:calc(50% - var(--scene-x) * var(--scene-width)); top:calc(var(--surface-ratio) - var(--scene-y) * var(--scene-height));
-  object-fit:fill; filter:none; transform:none; transition:none; pointer-events:none;
+  object-fit:fill; filter:none; transform:none; transition:none; @apply tw:pointer-events-none;
 }
 .tile:hover .category-podium-scene { transform:none; }
-.tile .category-dock-bottle { position:absolute; left:50%; bottom:20%; width:80%; height:70%; object-fit:contain; object-position:center bottom; filter:none; transform:translateX(-50%); pointer-events:none; }
+.tile .category-dock-bottle { @apply tw:absolute; left:50%; bottom:20%; @apply tw:w-[80%] tw:h-[70%] tw:object-contain; object-position:center bottom; filter:none; transform:translateX(-50%); @apply tw:pointer-events-none; }
 .tile:hover .category-dock-bottle { transform:translateX(-50%); }
-.category-landing-point { position:absolute; left:50%; top:var(--surface-ratio,80%); width:0; height:0; pointer-events:none; }
+.category-landing-point { @apply tw:absolute; left:50%; top:var(--surface-ratio,80%); @apply tw:w-0 tw:h-0 tw:pointer-events-none; }
 
-.tile > span { height:42px; min-height:42px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; }
+.tile > span { @apply tw:h-[42px] tw:min-h-[42px] tw:flex tw:items-center tw:justify-center tw:box-border; }

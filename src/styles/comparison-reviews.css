@@ -1,26 +1,26 @@
-.compare-symbol { display:inline-flex; position:relative; flex:none; vertical-align:middle; }
+.compare-symbol { @apply tw:inline-flex tw:relative; flex:none; vertical-align:middle; }
 .compare-symbol[data-selected="true"] > svg:first-child { fill:currentColor; }
-.compare-symbol-check { position:absolute; right:-5px; bottom:-4px; border-radius:50%; background:#80683D; color:#FFFDF6; padding:1px; box-sizing:content-box; }
-.detail-compare { display:inline-flex; align-items:center; gap:10px; }
+.compare-symbol-check { @apply tw:absolute; right:-5px; bottom:-4px; @apply tw:rounded-[50%]; background:#80683D; color:#FFFDF6; padding:1px; @apply tw:box-content; }
+.detail-compare { @apply tw:inline-flex tw:items-center tw:gap-[10px]; }
 .detail-compare[aria-pressed="true"] { background:#E4EADF; color:#3E5139; border-color:#849778; }
-.menu-comparison { display:flex; align-items:center; gap:12px; padding:10px 12px; margin-top:8px; min-height:44px; flex:none; border-radius:16px; background:#EEF1E9; }
+.menu-comparison { @apply tw:flex tw:items-center tw:gap-[12px]; padding:10px 12px; margin-top:8px; @apply tw:min-h-[44px]; flex:none; @apply tw:rounded-[16px]; background:#EEF1E9; }
 .menu-comparison b { margin-inline-start:auto; }
-.compare-shortcut { position:fixed; z-index:24; bottom:20px; left:24px; border:1px solid #D4C8B3; border-radius:24px; background:#FCFAF6; box-shadow:0 4px 18px #201D1A1A; }
-.compare-shortcut a { display:flex; align-items:center; justify-content:center; gap:12px; padding:8px 16px; min-height:44px; font-size:.8125rem; }
-.compare-shortcut b { border-radius:50%; background:#80683D; color:#fff; min-width:22px; text-align:center; }
+.compare-shortcut { @apply tw:fixed tw:z-[24]; bottom:20px; left:24px; border:1px solid #D4C8B3; @apply tw:rounded-[24px]; background:#FCFAF6; box-shadow:0 4px 18px #201D1A1A; }
+.compare-shortcut a { @apply tw:flex tw:items-center tw:justify-center tw:gap-[12px]; padding:8px 16px; @apply tw:min-h-[44px]; font-size:.8125rem; }
+.compare-shortcut b { @apply tw:rounded-[50%]; background:#80683D; color:#fff; @apply tw:min-w-[22px] tw:text-center; }
 body:has(.compare-shortcut) { padding-bottom:80px; }
-.detail-rating { border:0; background:transparent; display:flex; align-items:center; flex-wrap:wrap; gap:8px; min-height:44px; padding:0; color:#80683D; font-size:.875rem; text-align:start; }
+.detail-rating { border:0; background:transparent; @apply tw:flex tw:items-center; @apply tw:flex-wrap tw:gap-[8px] tw:min-h-[44px]; padding:0; color:#80683D; font-size:.875rem; @apply tw:text-start; }
 .detail-rating span { color:#655E53; font-size:.8125rem; }
 #product-reviews { scroll-margin-top:calc(var(--header-height,72px) + 16px); }
-.review-gate { display:flex; gap:12px; padding:20px; background:#F0F3EE; border-radius:20px; margin-top:24px; }
+.review-gate { @apply tw:flex tw:gap-[12px]; padding:20px; background:#F0F3EE; @apply tw:rounded-[20px]; margin-top:24px; }
 .review-gate > svg { flex:none; margin-top:4px; }
 .review-gate p,.review-composer p { font-size:.875rem; line-height:1.9; }
-.review-gate small { display:block; margin-top:8px; }
-.review-composer { margin-top:24px; padding:20px; border:1px solid #D8D0C4; border-radius:22px; max-width:640px; }
+.review-gate small { @apply tw:block; margin-top:8px; }
+.review-composer { margin-top:24px; padding:20px; border:1px solid #D8D0C4; @apply tw:rounded-[22px] tw:max-w-[640px]; }
 .review-stars { border:0; padding:0; margin:20px 0; }
-.review-stars > div { display:flex; width:fit-content; gap:6px; }
-.review-stars label { position:relative; display:grid; place-items:center; width:44px; height:44px; cursor:pointer; color:#80683D; border-radius:12px; }
-.review-stars input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; }
+.review-stars > div { @apply tw:flex; width:fit-content; @apply tw:gap-[6px]; }
+.review-stars label { @apply tw:relative tw:grid tw:place-items-center tw:w-[44px] tw:h-[44px] tw:cursor-pointer; color:#80683D; @apply tw:rounded-[12px]; }
+.review-stars input { @apply tw:absolute tw:opacity-0 tw:w-[100%] tw:h-[100%]; margin:0; @apply tw:cursor-pointer; }
 .review-stars label:has(:focus-visible) { outline:2px solid #53654B; outline-offset:2px; }
 .saved-review { border-top:1px solid #D8D0C4; padding-top:16px; }
 @media(max-width:600px) {
