@@ -19,6 +19,7 @@ export const navLinks: NavLink[] = [
 ];
 
 interface Props {
+  isHome: boolean;
   query: string;
   onQuery: (q: string) => void;
   onAction: (action: string) => void;
@@ -27,7 +28,7 @@ interface Props {
   bagCount: number;
 }
 
-export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bagCount }: Props) {
+export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCount, bagCount }: Props) {
   const { comparisonIds } = useStore();
   const [menu, setMenu] = useState(false);
   const [searching, setSearching] = useState(false);
@@ -36,6 +37,17 @@ export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bag
   const hideSecondary = compact && searching;
   const header = useRef<HTMLElement>(null);
   const searchToggle = useRef<HTMLButtonElement>(null);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
+  useLayoutEffect(() => {
+    const desktop = matchMedia('(min-width:901px)');
+    let frame = 0;
+    const update = () => setDesktopCollapsed(previous => desktop.matches && (!isHome || (previous ? scrollY > 24 : scrollY > 120)));
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', schedule, { passive:true });
+    desktop.addEventListener('change', update);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); desktop.removeEventListener('change', update); };
+  }, [isHome]);
 
   useLayoutEffect(() => {
     if (!header.current) return;
@@ -45,6 +57,7 @@ export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bag
       const rect = header.current.getBoundingClientRect();
       document.documentElement.style.setProperty('--header-height', rect.height + 'px');
       document.documentElement.style.setProperty('--header-bottom', rect.bottom + 'px');
+      if (matchMedia('(min-width:901px)').matches && header.current.dataset.collapsed !== 'true') header.current.style.setProperty('--header-expanded-height', rect.height + 'px');
     };
     const onScroll = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const observer = new ResizeObserver(measure);
@@ -94,7 +107,7 @@ export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bag
     closeSearch();
   }
 
-  return <header ref={header} className={`header ${searching ? 'is-searching' : ''}`}>
+  return <header ref={header} data-collapsed={desktopCollapsed || undefined} data-home={isHome || undefined} className={`header ${searching ? 'is-searching' : ''}`}>
     <div className="bar container">
       <button className="icon-btn menu-btn" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label="باز کردن منو" aria-expanded={menu} aria-controls={menu ? 'mobile-menu' : undefined} onClick={() => setMenu(true)}><Menu aria-hidden="true" /></button>
       <a href="#home" className="logo" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} dir="ltr" aria-label="آروما، خانه">AROMA<span>THE FRAGRANCE EDIT</span></a>
