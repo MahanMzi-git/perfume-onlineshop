@@ -6,6 +6,7 @@ import { useStore } from './StoreContext';
 export function CardCartControl({ product, variant }: { product: Product; variant?: ProductVariant }) {
   const store = useStore();
   const addButton = useRef<HTMLButtonElement>(null);
+  const plusButton = useRef<HTMLButtonElement>(null);
   const [feedback, setFeedback] = useState('');
   const presenceId = useId();
   const productQuantity = store.bagLines.filter(line => line.productId === product.id).reduce((sum, line) => sum + line.quantity, 0);
@@ -18,7 +19,10 @@ export function CardCartControl({ product, variant }: { product: Product; varian
   const number = new Intl.NumberFormat('fa-IR').format(quantity);
 
   function increment() {
-    if (variant && !unavailable && !atLimit) setFeedback(store.addToBag(product, variant));
+    if (variant && !unavailable && !atLimit) {
+      setFeedback(store.addToBag(product, variant));
+      if (!added) requestAnimationFrame(() => plusButton.current?.focus({ preventScroll: true }));
+    }
   }
   function decrement() {
     if (!variant || !added) return;
@@ -26,14 +30,14 @@ export function CardCartControl({ product, variant }: { product: Product; varian
       store.removeBag(variant.id);
       setFeedback('این نسخه از سبد نمایشی حذف شد.');
       // The add button keeps its DOM identity when the minus control disappears.
-      addButton.current?.focus({ preventScroll: true });
+      requestAnimationFrame(() => addButton.current?.focus({ preventScroll: true }));
     } else {
       setFeedback(store.changeBag(product, variant.id, variant.id, quantity - 1));
     }
   }
 
   return <>
-    <div className="card-photo-cta card-cart-control" data-added={added || undefined} data-cart-mark="overlay" data-in-bag={inBag || undefined} data-unavailable={unavailable || undefined} role="group" aria-label={`سبد خرید: ${context}`}>
+    <div className="card-photo-cta card-cart-control" data-added={added || undefined} data-cart-mark="overlay" data-in-bag={inBag || undefined} data-unavailable={unavailable || undefined} role="group" aria-label={`سبد خرید: ${context}`} aria-describedby={inBag ? presenceId : undefined}>
       <button ref={addButton} type="button" className="card-cart-add" disabled={unavailable || atLimit}
         aria-describedby={inBag ? presenceId : undefined} aria-label={`${unavailable ? 'ناموجود' : atLimit ? 'حداکثر موجودی نمایشی' : 'افزودن به سبد'}: ${context}`} onClick={increment}>
         <span>{unavailable ? 'ناموجود' : 'افزودن به سبد'}</span>
@@ -42,8 +46,8 @@ export function CardCartControl({ product, variant }: { product: Product; varian
         <span className="card-cart-icon"><ShoppingBag className="card-cart-bag" size={16} />{inBag && <Check className="card-cart-presence" size={12} />}</span>
       </span>
       {added && <div className="card-cart-stepper">
-        <button type="button" className="card-cart-plus" disabled={unavailable || atLimit} aria-label={`افزایش تعداد: ${context}`} onClick={increment}><Plus size={15} aria-hidden="true" /></button>
-        <span className="card-cart-count" aria-hidden="true">{number}</span>
+        <button ref={plusButton} type="button" className="card-cart-plus" disabled={unavailable || atLimit} aria-label={`افزایش تعداد: ${context}`} onClick={increment}><Plus size={15} aria-hidden="true" /></button>
+        <output className="card-cart-count" aria-label={`تعداد ${context}`}>{number}</output>
         <button type="button" className="card-cart-minus" aria-label={`کاهش تعداد: ${context}`} onClick={decrement}><Minus size={15} aria-hidden="true" /></button>
       </div>}
     </div>
