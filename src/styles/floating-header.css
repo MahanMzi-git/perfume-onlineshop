@@ -1,0 +1,18 @@
+#root { position:relative; isolation:isolate; }
+.header {
+  width:calc(100% - 48px); max-width:1400px; margin:24px auto 0; top:16px;
+  border:1px solid rgb(255 255 255 / 75%); border-radius:32px;
+  background:rgb(252 250 246 / 94%); box-shadow:0 10px 35px rgb(32 29 26 / 10%);
+}
+.header .bar.container { width:calc(100% - 40px); }
+.header .desktop-nav { border:0; }
+#main-content { position:relative; z-index:1; }
+#home { background:transparent; }
+#home .hero-background { visibility:hidden; }
+.floating-hero-backdrop { position:absolute; left:0; right:0; bottom:auto; z-index:0; pointer-events:none; }
+.announcement { position:relative; z-index:1; }
+.mobile-nav { inset-block-start:calc(var(--header-bottom, var(--header-height,72px)) + 8px); max-height:calc(100dvh - var(--header-bottom, var(--header-height,72px)) - 98px); }
+@media(max-width:600px) {
+  .header { width:calc(100% - 24px); margin-top:14px; top:10px; border-radius:999px; }
+  .header .bar.container { width:calc(100% - 24px); }
+}

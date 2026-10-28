@@ -39,13 +39,26 @@ export function Header({ query, onQuery, onAction, onSearch, favouriteCount, bag
 
   useLayoutEffect(() => {
     if (!header.current) return;
-    const observer = new ResizeObserver(([entry]) => {
-      document.documentElement.style.setProperty('--header-height', entry.target.getBoundingClientRect().height + 'px');
-    });
+    let frame = 0;
+    const measure = () => {
+      if (!header.current) return;
+      const rect = header.current.getBoundingClientRect();
+      document.documentElement.style.setProperty('--header-height', rect.height + 'px');
+      document.documentElement.style.setProperty('--header-bottom', rect.bottom + 'px');
+    };
+    const onScroll = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
+    const observer = new ResizeObserver(measure);
     observer.observe(header.current);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    measure();
     return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
       observer.disconnect();
       document.documentElement.style.removeProperty('--header-height');
+      document.documentElement.style.removeProperty('--header-bottom');
     };
   }, []);
 

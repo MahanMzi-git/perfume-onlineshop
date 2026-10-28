@@ -24,6 +24,7 @@
 @import "./comparison-reviews.css" layer(components);
 @import "./storefront-refinements.css" layer(components);
 @import "./product-card-finish.css" layer(components);
+@import "./floating-header.css" layer(components);
 
 /* Scan application sources, not experimental previews or generated output. */
 @source "../";
