@@ -132,7 +132,7 @@ export default function App() {
     <a className="skip" href="#main-content" onClick={event => { event.preventDefault(); const main = document.getElementById('main-content'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); main.scrollIntoView({ block: 'start' }); } }}>پرش به محتوای اصلی</a>
     <div className="announcement">{announcement}</div>
     {route.page === 'home' && <HeroBackdrop />}
-    <Header query={filters.query} onQuery={query => { setWishlistOnly(false); set({ query }); }} onAction={action} favouriteCount={favourites.length} bagCount={bagCount} onSearch={query => { if (route.page === 'home') navigateToSection('products'); else location.hash = catalogHref({ query: query ?? filters.query }); }} />
+    <Header isHome={route.page === 'home'} query={filters.query} onQuery={query => { setWishlistOnly(false); set({ query }); }} onAction={action} favouriteCount={favourites.length} bagCount={bagCount} onSearch={query => { if (route.page === 'home') navigateToSection('products'); else location.hash = catalogHref({ query: query ?? filters.query }); }} />
     <DiscoveryNavigation page={route.page} />
     <p className="comparison-feedback container" role="status">{comparisonFeedback}</p>
     <main id="main-content">{route.page === 'home' ? <><HeroSection />
