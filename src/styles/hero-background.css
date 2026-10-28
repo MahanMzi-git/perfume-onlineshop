@@ -1,23 +1,28 @@
-/* Approved terracotta photograph in its native landscape orientation. */
+/* Approved landingpage-back3 photograph, encoded without recoloring or cropping. */
 .hero-background {
   @apply tw:absolute; inset:0; @apply tw:z-[0] tw:pointer-events-none tw:overflow-hidden;
-  background-image:url('/images/hero/landing-terracotta.jpg'); background-size:cover; background-position:center bottom;
+  background-image:url('/images/hero/landing-leaf-2560.webp');
+  background-size:cover; background-position:center bottom;
 }
 .hero-background::after {
   content:""; @apply tw:absolute; inset:0;
   background:linear-gradient(to left, rgb(247 244 238 / 90%) 0%, rgb(247 244 238 / 76%) 30%, rgb(247 244 238 / 16%) 63%, rgb(247 244 238 / 4%) 100%);
 }
 @media (max-width:700px) {
+  .hero-background {
+    background-image:url('/images/hero/landing-leaf-1600.webp');
+  }
   .hero-background::after { background:linear-gradient(to bottom, rgb(247 244 238 / 90%) 0%, rgb(247 244 238 / 74%) 34%, rgb(247 244 238 / 20%) 62%, rgb(247 244 238 / 3%) 100%); }
+}
+@media (min-resolution:1.5dppx) {
+  .hero-background { background-image:url('/images/hero/landing-leaf-3840.webp'); }
+}
+@media (max-width:700px) and (min-resolution:1.5dppx) {
+  .hero-background { background-image:url('/images/hero/landing-leaf-2560.webp'); }
 }
 @media (min-width:700px) and (max-width:1100px) and (max-aspect-ratio:9/10) {
   .hero-background::after { background:linear-gradient(to bottom, rgb(247 244 238 / 90%) 0%, rgb(247 244 238 / 70%) 22%, transparent 42%), linear-gradient(to left, rgb(247 244 238 / 78%) 0%, rgb(247 244 238 / 10%) 52%); }
 }
 
-/* Keep motion controls visible over the darker image area. */
-@media (min-width:701px) {
-  .orbit-hero .home-orbit-pause { color:#F7F4EE; }
-}
-@media (min-width:700px) and (max-width:1100px) and (max-aspect-ratio:9/10) {
-  .orbit-hero .home-orbit-pause { color:#493B2C; }
-}
+/* The selected background is light; maintain contrast for the motion toggle. */
+.orbit-hero .home-orbit-pause { color:#493B2C; }
