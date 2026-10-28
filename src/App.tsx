@@ -27,6 +27,7 @@ import { DiscoveryNavigation } from './components/DiscoveryNavigation';
 import { ComparisonBar } from './components/ComparisonBar';
 import { addDemoBagItem, changeDemoBagItem, type BagLine } from './lib/demoBag';
 import { getLastHomePosition, useHashLocation } from './lib/useHashLocation';
+import { HeroBackdrop } from './components/HeroBackdrop';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
 import type { Product, ProductVariant, Filters, ProductCategory } from './types/product';
@@ -130,6 +131,7 @@ export default function App() {
   return <StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag, bagLines, discountCode, setDiscountCode, removeBag: variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId)), changeBag: (product, fromId, toId, quantity) => { const result = changeDemoBagItem(bagLines, product, fromId, toId, quantity); setBagLines(result.lines); return result.message; } }}>
     <a className="skip" href="#main-content" onClick={event => { event.preventDefault(); const main = document.getElementById('main-content'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); main.scrollIntoView({ block: 'start' }); } }}>پرش به محتوای اصلی</a>
     <div className="announcement">{announcement}</div>
+    {route.page === 'home' && <HeroBackdrop />}
     <Header query={filters.query} onQuery={query => { setWishlistOnly(false); set({ query }); }} onAction={action} favouriteCount={favourites.length} bagCount={bagCount} onSearch={query => { if (route.page === 'home') navigateToSection('products'); else location.hash = catalogHref({ query: query ?? filters.query }); }} />
     <DiscoveryNavigation page={route.page} />
     <p className="comparison-feedback container" role="status">{comparisonFeedback}</p>
