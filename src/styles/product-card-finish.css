@@ -31,6 +31,7 @@
 .card-cart-control .card-cart-count { font-size:14px; color:inherit; }
 .card-cart-control button:focus-visible { outline-color:var(--cream); }
 .card-photo-preview .card-cart-control[data-unavailable=true] { background:rgb(252 250 246 / 8%);color:#E0DCD5;border-color:rgb(255 255 255 / 20%);box-shadow:none; }
+.card-photo-preview .card-cart-control[data-unavailable=true] .card-cart-add:disabled { color:#F5F0E8; -webkit-text-fill-color:#F5F0E8; opacity:1; }
 .card-cart-control[data-in-bag=true] .card-cart-bag { animation:card-bag-turn .28s ease-out; }
 @keyframes card-bag-turn { from { transform:rotate(-65deg) scale(.75); } to { transform:none; } }
 @media(prefers-reduced-motion:reduce) { .card-photo-preview .card-img img { transition:none; } .card.card-photo-preview:hover .card-img img { transform:none; } .card-cart-control[data-in-bag=true] .card-cart-bag { animation:none; } }
