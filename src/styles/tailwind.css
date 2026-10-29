@@ -28,6 +28,7 @@
 @import "./comparison-dock-study.css" layer(components);
 @import "./compact-product-grid.css" layer(components);
 @import "./phone-landscape.css" layer(components);
+@import "./admin.css" layer(components);
 
 /* Scan application sources, not experimental previews or generated output. */
 @source "../";

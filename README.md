@@ -6,7 +6,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - npm run dev: local Vite preview (default http://localhost:5173).
 - npm run build: TypeScript check and production bundle.
 - npm run preview: serve production output.
-- npm test: run catalog/search, dialog-focus, cart and customer-validation regression tests (17 tests, no extra packages).
+- npm test: run catalog/search, dialog-focus, cart, customer and administrative-demo regression tests (30 tests, no extra packages).
 
 ## Structure
 - src/data and src/types: existing typed demo catalog.
@@ -27,9 +27,13 @@ Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working loca
 - Order fixtures are explicitly fictional and opt-in; cancellation changes only a local sample label. Reviews are local drafts and never affect catalog scores. Support does not send messages.
 - Existing product cards, landing motion, fonts and hover styles are reused. New layouts are scoped in `src/styles/customer.css`; no packages were added.
 
-See [Step 3 implementation, validation and remaining checks](docs/phase-1-step-3.md). This local preview awaits owner review; no Step 4 work has started.
+See [Step 3 implementation, validation and remaining checks](docs/phase-1-step-3.md).
 
-Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
+## Phase 1 Step 4 — administrative UI demos
+
+Open `#/seller` for store operations and `#/account` for customer pages. The seller workspace defaults to an explicit demo access-denied state; choose a labelled seller persona to explore. The platform/developer console was removed at the owner’s request. This is not login or authorization. All administrative actions use isolated in-memory fixtures, reset on reload/exit and never modify the storefront or real business data. See [routes, role/access matrix, workflows and QA](docs/phase-1-step-4.md). Work stops at Step 4.
+
+Sahel is served locally. No backend, real accounts, payments or operational admin/inventory system is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
 
 See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Changes are maintained on the FixLandingPage branch; main is preserved until integration.
 
