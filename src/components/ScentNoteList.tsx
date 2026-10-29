@@ -16,13 +16,13 @@ export function ScentNoteList({ noteIds, max = 4, onSelect, selectedNoteIds = []
     let frame = 0;
     const arrange = () => {
       let next: string[] = [];
-      if (mobile.matches) {
+      const available = element.getBoundingClientRect().width;
+      if (mobile.matches || (element.closest('.card') && available <= 240)) {
         const items = Array.from(element.children).map(item => {
           const id = (item as HTMLElement).dataset.noteId!;
           return { id, width: item.firstElementChild!.getBoundingClientRect().width, index: sourceOrder.indexOf(id) };
         });
         const gap = parseFloat(getComputedStyle(element).columnGap) || 0;
-        const available = element.getBoundingClientRect().width;
         const total = items.reduce((sum, item) => sum + item.width, 0) + gap * (items.length - 1);
         if (total > available) {
           const remaining = items.sort((a, b) => b.width - a.width || a.index - b.index);

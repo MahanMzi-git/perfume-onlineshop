@@ -1,5 +1,5 @@
 .comparison-dock-study { display:none; }
-@media(min-width:901px) {
+@media(min-width:768px) {
   .comparison-mobile-original { display:none; }
   .comparison-dock-study {
     position:fixed; z-index:45; bottom:24px; left:50%; transform:translateX(-50%);
