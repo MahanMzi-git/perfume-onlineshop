@@ -1,0 +1,28 @@
+.comparison-dock-study { display:none; }
+@media(min-width:901px) {
+  .comparison-mobile-original { display:none; }
+  .comparison-dock-study {
+    position:fixed; z-index:45; bottom:24px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:24px; width:max-content; max-width:calc(100vw - 48px);
+    padding:12px 16px 12px 24px; border-radius:28px;
+    background:rgb(252 250 246 / 82%); backdrop-filter:blur(16px) saturate(1.1);
+    border:1px solid rgb(255 255 255 / 85%); box-shadow:0 12px 40px rgb(32 29 26 / 18%);
+    animation:comparison-dock-arrive .25s ease-out;
+  }
+  .comparison-dock-copy { display:flex; align-items:center; gap:12px; color:var(--charcoal); }
+  .comparison-dock-copy > svg { width:24px; height:24px; color:var(--gold); }
+  .comparison-dock-copy strong,.comparison-dock-copy small { display:block; }
+  .comparison-dock-copy strong { font-size:14px; font-weight:600; }
+  .comparison-dock-copy small { font-size:12px; margin-top:4px; color:#655C4E; }
+  .comparison-dock-products { display:flex; gap:10px; list-style:none; margin:0; padding:0; }
+  .comparison-dock-products li { position:relative; }
+  .comparison-dock-products img { display:block; width:48px; height:56px; object-fit:cover; border-radius:12px; }
+  .comparison-dock-products button { position:absolute; top:-7px; left:-7px; width:22px; height:22px; min-width:22px; min-height:22px; padding:0; display:grid; place-items:center; background:#FCFAF6; border:1px solid #D9D0C1; border-radius:50%; color:#332C25; cursor:pointer; }
+  .comparison-dock-products button::after { content:''; position:absolute; inset:-11px; }
+  .comparison-dock-action { display:flex; align-items:center; justify-content:center; gap:16px; min-height:46px; padding:0 22px; background:#26221E; color:#FCFAF6; border:0; border-radius:999px; font:inherit; font-size:13px; text-decoration:none; white-space:nowrap; }
+  .comparison-dock-action:disabled { background:#E5E0D7; color:#6E6558; cursor:default; }
+  .comparison-dock-action:not(:disabled):hover { background:#46533F; }
+  .comparison-dock-study :focus-visible { outline:2px solid #80683D; outline-offset:4px; }
+}
+@keyframes comparison-dock-arrive { from { opacity:0; translate:0 10px; } to { opacity:1; translate:0 0; } }
+@media(prefers-reduced-motion:reduce) { .comparison-dock-study { animation:none; } }
