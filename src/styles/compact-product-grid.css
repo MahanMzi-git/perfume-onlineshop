@@ -1,0 +1,13 @@
+/* Fit the shared cards to their available space, including account sidebars. */
+.grid:has(> .card-photo-preview) {
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,max(190px,calc(20% - 14.4px))),1fr));
+  gap:24px 18px;
+}
+.card.card-photo-preview { min-height:360px; --photo-inset:12px; border-radius:20px; }
+.card.card-photo-preview h3 { font-size:clamp(18px,7.6cqw,25px); }
+.card-photo-preview .card-img .fav { width:44px; height:44px; top:10px; inset-inline-start:10px; }
+.card-photo-preview .card-img .card-compare { width:44px; height:44px; top:60px; inset-inline-start:10px; }
+@media(max-width:600px) {
+  .grid:has(> .card-photo-preview) { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 12px; }
+  .card.card-photo-preview { --photo-inset:10px; border-radius:18px; }
+}
