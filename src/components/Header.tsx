@@ -31,6 +31,10 @@ interface Props {
 export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCount, bagCount }: Props) {
   const { comparisonIds } = useStore();
   const [menu, setMenu] = useState(false);
+  const [desktopMenu, setDesktopMenu] = useState(false);
+  const [desktopMenuFloating, setDesktopMenuFloating] = useState(false);
+  const menuToggle = useRef<HTMLButtonElement>(null);
+  const desktopNavigation = useRef<HTMLDivElement>(null);
   const [searching, setSearching] = useState(false);
   const [compact, setCompact] = useState(() => matchMedia('(max-width:600px)').matches);
   const searchInput = useRef<HTMLInputElement>(null);
@@ -39,14 +43,35 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
   const searchToggle = useRef<HTMLButtonElement>(null);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   useLayoutEffect(() => {
-    const desktop = matchMedia('(min-width:901px)');
+    if (desktopNavigation.current) desktopNavigation.current.inert = desktopCollapsed && !desktopMenu;
+  }, [desktopCollapsed, desktopMenu]);
+  useLayoutEffect(() => {
+    setDesktopMenu(false);
+    setDesktopMenuFloating(false);
+  }, [desktopCollapsed, isHome]);
+  useLayoutEffect(() => {
+    if (!desktopMenu) return;
+    const close = () => setDesktopMenu(false);
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { close(); menuToggle.current?.focus({ preventScroll:true }); }
+    };
+    const outside = (event: PointerEvent) => { if (!header.current?.contains(event.target as Node)) close(); };
+    window.addEventListener('hashchange', close);
+    window.addEventListener('keydown', escape);
+    window.addEventListener('pointerdown', outside);
+    return () => { window.removeEventListener('hashchange', close); window.removeEventListener('keydown', escape); window.removeEventListener('pointerdown', outside); };
+  }, [desktopMenu]);
+  useLayoutEffect(() => {
+    const desktop = matchMedia('(min-width:901px), (min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape)');
     let frame = 0;
-    const update = () => setDesktopCollapsed(previous => desktop.matches && (!isHome || (previous ? scrollY > 24 : scrollY > 120)));
+    const update = () => setDesktopCollapsed(previous => desktop.matches && (matchMedia('(max-width:900px)').matches || !isHome || (previous ? scrollY > 24 : scrollY > 120)));
+    const closeMobile = () => { if (desktop.matches) setMenu(false); };
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
     update();
     window.addEventListener('scroll', schedule, { passive:true });
     desktop.addEventListener('change', update);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); desktop.removeEventListener('change', update); };
+    desktop.addEventListener('change', closeMobile);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', schedule); desktop.removeEventListener('change', update); desktop.removeEventListener('change', closeMobile); };
   }, [isHome]);
 
   useLayoutEffect(() => {
@@ -57,7 +82,7 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
       const rect = header.current.getBoundingClientRect();
       document.documentElement.style.setProperty('--header-height', rect.height + 'px');
       document.documentElement.style.setProperty('--header-bottom', rect.bottom + 'px');
-      if (matchMedia('(min-width:901px)').matches && header.current.dataset.collapsed !== 'true') header.current.style.setProperty('--header-expanded-height', rect.height + 'px');
+      if (matchMedia('(min-width:901px), (min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape)').matches && header.current.dataset.collapsed !== 'true') header.current.style.setProperty('--header-expanded-height', rect.height + 'px');
     };
     const onScroll = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const observer = new ResizeObserver(measure);
@@ -107,9 +132,9 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
     closeSearch();
   }
 
-  return <header ref={header} data-collapsed={desktopCollapsed || undefined} data-home={isHome || undefined} className={`header ${searching ? 'is-searching' : ''}`}>
+  return <header ref={header} data-desktop-menu={desktopMenu || undefined} data-desktop-floating={desktopMenuFloating || undefined} data-collapsed={desktopCollapsed || undefined} data-home={isHome || undefined} className={`header ${searching ? 'is-searching' : ''}`}>
     <div className="bar container">
-      <button className="icon-btn menu-btn" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label="باز کردن منو" aria-expanded={menu} aria-controls={menu ? 'mobile-menu' : undefined} onClick={() => setMenu(true)}><Menu aria-hidden="true" /></button>
+      <button ref={menuToggle} className="icon-btn menu-btn" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} aria-label={desktopMenu ? 'بستن منو' : 'باز کردن منو'} aria-expanded={desktopMenu || menu} aria-controls={desktopCollapsed ? 'desktop-navigation' : menu ? 'mobile-menu' : undefined} onClick={() => { if (matchMedia('(min-width:901px), (min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape)').matches) { setDesktopMenuFloating(true); setDesktopMenu(current => !current); } else setMenu(true); }}>{desktopMenu ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
       <a href="#home" className="logo" tabIndex={hideSecondary ? -1 : undefined} aria-hidden={hideSecondary || undefined} dir="ltr" aria-label="آروما، خانه">AROMA<span>THE FRAGRANCE EDIT</span></a>
       <p className="header-tagline">روایتِ تو، به زبانِ رایحه</p>
       <div className="actions">
@@ -129,12 +154,12 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
         <button className="icon-btn wishlist-action header-cart" aria-label={`سبد خرید، ${new Intl.NumberFormat('fa-IR').format(bagCount)} کالا`} onClick={() => onAction('cart')}><ShoppingBag aria-hidden="true" />{bagCount > 0 && <span className="wishlist-count" aria-hidden="true">{new Intl.NumberFormat('fa-IR').format(bagCount)}</span>}</button>
       </div>
     </div>
-    <nav className="desktop-nav container" aria-label="ناوبری اصلی">
+    <div ref={desktopNavigation} className="desktop-nav-shell"><div className="desktop-nav-clip"><nav id="desktop-navigation" className="desktop-nav container" aria-label="ناوبری اصلی" onClick={() => setDesktopMenu(false)}>
       <ul>{navLinks.map(link => <li key={link.label}>
         <a href={link.href} aria-current={location.hash.split('?')[0] === link.href ? 'page' : undefined}>{link.label}</a>
       </li>)}<li><a href={comparisonHref(comparisonIds)}><CompareIcon /> مقایسهٔ عطرها ({new Intl.NumberFormat('fa-IR').format(comparisonIds.length)})</a></li></ul>
       <a href="#/journal">مجلهٔ آروما <span aria-hidden="true">↖</span></a>
-    </nav>
+    </nav></div></div>
     <MobileNavigation links={navLinks} open={menu} onClose={() => setMenu(false)} />
   </header>;
 }
