@@ -1,3 +1,4 @@
+import {seasonLabels,occasionLabels} from '../data/catalogLabels';
 import { products } from '../data/products';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
@@ -20,7 +21,7 @@ export function parseAdminPath(segments:string[]): AdminRoute | undefined {
  if(group==='seller'&&segments.length===3&&['products','orders'].includes(section))return {group,section:section==='products'?'product-edit':'order-detail',id:segments[2]};
 }
 export interface AdminVariant { id:string; volume:number; price:number; stock:number }
-export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; image:string; status:string; variants:AdminVariant[] }
+export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; audience?:string; seasons?:string[]; occasions?:string[]; dayTimes?:string[]; image:string; status:string; variants:AdminVariant[] }
 export interface AdminRecord { id:string; name:string; detail:string; status:string; value:string }
 export const orderSteps=['در حال پردازش','در حال بسته‌بندی','آمادهٔ ارسال','ارسال شده','تحویل شده'];
 export interface AdminOrder { id:string; customer:string; status:string; product:string; quantity:number; total:number; history:string[] }
@@ -47,7 +48,7 @@ export function advanceOrder(state:AdminState,id:string,next:string):AdminState 
 const record=(id:string,name:string,detail:string,status='فعال',value=''):AdminRecord=>({id,name,detail,status,value});
 export function createAdminState():AdminState {
  return {
-  products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,price:v.price,stock:v.stock}))})),
+  products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,audience:({women:'زنانه',men:'مردانه',unisex:'یونیسکس'}[p.targetAudience]),family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),seasons:p.seasons.map(s=>seasonLabels[s]),occasions:p.occasions.map(o=>occasionLabels[o]).filter(o=>o!=='عصر و شب'),dayTimes:p.occasions.includes('evening')?['عصر','شب']:[],image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,price:v.price,stock:v.stock}))})),
   orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری آزمایشی '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
   records:{
    brands:brands.map((b,i)=>record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی آزمایشی')),

@@ -57,7 +57,7 @@ No special query is needed. `?cardPreview=legacy` retains the earlier fictional 
 
 Photo-card add actions now animate the bag into a check and expose inline plus/minus quantity controls using the shared demo cart. See [behaviour and QA](docs/card-cart-control.md).
 
-Account/checkout addresses now use dependent Iranian province/city lists (31 provinces; 1,478 unique province/city names from the MIT-licensed 1404 snapshot). Forms support boundary-aware arrow navigation, the cart uses compact rows, checkout has visual step/shipping icons, and the mobile menu is a floating panel with a blurred backdrop. See [implementation and responsive QA](docs/shopping-mobile-polish.md) and [geography provenance](docs/iran-locations-source.md). Shopping and customer data remain frontend demos.
+Account/checkout addresses now use dependent Iranian province/city lists (31 provinces; 1,458 province/city choices after the owner-approved cleanup from the MIT-licensed 1404 snapshot). Forms support boundary-aware arrow navigation, the cart uses compact rows, checkout has visual step/shipping icons, and the mobile menu is a floating panel with a blurred backdrop. See [implementation and responsive QA](docs/shopping-mobile-polish.md) and [geography provenance](docs/iran-locations-source.md). Shopping and customer data remain frontend demos.
 
 ## Phase 1 — Step 2
 Frontend catalog, compound filters, shareable hash routes, 13 fragrance families, 20 notes, reusable product details, stock-aware volume/concentration variants and comparison of 2–3 products are implemented with centralized fictional data. Existing compact card geometry and approved hovers are preserved. Product image/name links and a small comparison control were approved by the owner.
@@ -73,3 +73,6 @@ The current landing orbit uses seven optimized local photo cutouts (324,748 byte
 
 ## Approved ribbon backdrop
 The homepage now uses three tapered ribbons and two muted burgundy dotted orbits rotating in opposite directions, with bounded randomized radii and phases sampled at mount. Uses the existing photo orbit, pause/reduced-motion clock and actual category docking. Tablet positioning was refined to keep bottles clear of the heading. See docs/orbit-backdrop-studies.md for QA and preview screenshots. Owner approved the final responsive composition, local Sahel typography and motion controls for release on FixLandingPage.
+
+## Phase 1 — Step 5
+Frontend QA covered 187 route/query cases at five required widths (935 DOM/render checks), representative Chrome interaction/keyboard flows and responsive screenshots. Local fixes preserve the approved design; 34 tests and the TypeScript/Vite build pass. The platform console remains removed. The separately reviewed city cleanup is now approved and applied, and browser/accessibility limits are explicit. See [audit results and limitations](docs/phase-1-step-5.md), [route inventory](docs/phase-1-step-5-routes.json) and [machine-readable results](docs/phase-1-step-5-results.json). No backend was added in this step.

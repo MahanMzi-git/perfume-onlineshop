@@ -28,6 +28,8 @@
   .luxury-select-trigger { @apply tw:min-h-[42px]; font-size:.875rem; }
   .luxury-select-scrim { @apply tw:block tw:fixed tw:z-[64]; inset:0; @apply tw:w-[100%]; border:0; @apply tw:rounded-none; background:rgb(32 29 26 / 18%); }
   .luxury-select-panel { @apply tw:fixed tw:z-[65]; inset:auto 12px max(12px,env(safe-area-inset-bottom)); top:auto; @apply tw:w-auto tw:min-w-0; padding:12px; @apply tw:rounded-[26px]; animation:luxury-select-up .2s ease; }
+  body:has(.mobile-island) .luxury-select-panel { bottom:calc(90px + env(safe-area-inset-bottom)); }
+  body:has(.comparison-mobile-original) .luxury-select-panel { bottom:calc(150px + env(safe-area-inset-bottom)); }
   .luxury-select-mobile-title { @apply tw:flex tw:items-center tw:justify-between; padding:2px 4px 9px; font-size:.8125rem; }
   .luxury-select-mobile-title button { min-height:32px!important; padding:3px 8px; border:0; background:transparent; color:var(--accent-text); }
 }

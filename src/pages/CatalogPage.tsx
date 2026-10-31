@@ -23,7 +23,9 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
   const wishlistOnly = params.get('wishlist') === '1';
   const { favourites } = useStore();
   const results = sortProducts(filterProducts(products, filters).filter(p => !wishlistOnly || favourites.includes(p.id)), sort, filters);
-  const totalPages = Math.max(1, Math.ceil(results.length / 4));
+  const pageSize = 5;
+  const totalPages = Math.max(1, Math.ceil(results.length / pageSize));
+  const emptyCollection = !!collection && filterProducts(products, { query:'', ...scope }).length === 0;
   const requestedPage = Number(params.get('page') ?? 1);
   const page = Math.min(totalPages, Math.max(1, Number.isFinite(requestedPage) ? Math.floor(requestedPage) : 1));
   function update(patch: Partial<Filters>, replace = false) {
@@ -56,7 +58,7 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
     <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
     <div id="catalog-results" className="catalog-result-area"><h2 className="sr">نتایج کاتالوگ</h2>
       <ActiveFilters filters={visibleFilters} wishlistOnly={wishlistOnly} count={results.length} onRemoveNote={toggleNote} onRemove={key => update({ [key]: key === 'query' ? '' : undefined })} onReset={reset} />
-      {results.length ? <><p className="fine-print">قیمت کارت مربوط به اولین حجم و غلظت منطبق با فیلترهاست؛ نسخهٔ دقیق را در جزئیات انتخاب کنید.</p><ProductGrid list={results.slice((page - 1) * 4, page * 4)} filters={filters} onNote={toggleNote} /></> : <div className="empty"><h2>عطری مطابق این انتخاب پیدا نشد.</h2><p>می‌توانید یک فیلتر را حذف کنید یا از ابتدا شروع کنید.</p><button className="step-action" onClick={reset}>پاک کردن همهٔ فیلترها</button></div>}
+      {results.length ? <><p className="fine-print">قیمت کارت مربوط به اولین حجم و غلظت منطبق با فیلترهاست؛ نسخهٔ دقیق را در جزئیات انتخاب کنید.</p><ProductGrid list={results.slice((page - 1) * pageSize, page * pageSize)} filters={filters} onNote={toggleNote} /></> : emptyCollection ? <div className="empty"><h2>این مجموعه فعلاً محصول نمایشی ندارد.</h2><p>می‌توانید عطرهای مجموعه‌های دیگر را ببینید.</p><a className="step-action" href="#/catalog">دیدن همهٔ عطرها</a></div> : <div className="empty"><h2>عطری مطابق این انتخاب پیدا نشد.</h2><p>می‌توانید یک فیلتر را حذف کنید یا از ابتدا شروع کنید.</p><button className="step-action" onClick={reset}>پاک کردن همهٔ فیلترها</button></div>}
     </div>
     {results.length > 0 && <nav className="pagination" aria-label="صفحه‌بندی محصولات">
       <button className="step-action" disabled={page === 1} onClick={() => goPage(page - 1)}>صفحهٔ قبل</button>

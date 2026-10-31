@@ -37,7 +37,24 @@ const { CustomerProvider } = load(path.join(root, 'components/CustomerContext.ts
 const { CustomerPage, accountTabs } = load(path.join(root, 'pages/CustomerPages.tsx'));
 const { CartPage, CheckoutPage } = load(path.join(root, 'pages/ShoppingPages.tsx'));
 const { products } = load(path.join(root, 'data/products.ts'));
+const { CatalogPage } = load(path.join(root, 'pages/CatalogPage.tsx'));
+const { ComparisonPage } = load(path.join(root, 'pages/ComparisonPage.tsx'));
 const noop = () => {};
+test('Catalog pagination fills the approved five-column row and keeps all products reachable',()=>{
+ const first=render(CatalogPage,{params:new URLSearchParams()}),second=render(CatalogPage,{params:new URLSearchParams('page=2')});
+ assert.equal((first.match(/<article class="card /g)??[]).length,5);
+ assert.equal((second.match(/<article class="card /g)??[]).length,4);
+ for(const product of products)assert.ok((first+second).includes('جزئیات عطر '+product.name));
+});
+test('An inherently empty collection offers catalog navigation instead of an inert reset',()=>{
+ const {collections}=load(path.join(root,'data/collections.ts'));
+ const html=render(CatalogPage,{params:new URLSearchParams(),collection:collections.find(c=>c.slug==='gifts'),baseHref:'#/collections/gifts'});
+ assert.ok(html.includes('این مجموعه فعلاً محصول نمایشی ندارد.'));assert.ok(html.includes('دیدن همهٔ عطرها'));assert.ok(!html.includes('پاک کردن همهٔ فیلترها'));
+});
+test('Real fragrance comparisons label selected notes without inventing a note pyramid',()=>{
+ const html=render(ComparisonPage,{ids:products.slice(0,2).map(p=>p.id)});
+ assert.ok(html.includes('نت‌های منتخب'));assert.ok(!html.includes('نت‌های آغازین'));assert.ok(!html.includes('نت‌های پایه'));
+});
 function render(Component, props = {}, bagLines = [], favourites = []) {
   const store = { favourites, toggleFavourite: noop, comparisonIds: [], toggleComparison: noop, addToBag: noop, bagLines, changeBag: noop, removeBag: noop, discountCode: '', setDiscountCode: noop };
   return renderToStaticMarkup(React.createElement(StoreContext.Provider, { value: store }, React.createElement(CustomerProvider, null, React.createElement(Component, props))));

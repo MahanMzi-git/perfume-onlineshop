@@ -1,0 +1,5 @@
+import {Sun,Sunrise,Sunset,Moon,Flower2,Leaf,Snowflake,Briefcase,Heart,CalendarDays,Shirt} from 'lucide-react';
+const icons={بهار:Flower2,تابستان:Sun,پاییز:Leaf,زمستان:Snowflake,'محیط کار':Briefcase,'قرار عاشقانه':Heart,روزمره:CalendarDays,رسمی:Shirt,صبح:Sunrise,عصر:Sunset,شب:Moon};
+import {splitUsage} from './usageOptions';
+export {usageFields} from './usageOptions';
+export function UsageChoices({label,value,options,onChange,disabled}:{label:string;value:string;options:string[];onChange:(v:string)=>void;disabled?:boolean}){const selected=splitUsage(value);return <fieldset className="admin-usage"><legend>{label} · انتخاب چند گزینه</legend><div>{options.map(name=>{const Icon=icons[name as keyof typeof icons]??CalendarDays;return <button key={name} type="button" disabled={disabled} aria-pressed={selected.includes(name)} onClick={()=>onChange((selected.includes(name)?selected.filter(n=>n!==name):[...selected,name]).join('، '))}><Icon size={19} aria-hidden="true"/>{name}</button>;})}</div></fieldset>;}

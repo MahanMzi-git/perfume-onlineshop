@@ -1,0 +1,102 @@
+[
+  {
+    "province": "فارس",
+    "candidate": "شیراز6",
+    "existingBase": "شیراز"
+  },
+  {
+    "province": "خراسان رضوی",
+    "candidate": "سبزوار1",
+    "existingBase": "سبزوار"
+  },
+  {
+    "province": "خراسان رضوی",
+    "candidate": "سبزوار2",
+    "existingBase": "سبزوار"
+  },
+  {
+    "province": "لرستان",
+    "candidate": "بروجرد1",
+    "existingBase": "بروجرد"
+  },
+  {
+    "province": "لرستان",
+    "candidate": "بروجرد2",
+    "existingBase": "بروجرد"
+  },
+  {
+    "province": "لرستان",
+    "candidate": "خرم آباد1",
+    "existingBase": "خرم آباد"
+  },
+  {
+    "province": "لرستان",
+    "candidate": "خرم آباد2",
+    "existingBase": "خرم آباد"
+  },
+  {
+    "province": "لرستان",
+    "candidate": "خرم آباد3",
+    "existingBase": "خرم آباد"
+  },
+  {
+    "province": "بوشهر",
+    "candidate": "بوشهر1",
+    "existingBase": "بوشهر"
+  },
+  {
+    "province": "بوشهر",
+    "candidate": "بوشهر2",
+    "existingBase": "بوشهر"
+  },
+  {
+    "province": "تهران",
+    "candidate": "اسلام‌شهر1",
+    "existingBase": "اسلامشهر"
+  },
+  {
+    "province": "تهران",
+    "candidate": "اسلام‌شهر2",
+    "existingBase": "اسلامشهر"
+  },
+  {
+    "province": "تهران",
+    "candidate": "اسلام‌شهر3",
+    "existingBase": "اسلامشهر"
+  },
+  {
+    "province": "تهران",
+    "candidate": "شهریار1",
+    "existingBase": "شهریار"
+  },
+  {
+    "province": "تهران",
+    "candidate": "شهریار2",
+    "existingBase": "شهریار"
+  },
+  {
+    "province": "تهران",
+    "candidate": "شهریار3",
+    "existingBase": "شهریار"
+  },
+  {
+    "province": "خراسان شمالی",
+    "candidate": "بجنورد1",
+    "existingBase": "بجنورد"
+  },
+  {
+    "province": "خراسان شمالی",
+    "candidate": "بجنورد2",
+    "existingBase": "بجنورد"
+  },
+  {
+    "province": "خراسان جنوبی",
+    "candidate": "بیرجند1",
+    "existingBase": "بیرجند"
+  },
+  {
+    "province": "خراسان جنوبی",
+    "candidate": "بیرجند2",
+    "existingBase": "بیرجند"
+  }
+]

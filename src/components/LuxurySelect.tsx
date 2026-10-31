@@ -6,6 +6,7 @@ export interface LuxurySelectOption {
   value: string;
   label: string;
   description?: string;
+  englishLabel?: string;
   disabled?: boolean;
 }
 
@@ -34,7 +35,7 @@ export function LuxurySelect({ label, value, options, onChange, ariaLabel, disab
   const [query, setQuery] = useState('');
   const selected = options.find(option => option.value === value) ?? options[0];
   const hasSearch = options.length > 3;
-  const filtered = query ? options.filter(option => searchableText(option.label + ' ' + (option.description ?? '')).includes(searchableText(query))) : options;
+  const filtered = query ? options.filter(option => searchableText(option.label + ' ' + (option.description ?? '') + ' ' + (option.englishLabel ?? '')).includes(searchableText(query))) : options;
 
   useEffect(() => {
     if (!open) return;
@@ -92,7 +93,7 @@ export function LuxurySelect({ label, value, options, onChange, ariaLabel, disab
         <div className="luxury-select-list-wrap">
           <div ref={list} id={`${id}-list`} className="luxury-select-list" role="listbox" aria-labelledby={`${id}-label`}>
             {filtered.map(option => <button key={option.value} type="button" role="option" tabIndex={option.value === value || (!filtered.some(item => item.value === value && !item.disabled) && option === filtered.find(item => !item.disabled)) ? 0 : -1} aria-selected={option.value === value} disabled={option.disabled} onClick={() => choose(option)}>
-              <span><bdi>{option.label}</bdi>{option.description && <small>{option.description}</small>}</span>{option.value === value && <Check aria-hidden="true" />}
+              <span className={option.englishLabel ? "luxury-bilingual" : undefined}><bdi>{option.label}</bdi>{option.englishLabel && <bdi lang="en" dir="ltr">{option.englishLabel}</bdi>}{option.description && <small>{option.description}</small>}</span>{option.value === value && <Check aria-hidden="true" />}
             </button>)}
             {!filtered.length && <p className="luxury-select-empty">گزینه‌ای پیدا نشد.</p>}
           </div>

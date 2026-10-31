@@ -1,0 +1,334 @@
+{
+  "date": "2026-10-30",
+  "browser": "Installed Chrome, headless Playwright; production dist via static local server",
+  "routeCases": 187,
+  "baselineChecks": 715,
+  "additionalLinkChecks": 220,
+  "totalRouteViewportChecks": 935,
+  "widths": [
+    360,
+    390,
+    768,
+    1024,
+    1440
+  ],
+  "baseline": {
+    "overflow": 0,
+    "unexpectedNotFound": 0,
+    "pageErrors": 0,
+    "missingAlt": 0,
+    "brokenImages": 0,
+    "unnamedVisibleButtons": 0,
+    "unlabelledVisibleFields": 0
+  },
+  "interactions": [
+    {
+      "width": 360,
+      "height": 800,
+      "passed": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "passed": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "passed": true
+    }
+  ],
+  "customerForms": [
+    {
+      "width": 390,
+      "profile": true,
+      "addressCreateEditDelete": true,
+      "preferences": true,
+      "notifications": true,
+      "cabinet": true,
+      "contact": true
+    },
+    {
+      "width": 1440,
+      "profile": true,
+      "addressCreateEditDelete": true,
+      "preferences": true,
+      "notifications": true,
+      "cabinet": true,
+      "contact": true
+    }
+  ],
+  "cityStudy": [
+    {
+      "width": 390,
+      "province": "فارس",
+      "old": 127,
+      "clean": 126,
+      "removed": 1
+    },
+    {
+      "width": 390,
+      "province": "خراسان رضوی",
+      "old": 100,
+      "clean": 98,
+      "removed": 2
+    },
+    {
+      "width": 390,
+      "province": "لرستان",
+      "old": 38,
+      "clean": 33,
+      "removed": 5
+    },
+    {
+      "width": 390,
+      "province": "بوشهر",
+      "old": 43,
+      "clean": 41,
+      "removed": 2
+    },
+    {
+      "width": 390,
+      "province": "تهران",
+      "old": 55,
+      "clean": 49,
+      "removed": 6
+    },
+    {
+      "width": 390,
+      "province": "خراسان شمالی",
+      "old": 27,
+      "clean": 25,
+      "removed": 2
+    },
+    {
+      "width": 390,
+      "province": "خراسان جنوبی",
+      "old": 33,
+      "clean": 31,
+      "removed": 2
+    },
+    {
+      "width": 1440,
+      "province": "فارس",
+      "old": 127,
+      "clean": 126,
+      "removed": 1
+    },
+    {
+      "width": 1440,
+      "province": "خراسان رضوی",
+      "old": 100,
+      "clean": 98,
+      "removed": 2
+    },
+    {
+      "width": 1440,
+      "province": "لرستان",
+      "old": 38,
+      "clean": 33,
+      "removed": 5
+    },
+    {
+      "width": 1440,
+      "province": "بوشهر",
+      "old": 43,
+      "clean": 41,
+      "removed": 2
+    },
+    {
+      "width": 1440,
+      "province": "تهران",
+      "old": 55,
+      "clean": 49,
+      "removed": 6
+    },
+    {
+      "width": 1440,
+      "province": "خراسان شمالی",
+      "old": 27,
+      "clean": 25,
+      "removed": 2
+    },
+    {
+      "width": 1440,
+      "province": "خراسان جنوبی",
+      "old": 33,
+      "clean": 31,
+      "removed": 2
+    }
+  ],
+  "affectedStateChecks": [
+    {
+      "width": 360,
+      "height": 800,
+      "optionCentersAccessible": true,
+      "gifts": true,
+      "catalogFive": true,
+      "newsletter": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "optionCentersAccessible": true,
+      "gifts": true,
+      "catalogFive": true,
+      "newsletter": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "optionCentersAccessible": true,
+      "gifts": true,
+      "catalogFive": true,
+      "newsletter": true
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "optionCentersAccessible": true,
+      "gifts": true,
+      "catalogFive": true,
+      "newsletter": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "optionCentersAccessible": true,
+      "gifts": true,
+      "catalogFive": true,
+      "newsletter": true
+    }
+  ],
+  "landscapeChecks": [
+    {
+      "width": 667,
+      "height": 375,
+      "optionCentersAccessible": true
+    }
+  ],
+  "rawSkillAudit": {
+    "cases": 10,
+    "findings": 540,
+    "critical": 490,
+    "medium": 50,
+    "triage": {
+      "static-content-collision": {
+        "count": 29,
+        "decision": "All 29 pairs include note-filter-help inside a closed details element. Follow-up visibility tests at five widths report checkVisibility=false; selected screenshots show no painted help/card collision. Classified as closed-disclosure geometry noise, not a reason to alter the approved layout."
+      },
+      "occlusion": {
+        "count": 4,
+        "decision": "Four eyebrow-box/pause hit-area intersections. The eyebrow spans its row while glyphs align to the right and the icon is at the left. Inspected hero screenshots show no glyph overlap. Box sampling is not text-pixel sampling."
+      },
+      "fixed-sticky-overlay-collision": {
+        "count": 457,
+        "decision": "457 geometric intersections with persistent approved chrome during natural/pinned scrolling. Scrolling content behind sticky header/island is expected, but this category is not blanket-dismissed as a pass. Representative screenshots and end-of-page/interactive controls were checked. The separately reproduced dropdown obstruction was a real interaction defect and was fixed. Individual raw overlap snapshots were not all visually adjudicated."
+      },
+      "tap-target": {
+        "count": 50,
+        "decision": "50 box-size hints. Phone/coarse-pointer CSS already expands logo, quiet-link and discovery links using pseudo-elements; desktop hints include narrow text links. Scanner measures element rectangles, not pseudo hit areas. Existing visual sizes preserved; not a blanket 44px certification."
+      }
+    }
+  },
+  "asset": {
+    "beforeBytes": 535750,
+    "afterBytes": 489742,
+    "decodedScanlineSHA256": "7ee5e93b479fdd13ba93c8a50402f0ac7823bb70fb1ad82f6318675b1162d7ec",
+    "decodedScanlineBytes": 6291318,
+    "widthHeight": [
+      1254,
+      1254
+    ]
+  },
+  "regression": {
+    "tests": "34/34 passed",
+    "typecheck": "Passed through tsc -b in npm run build",
+    "productionBuild": "Passed",
+    "lint": "Not configured; not run",
+    "whitespace": "git diff --check passed"
+  },
+  "limitations": [
+    "No physical iOS/Android keyboard, Safari/Firefox or screen-reader testing.",
+    "935 route/viewport checks are DOM/render checks, not 935 individually reviewed visual screenshots.",
+    "Glass/photo contrast varies with the image; a full WCAG contrast certification was not performed.",
+    "City cleanup is owner-approved and applied; geography remains a versioned snapshot.",
+    "No real authentication, payment, order creation, seller persistence or backend."
+  ],
+  "sellerStateChecks": [
+    {
+      "width": 360,
+      "visitorDenied": true,
+      "loading": true,
+      "empty": true,
+      "errorRetry": true,
+      "emptyFilterReset": true
+    },
+    {
+      "width": 390,
+      "visitorDenied": true,
+      "loading": true,
+      "empty": true,
+      "errorRetry": true,
+      "emptyFilterReset": true
+    },
+    {
+      "width": 768,
+      "visitorDenied": true,
+      "loading": true,
+      "empty": true,
+      "errorRetry": true,
+      "emptyFilterReset": true
+    },
+    {
+      "width": 1024,
+      "visitorDenied": true,
+      "loading": true,
+      "empty": true,
+      "errorRetry": true,
+      "emptyFilterReset": true
+    },
+    {
+      "width": 1440,
+      "visitorDenied": true,
+      "loading": true,
+      "empty": true,
+      "errorRetry": true,
+      "emptyFilterReset": true
+    }
+  ],
+  "cityCleanup": {
+    "approved": "2026-10-30",
+    "applied": true,
+    "removedChoices": 20,
+    "provinces": 31,
+    "choicesBefore": 1478,
+    "choicesAfter": 1458,
+    "removalList": "scripts/data/iran-city-cleanup.json",
+    "verification": {
+      "exactDiff": true,
+      "results": [
+        {
+          "width": 390,
+          "provinces": 7,
+          "approvedRemovalsChecked": 20
+        },
+        {
+          "width": 1440,
+          "provinces": 7,
+          "approvedRemovalsChecked": 20
+        }
+      ]
+    }
+  }
+}

@@ -27,6 +27,13 @@ for row in rows:
     groups[str(parent['Id'])].append(row['Name'].strip())
 locations = [{'id': row['Code'], 'name': row['Name'].strip(), 'cities': sorted(set(groups[str(row['Id'])]))} for row in provinces]
 assert len(locations) == 31
+approved_cleanup = json.loads((ROOT / 'scripts/data/iran-city-cleanup.json').read_text(encoding='utf-8-sig'))
+for entry in approved_cleanup:
+    province = next(p for p in locations if p['name'] == entry['province'])
+    # Exact owner-approved removals only; never strip arbitrary numeric suffixes.
+    assert entry['existingBase'] in province['cities'], f'Cleanup base missing: {entry}'
+    if entry['candidate'] in province['cities']:
+        province['cities'].remove(entry['candidate'])
 city_count = sum(len(p['cities']) for p in locations)
 assert city_count >= 1400
 target = ROOT / 'src/data/iranLocations.ts'
@@ -41,7 +48,10 @@ metadata = json.loads(fetch('data/1404/metadata.json'))
     '# Iran province/city snapshot\n\nImported 2026-10-24 from [Hameds/IranCountryDivisions](https://github.com/Hameds/IranCountryDivisions), '
     'the 1404 source snapshot. Source publisher attributes it to the Statistical Center of Iran. '
     'This local derivative keeps provinces and cities only, follows district/county parents to the province, excludes urban zones and villages, '
-    'and deduplicates identical names within the same province for address selection.\n\n'
+    'and deduplicates identical names within the same province for address selection. '
+    'The owner-approved 2026-10-30 cleanup additionally excludes the 20 exact numbered choices in '
+    '`scripts/data/iran-city-cleanup.json`, retaining their existing same-province base names. '
+    'This is a storefront display choice, not a claim about official administrative status.\n\n'
     f'Included: {len(locations)} provinces and {city_count} province/city name pairs. Upstream city count: {metadata["counts"]["city"]}. '
     f'CSV SHA-256: `{hashlib.sha256(raw).hexdigest()}`.\n\n'
     'MIT copyright: Hamed Saeedi (2020). Full license: `public/licenses/iran-country-divisions-MIT.txt`. '

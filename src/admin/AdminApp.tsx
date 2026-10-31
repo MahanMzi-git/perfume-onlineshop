@@ -3,7 +3,10 @@ import { LayoutDashboard, Package, ShieldCheck, Menu, ArrowUpLeft, Truck, Star, 
 import { LuxurySelect } from '../components/LuxurySelect';
 import { ScrollRail } from '../components/ScrollRail';
 import { AdminBadge, AdminForm, ConfirmDialog, DataTable, Panel, type FormField } from './AdminUI';
-import { advanceOrder, canAccess, canEdit, createAdminState, money, number, orderSteps, roles, sellerPages, updateVariant, validateAdminProduct, type AdminGroup, type AdminProduct, type AdminRecord, type AdminRole, type AdminRoute, type AdminState } from './model';
+import { advanceOrder, canAccess, canEdit, createAdminState, money, number, orderSteps, roles, sellerPages, updateVariant, type AdminGroup, type AdminRecord, type AdminRole, type AdminRoute, type AdminState } from './model';
+import {usageFields} from './UsageChoices';
+import { familyEnglish } from './fragranceLabels';
+import { NEW_BRAND_OPTION, NEW_FAMILY_OPTION, saveProductDraft, validateProductDraft } from './productSave';
 
 interface Workspace { state:AdminState; editable:boolean; mutate:(label:string,fn:(s:AdminState)=>AdminState)=>void; confirm:(title:string,detail:string,action:()=>void)=>void }
 const link=(group:AdminGroup,section:string)=>`#/${group}/${section}`;
@@ -68,16 +71,25 @@ function SellerPage({route,workspace:w}:{route:AdminRoute;workspace:Workspace}) 
 
 function ProductEditor({id,workspace:w}:{id?:string;workspace:Workspace}) {
  const existing=id?w.state.products.find(p=>p.id===id):undefined;
- const [image,setImage]=useState(existing?.image??''),[file,setFile]=useState<File>(),[error,setError]=useState('');
+ const [image,setImage]=useState(existing?.image??''),[file,setFile]=useState<File>(),[error,setError]=useState(''),[formVersion,setFormVersion]=useState(0);
  useEffect(()=>{if(!file)return;const url=URL.createObjectURL(file);setImage(url);return()=>URL.revokeObjectURL(url);},[file]);
  if(id&&!existing)return <Missing href={link('seller','products')}/>;
  const options=(key:string)=>w.state.records[key].map(r=>r.name);
- const fields:FormField[]=[textField('name','نام محصول','نام عطر آزمایشی'),{key:'brand',label:'برند',type:'select',options:options('brands'),required:true},{key:'family',label:'خانوادهٔ رایحه',type:'select',options:options('families'),required:true},textField('notes','نت‌های منتخب','مثلاً گل رز، یاس، مشک'),{key:'status',label:'وضعیت انتشار نمونه',type:'select',options:['فعال','پیش‌نویس'],required:true}];
+ const isNewBrand=(values:Record<string,string>)=>values.brand===NEW_BRAND_OPTION;
+ const isNewFamily=(values:Record<string,string>)=>values.family===NEW_FAMILY_OPTION;
+ const fields:FormField[]=[textField('name','نام محصول','نام عطر آزمایشی'),{key:'brand',label:'برند',type:'select',options:[NEW_BRAND_OPTION,...options('brands')],required:true,hint:'برند در فهرست نیست؟ «افزودن برند جدید…» را انتخاب کنید.'},
+  {...textField('newBrand','نام برند جدید','نام برند را بنویسید'),when:isNewBrand,hint:'با ذخیرهٔ محصول، برند هم به کتابخانه اضافه می‌شود. اگر از قبل وجود داشته باشد، همان برند استفاده می‌شود.'},
+  {key:'newBrandDetail',label:'توضیح برند (اختیاری)',placeholder:'توضیح کوتاه دربارهٔ برند',when:isNewBrand},
+  {key:'family',label:'خانوادهٔ رایحه',type:'select',options:[NEW_FAMILY_OPTION,...options('families')],optionEnglish:{...familyEnglish,...Object.fromEntries(w.state.records.families.filter(r=>r.value).map(r=>[r.name,r.value]))},required:true,hint:'رایحه در فهرست نیست؟ «افزودن خانوادهٔ رایحهٔ جدید…» را انتخاب کنید.'},
+  {...textField('newFamily','نام خانوادهٔ رایحهٔ جدید','نام خانوادهٔ رایحه را بنویسید'),when:isNewFamily,hint:'با ذخیرهٔ محصول، خانوادهٔ رایحه هم به کتابخانه اضافه می‌شود. اگر از قبل وجود داشته باشد، همان مورد استفاده می‌شود.'},
+  {key:'newFamilyEnglish',label:'نام انگلیسی رایحه',placeholder:'مثلاً Citrus',when:isNewFamily},
+  {key:'newFamilyDetail',label:'توضیح رایحه (اختیاری)',placeholder:'توضیح کوتاه دربارهٔ این خانوادهٔ رایحه',when:isNewFamily},
+  {key:'notes',label:'نت‌های منتخب',type:'notes',options:options('notes'),required:true,hint:'از کتابخانه تا ۴ نت انتخاب کنید.'},{key:'audience',label:'مخاطب عطر',type:'select',options:['زنانه','مردانه','یونیسکس'],required:true},...usageFields,{key:'status',label:'وضعیت انتشار نمونه',type:'select',options:['فعال','پیش‌نویس'],required:true}];
  return <Panel title={existing?'ویرایش اطلاعات محصول':'ساخت محصول آزمایشی'}><div className="admin-actions"><a href={link('seller','products')}>فهرست محصولات</a>{existing&&<a href={link('seller','variants')}>مدیریت حجم و قیمت</a>}</div>
   <div className="admin-image-picker"><ImagePlus aria-hidden="true"/><label>تصویر محلی (PNG، JPEG یا WebP؛ حداکثر ۲ مگابایت)<input disabled={!w.editable} type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>{const next=e.target.files?.[0];setError('');if(!next)return;if(!['image/png','image/jpeg','image/webp'].includes(next.type)||next.size>2*1024*1024){setError('فرمت یا حجم تصویر مجاز نیست.');e.target.value='';return;}setFile(next);}}/></label>{image&&<img src={image} alt="پیش‌نمایش تصویر انتخاب‌شده" width={100} height={100} onError={()=>setError('تصویر قابل خواندن نیست؛ فایل دیگری انتخاب کنید.')}/>}<p>تصویر فقط پیش‌نمایش همین فرم است؛ آپلود نمی‌شود و به محصول ذخیره‌شده منتقل نمی‌شود.</p>{error&&<p role="alert" className="admin-error">{error}</p>}</div>
-  <AdminForm fields={fields} initial={existing?{name:existing.name,brand:existing.brand,family:existing.family,notes:existing.notes,status:existing.status}:{name:'',brand:'',family:'',notes:'',status:'پیش‌نویس'}} disabled={!w.editable} validate={(v):Record<string,string>=>validateAdminProduct({name:v.name,brand:v.brand,family:v.family,notes:v.notes})} onSave={v=>{
-   const product:AdminProduct={id:existing?.id??'LOCAL-PRODUCT-'+Date.now(),name:v.name,brand:v.brand,family:v.family,notes:v.notes,status:v.status,image:existing?.image??'/images/hero-editorial.svg',variants:existing?.variants??[{id:'LOCAL-VARIANT-'+Date.now(),volume:50,price:5000000,stock:0}]};
-   w.mutate('ذخیرهٔ محصول آزمایشی',s=>({...s,products:existing?s.products.map(p=>p.id===existing.id?product:p):[product,...s.products]}));location.hash=link('seller','products/'+product.id);
+  <AdminForm key={formVersion} fields={fields} initial={existing?{name:existing.name,brand:existing.brand,family:existing.family,seasons:existing.seasons?.join('، ')??'',occasions:existing.occasions?.join('، ')??'',dayTimes:existing.dayTimes?.join('، ')??'',notes:existing.notes,audience:existing.audience??'یونیسکس',status:existing.status}:{name:'',brand:'',family:'',notes:'',audience:'',status:'پیش‌نویس'}} disabled={!w.editable} validate={validateProductDraft} onSave={v=>{
+   const ids={product:existing?.id??'LOCAL-PRODUCT-'+crypto.randomUUID(),brand:'LOCAL-BRAND-'+crypto.randomUUID(),family:'LOCAL-FAMILY-'+crypto.randomUUID(),variant:'LOCAL-VARIANT-'+crypto.randomUUID()};
+   w.mutate(isNewBrand(v)||isNewFamily(v)?'ذخیرهٔ محصول و اطلاعات کتابخانهٔ آزمایشی':'ذخیرهٔ محصول آزمایشی',s=>saveProductDraft(s,v,ids,existing?.id));setFormVersion(version=>version+1);location.hash=link('seller','products/'+ids.product);
   }}/>
  </Panel>;
 }

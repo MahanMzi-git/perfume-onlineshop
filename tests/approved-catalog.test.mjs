@@ -61,6 +61,13 @@ test('Iran location snapshot covers every province with unique valid city choice
   assert.equal(iranProvinces.length,31);
   assert.equal(new Set(iranProvinces.map(p=>p.id)).size,31);
   assert.ok(iranProvinces.every(p=>p.cities.length>0&&new Set(p.cities).size===p.cities.length));
-  assert.equal(iranProvinces.reduce((sum,p)=>sum+p.cities.length,0),1478);
+  assert.equal(iranProvinces.reduce((sum,p)=>sum+p.cities.length,0),1458);
+  const cleanup=JSON.parse(fs.readFileSync('scripts/data/iran-city-cleanup.json','utf8'));
+  assert.equal(cleanup.length,20);
+  for(const {province,candidate,existingBase} of cleanup){
+    const cities=iranProvinces.find(p=>p.name===province)?.cities;
+    assert.ok(cities?.includes(existingBase));
+    assert.ok(!cities.includes(candidate));
+  }
   for(const [province,city] of [['تهران','تهران'],['البرز','کرج'],['فارس','شیراز'],['خراسان رضوی','مشهد']]) assert.ok(iranProvinces.find(p=>p.name===province)?.cities.includes(city));
 });

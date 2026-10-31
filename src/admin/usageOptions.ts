@@ -1,0 +1,2 @@
+export const usageFields=[{key:'seasons',label:'فصل مناسب',type:'choices' as const,options:['بهار','تابستان','پاییز','زمستان']},{key:'occasions',label:'موقعیت استفاده',type:'choices' as const,options:['روزمره','محیط کار','قرار عاشقانه','رسمی']},{key:'dayTimes',label:'زمان استفاده',type:'choices' as const,options:['صبح','عصر','شب']}];
+export const splitUsage=(v:string)=>[...new Set(v.split('،').map(s=>s.trim()).filter(Boolean))];
