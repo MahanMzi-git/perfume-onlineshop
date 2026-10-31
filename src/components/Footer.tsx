@@ -13,7 +13,7 @@ export function Footer({ onInfo }: { onInfo: (id: string) => void }) {
         <nav aria-label="خرید"><ul><li><a href="#/catalog">همهٔ عطرها</a></li>{categories.filter(c => !c.scrollTo).map(c => <li key={c.id}><a href={'#/collections/' + c.id}>{c.label}</a></li>)}</ul></nav>
       </AdaptiveDisclosure>
       <AdaptiveDisclosure className="footer-group" summary={title('همراه شما')}>
-        <nav aria-label="راهنما"><ul><li><a href="#/families">راهنمای رایحه‌ها</a></li><li><a href="#/collections/gifts">ست‌های آشنایی</a></li><li><a href="#/journal">مجلهٔ آروما</a></li><li><a href="#/about">دربارهٔ ما</a></li><li><button onClick={() => onInfo('policies')}>ارسال و مرجوعی</button></li><li><button onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li></ul></nav>
+        <nav aria-label="راهنما"><ul><li><a href="#/families">راهنمای رایحه‌ها</a></li><li><a href="#/collections/gifts">ست‌های آشنایی</a></li><li><a href="#/journal">مجلهٔ آروما</a></li><li><a href="#/about">دربارهٔ ما</a></li><li><button onClick={() => onInfo('shipping')}>ارسال و مرجوعی</button></li><li><button onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li></ul></nav>
       </AdaptiveDisclosure>
       <AdaptiveDisclosure className="footer-group" summary={title('در ارتباط بمانیم')}>
         <p>اطلاعات تماس و شبکه‌های اجتماعی<br />پس از تأیید فروشگاه اضافه می‌شوند.</p><a className="text-link" href="#/contact">ارتباط با ما ↖</a>

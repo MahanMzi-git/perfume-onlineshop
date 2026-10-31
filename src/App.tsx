@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState, lazy, Suspense } from 'react';
 import { ArrowUpLeft, BookOpen, FlaskConical, Gift, Leaf } from 'lucide-react';
 import { Header } from './components/Header';
 import { MobileIsland } from './components/MobileIsland';
@@ -27,10 +27,13 @@ import { DiscoveryNavigation } from './components/DiscoveryNavigation';
 import { ComparisonBar } from './components/ComparisonBar';
 import { addDemoBagItem, changeDemoBagItem, type BagLine } from './lib/demoBag';
 import { getLastHomePosition, useHashLocation } from './lib/useHashLocation';
+
 import { HeroBackdrop } from './components/HeroBackdrop';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
 import type { Product, ProductVariant, Filters, ProductCategory } from './types/product';
+
+const AdminApp = lazy(() => import('./admin/AdminApp').then(module => ({ default:module.AdminApp })));
 
 export default function App() {
   useEffect(() => { document.addEventListener('keydown',handleArrowFieldNavigation); return () => document.removeEventListener('keydown',handleArrowFieldNavigation); }, []);
@@ -55,7 +58,7 @@ export default function App() {
   useLayoutEffect(() => {
     const productTitle = route.page === 'product' ? products.find(p => p.slug === route.slug)?.name : undefined;
     const pageTitle = route.page === 'collection' ? collections.find(item => item.slug === route.slug)?.title : route.page === 'brand' ? brands.find(item => item.id === route.slug)?.name : undefined;
-    document.title = (pageTitle ?? productTitle ?? ({ collection: 'مجموعهٔ عطرها', brands: 'برندها', brand: 'عطرهای برند', about: 'دربارهٔ آروما', contact: 'ارتباط با آروما', journal: 'مجلهٔ آروما', 'form-studio': 'پیش‌نمایش طراحی فرم‌ها', cart: 'سبد خرید', checkout: 'تسویه‌حساب نمایشی', account: 'حساب نمایشی', home: 'فروشگاه عطر', product: 'جزئیات عطر', 'not-found': 'صفحه پیدا نشد', catalog: 'کاتالوگ عطرها', families: 'کتابخانهٔ رایحه', family: 'خانوادهٔ رایحه', notes: 'واژه‌نامه نت‌ها', note: 'شناخت نت', compare: 'مقایسهٔ عطرها' }[route.page] ?? 'فروشگاه عطر')) + ' | آروما';
+    document.title = (pageTitle ?? productTitle ?? ({ seller: 'پنل فروشنده', collection: 'مجموعهٔ عطرها', brands: 'برندها', brand: 'عطرهای برند', about: 'دربارهٔ آروما', contact: 'ارتباط با آروما', journal: 'مجلهٔ آروما', 'form-studio': 'پیش‌نمایش طراحی فرم‌ها', cart: 'سبد خرید', checkout: 'تسویه‌حساب نمایشی', account: 'حساب نمایشی', home: 'فروشگاه عطر', product: 'جزئیات عطر', 'not-found': 'صفحه پیدا نشد', catalog: 'کاتالوگ عطرها', families: 'کتابخانهٔ رایحه', family: 'خانوادهٔ رایحه', notes: 'واژه‌نامه نت‌ها', note: 'شناخت نت', compare: 'مقایسهٔ عطرها' }[route.page] ?? 'فروشگاه عطر')) + ' | آروما';
     if (route.page === 'home' && consumeHomeReturn()) {
       const position = getLastHomePosition();
       window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' });
@@ -79,11 +82,17 @@ export default function App() {
       }
       return;
     }
-    requestAnimationFrame(() => {
+    if (route.admin) {
+      document.getElementById('admin-main')?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
       const heading = document.querySelector<HTMLElement>('main h1');
       if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
       window.scrollTo({ top: 0, behavior: 'instant' });
     });
+    return () => cancelAnimationFrame(frame);
   }, [routePath, restoredScroll]);
   function toggleComparison(id: string) {
     const next = addComparison(comparisonIds, id);
@@ -128,6 +137,7 @@ export default function App() {
   const curated = (familyId: string) => { reset(); setFilters({ query: '', familyId }); navigateToSection('products'); };
   const bagCount = bagLines.reduce((sum, line) => sum + line.quantity, 0);
   const article = modal?.startsWith('article-') ? articles[Number(modal.slice(8))] : undefined;
+  if (route.admin) return <Suspense fallback={<main dir="rtl" className="container section" role="status">در حال آماده‌سازی پنل نمایشی…</main>}><AdminApp route={route.admin} /></Suspense>;
   return <StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag, bagLines, discountCode, setDiscountCode, removeBag: variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId)), changeBag: (product, fromId, toId, quantity) => { const result = changeDemoBagItem(bagLines, product, fromId, toId, quantity); setBagLines(result.lines); return result.message; } }}>
     <a className="skip" href="#main-content" onClick={event => { event.preventDefault(); const main = document.getElementById('main-content'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); main.scrollIntoView({ block: 'start' }); } }}>پرش به محتوای اصلی</a>
     <div className="announcement">{announcement}</div>
@@ -157,8 +167,8 @@ export default function App() {
       <section className="newsletter container"><div><p className="eyebrow">LET’S STAY INSPIRED</p><h2>نامه‌ای از دنیای رایحه‌ها</h2><p>فرم نمایشی خبرنامه؛ ایمیل شما ذخیره یا ارسال نمی‌شود.</p></div><form onSubmit={e => { e.preventDefault(); setSignup(true); }}><label htmlFor="newsletter-email">ایمیل شما</label><div className="search-row"><input id="newsletter-email" type="email" autoComplete="email" maxLength={254} aria-describedby="newsletter-status" dir="ltr" placeholder="you@example.com" required value={email} onChange={e => { setEmail(e.target.value); setSignup(false); }} /><button className="cta" type="submit">امتحان فرم</button></div><p id="newsletter-status" className="form-status" role="status">{signup ? 'فرمت ایمیل معتبر است؛ در این نسخه هیچ اطلاعاتی ارسال یا ذخیره نشد.' : 'فقط برای پیش‌نمایش تجربهٔ عضویت'}</p></form></section>
     </> : <CommercePages route={route} comparisonIds={comparisonIds} />}</main><ComparisonBar /><Footer onInfo={setModal} />
     <MobileIsland route={route} favouriteCount={favourites.length} bagCount={bagCount} />
-    {modal && <Dialog title={article?.title ?? ({ account: 'حساب کاربری', cart: 'سبد خرید', samples: 'ست کشف رایحه چیست؟', contact: 'ارتباط با آروما', policies: 'شرایط و حریم خصوصی' }[modal] ?? 'اطلاعات آروما')} onClose={() => setModal(undefined)}>
-      {<p>{article?.text ?? ({ account: 'ورود و ثبت‌نام در این مرحله فعال نیست. این پیش‌نمایش حساب واقعی یا احراز هویت ندارد.', cart: 'این نسخه برای آشنایی با طراحی فروشگاه است. افزودن به سبد، سفارش و پرداخت در مرحله‌های بعد ساخته می‌شوند.', samples: 'ست کشف رایحه مجموعه‌ای از نمونه‌های کوچک برای مقایسه و آشنایی است. پیش از خرید یک بطری کامل، می‌توان تغییر رایحه روی پوست را تجربه کرد. این بخش فعلاً معرفی است و موجودی واقعی ندارد.', contact: 'اطلاعات فروشنده، شماره تماس، نشانی و شبکه‌های اجتماعی پس از تأیید مالک فروشگاه درج می‌شوند. در این نسخه کانال ارتباطی فعالی معرفی نشده است.', policies: 'این سایت نسخهٔ نمایشی است و خریدی در آن انجام نمی‌شود. شرایط ارسال، مرجوعی و حریم خصوصی باید پیش از راه‌اندازی فروش واقعی توسط مالک فروشگاه تکمیل شوند. فرم خبرنامه داده‌ای ارسال نمی‌کند.' }[modal])}</p>}<button className="cta" onClick={() => setModal(undefined)}>متوجه شدم</button>
+    {modal && <Dialog title={article?.title ?? ({ account: 'حساب کاربری', cart: 'سبد خرید', samples: 'ست کشف رایحه چیست؟', shipping: 'ارسال و مرجوعی', contact: 'ارتباط با آروما', policies: 'شرایط و حریم خصوصی' }[modal] ?? 'اطلاعات آروما')} onClose={() => setModal(undefined)}>
+      {<p>{article?.text ?? ({ account: 'ورود و ثبت‌نام در این مرحله فعال نیست. این پیش‌نمایش حساب واقعی یا احراز هویت ندارد.', cart: 'این نسخه برای آشنایی با طراحی فروشگاه است. افزودن به سبد، سفارش و پرداخت در مرحله‌های بعد ساخته می‌شوند.', samples: 'ست کشف رایحه مجموعه‌ای از نمونه‌های کوچک برای مقایسه و آشنایی است. پیش از خرید یک بطری کامل، می‌توان تغییر رایحه روی پوست را تجربه کرد. این بخش فعلاً معرفی است و موجودی واقعی ندارد.', contact: 'اطلاعات فروشنده، شماره تماس، نشانی و شبکه‌های اجتماعی پس از تأیید مالک فروشگاه درج می‌شوند. در این نسخه کانال ارتباطی فعالی معرفی نشده است.', shipping: 'ارسال و مرجوعی در این نسخه عملیاتی نیست. روش‌ها و هزینه‌های بخش تسویه صرفاً برای تست رابط‌اند؛ شرایط واقعی ارسال و مرجوعی پس از تأیید فروشگاه اعلام می‌شوند.', policies: 'این سایت نسخهٔ نمایشی است و خریدی در آن انجام نمی‌شود. شرایط ارسال، مرجوعی و حریم خصوصی باید پیش از راه‌اندازی فروش واقعی توسط مالک فروشگاه تکمیل شوند. فرم خبرنامه داده‌ای ارسال نمی‌کند.' }[modal])}</p>}<button className="cta" onClick={() => setModal(undefined)}>متوجه شدم</button>
     </Dialog>}
   </StoreContext.Provider>;
 }

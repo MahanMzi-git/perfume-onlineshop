@@ -1,16 +1,21 @@
 import { brands } from '../data/brands';
+import { parseAdminPath, type AdminRoute } from '../admin/model';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { scentNotes } from '../data/scentNotes';
 import type { Filters, SortOrder } from '../types/product';
 import { audienceLabels, occasionLabels, seasonLabels, sortLabels, stockLabels, sweetnessLabels, temperatureLabels, productTypeLabels } from '../data/catalogLabels';
 
-export type PageName = 'home' | 'collection' | 'brands' | 'brand' | 'about' | 'contact' | 'journal' | 'form-studio' | 'catalog' | 'product' | 'families' | 'family' | 'notes' | 'note' | 'compare' | 'cart' | 'checkout' | 'account' | 'not-found';
-export interface Route { page: PageName; slug?: string; params: URLSearchParams }
+export type PageName = 'home' | 'collection' | 'brands' | 'brand' | 'about' | 'contact' | 'journal' | 'form-studio' | 'catalog' | 'product' | 'families' | 'family' | 'notes' | 'note' | 'compare' | 'cart' | 'checkout' | 'account' | 'not-found' | 'seller';
+export interface Route { page: PageName; slug?: string; params: URLSearchParams; admin?:AdminRoute }
 export function parseRoute(hash: string): Route {
   if (!hash.startsWith('#/')) return { page: 'home', params: new URLSearchParams() };
   const [path, query = ''] = hash.slice(2).split('?');
   const segments = path.split('/').filter(Boolean);
   const params = new URLSearchParams(query);
+  if (segments[0] === 'seller') {
+    const admin = parseAdminPath(segments) ?? { group:segments[0], section:'not-found' } as AdminRoute;
+    return { page:admin.group, params, admin };
+  }
   if (segments.length === 2 && ['collections', 'brands'].includes(segments[0])) return { page: segments[0] === 'collections' ? 'collection' : 'brand', slug: segments[1], params };
   if (segments.length === 1 && ['brands', 'about', 'contact', 'journal', 'form-studio', 'cart', 'checkout'].includes(segments[0])) return { page: segments[0] as PageName, params };
   if (segments[0] === 'account') {

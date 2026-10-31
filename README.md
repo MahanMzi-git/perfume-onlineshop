@@ -6,7 +6,7 @@ A responsive Persian RTL demo storefront built with React 18, strict TypeScript 
 - npm run dev: local Vite preview (default http://localhost:5173).
 - npm run build: TypeScript check and production bundle.
 - npm run preview: serve production output.
-- npm test: run catalog/search, dialog-focus, cart and customer-validation regression tests (17 tests, no extra packages).
+- npm test: run catalog/search, dialog-focus, cart, customer and administrative-demo regression tests (30 tests, no extra packages).
 
 ## Structure
 - src/data and src/types: existing typed demo catalog.
@@ -27,9 +27,13 @@ Phase 1 Step 1 adds the cream/charcoal homepage, section hierarchy, working loca
 - Order fixtures are explicitly fictional and opt-in; cancellation changes only a local sample label. Reviews are local drafts and never affect catalog scores. Support does not send messages.
 - Existing product cards, landing motion, fonts and hover styles are reused. New layouts are scoped in `src/styles/customer.css`; no packages were added.
 
-See [Step 3 implementation, validation and remaining checks](docs/phase-1-step-3.md). This local preview awaits owner review; no Step 4 work has started.
+See [Step 3 implementation, validation and remaining checks](docs/phase-1-step-3.md).
 
-Fonts still load from Google Fonts; local hosting remains pending. No backend, real accounts, payment, admin or inventory is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
+## Phase 1 Step 4 — administrative UI demos
+
+Open `#/seller` for store operations and `#/account` for customer pages. The seller workspace defaults to an explicit demo access-denied state; choose a labelled seller persona to explore. The platform/developer console was removed at the owner’s request. This is not login or authorization. All administrative actions use isolated in-memory fixtures, reset on reload/exit and never modify the storefront or real business data. See [routes, role/access matrix, workflows and QA](docs/phase-1-step-4.md). Work stops at Step 4.
+
+Sahel is served locally. No backend, real accounts, payments or operational admin/inventory system is implemented. No lint script is configured. Regression tests run with npm test using the existing TypeScript dependency and Node test runner.
 
 See [Step 1 audit, QA results, changed files and limitations](docs/phase-1-step-1.md). Build and browser checks were actually run; the owner approved Step 1 for a local commit. Changes are maintained on the FixLandingPage branch; main is preserved until integration.
 
@@ -53,7 +57,7 @@ No special query is needed. `?cardPreview=legacy` retains the earlier fictional 
 
 Photo-card add actions now animate the bag into a check and expose inline plus/minus quantity controls using the shared demo cart. See [behaviour and QA](docs/card-cart-control.md).
 
-Account/checkout addresses now use dependent Iranian province/city lists (31 provinces; 1,478 unique province/city names from the MIT-licensed 1404 snapshot). Forms support boundary-aware arrow navigation, the cart uses compact rows, checkout has visual step/shipping icons, and the mobile menu is a floating panel with a blurred backdrop. See [implementation and responsive QA](docs/shopping-mobile-polish.md) and [geography provenance](docs/iran-locations-source.md). Shopping and customer data remain frontend demos.
+Account/checkout addresses now use dependent Iranian province/city lists (31 provinces; 1,458 province/city choices after the owner-approved cleanup from the MIT-licensed 1404 snapshot). Forms support boundary-aware arrow navigation, the cart uses compact rows, checkout has visual step/shipping icons, and the mobile menu is a floating panel with a blurred backdrop. See [implementation and responsive QA](docs/shopping-mobile-polish.md) and [geography provenance](docs/iran-locations-source.md). Shopping and customer data remain frontend demos.
 
 ## Phase 1 — Step 2
 Frontend catalog, compound filters, shareable hash routes, 13 fragrance families, 20 notes, reusable product details, stock-aware volume/concentration variants and comparison of 2–3 products are implemented with centralized fictional data. Existing compact card geometry and approved hovers are preserved. Product image/name links and a small comparison control were approved by the owner.
@@ -69,3 +73,6 @@ The current landing orbit uses seven optimized local photo cutouts (324,748 byte
 
 ## Approved ribbon backdrop
 The homepage now uses three tapered ribbons and two muted burgundy dotted orbits rotating in opposite directions, with bounded randomized radii and phases sampled at mount. Uses the existing photo orbit, pause/reduced-motion clock and actual category docking. Tablet positioning was refined to keep bottles clear of the heading. See docs/orbit-backdrop-studies.md for QA and preview screenshots. Owner approved the final responsive composition, local Sahel typography and motion controls for release on FixLandingPage.
+
+## Phase 1 — Step 5
+Frontend QA covered 187 route/query cases at five required widths (935 DOM/render checks), representative Chrome interaction/keyboard flows and responsive screenshots. Local fixes preserve the approved design; 34 tests and the TypeScript/Vite build pass. The platform console remains removed. The separately reviewed city cleanup is now approved and applied, and browser/accessibility limits are explicit. See [audit results and limitations](docs/phase-1-step-5.md), [route inventory](docs/phase-1-step-5-routes.json) and [machine-readable results](docs/phase-1-step-5-results.json). No backend was added in this step.

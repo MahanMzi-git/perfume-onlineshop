@@ -7,6 +7,7 @@ import { DemoImage } from '../components/DemoImage';
 import { useStore } from '../components/StoreContext';
 import { demoRating, priceText, numberText } from '../lib/catalog';
 import type { Product } from '../types/product';
+import { isCardStudy } from '../data/cardStudyImages';
 
 export function ComparisonPage({ ids }: { ids: string[] }) {
   const store = useStore();
@@ -20,9 +21,11 @@ export function ComparisonPage({ ids }: { ids: string[] }) {
     { title: 'موجودی نسخهٔ پایه (نمایشی)', value: p => p.variants[0].stock > 0 ? 'موجود' : 'ناموجود' },
     { title: 'مخاطب', value: p => audienceLabels[p.targetAudience] },
     { title: 'طبع / شیرینی', value: p => temperatureLabels[p.temperature] + ' / ' + sweetnessLabels[p.sweetness] },
-    { title: 'نت‌های آغازین', value: p => p.notePyramid.top.map(id => noteById(id)?.name).join('، ') },
-    { title: 'نت‌های میانی', value: p => p.notePyramid.middle.map(id => noteById(id)?.name).join('، ') },
-    { title: 'نت‌های پایه', value: p => p.notePyramid.base.map(id => noteById(id)?.name).join('، ') },
+    ...(isCardStudy ? [{ title:'نت‌های منتخب', value:(p:Product)=>p.scentNoteIds.map(id=>noteById(id)?.name).join('، ') }] : [
+      { title:'نت‌های آغازین', value:(p:Product)=>p.notePyramid.top.map(id=>noteById(id)?.name).join('، ') || 'تعریف نشده' },
+      { title:'نت‌های میانی', value:(p:Product)=>p.notePyramid.middle.map(id=>noteById(id)?.name).join('، ') || 'تعریف نشده' },
+      { title:'نت‌های پایه', value:(p:Product)=>p.notePyramid.base.map(id=>noteById(id)?.name).join('، ') || 'تعریف نشده' },
+    ]),
     { title: 'خانواده‌های بویایی', value: p => p.fragranceFamilyIds.map(id => fragranceFamilies.find(f => f.id === id)?.name).join('، ') },
     { title: 'موقعیت پیشنهادی', value: p => p.occasions.map(id => occasionLabels[id]).join('، ') },
     { title: 'امتیاز نمونه (نظر واقعی نیست)', value: p => demoRating(p) === undefined ? 'تعریف نشده' : new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 1 }).format(demoRating(p)!) + ' از ۵' },

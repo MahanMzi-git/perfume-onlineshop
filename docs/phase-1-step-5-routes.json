@@ -1,0 +1,2724 @@
+{
+  "date": "2026-10-30",
+  "scope": "Hash-route cases, including query states and deliberate invalid URLs; not 187 distinct page components.",
+  "count": 187,
+  "routes": [
+    {
+      "hash": "#home",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#products",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#brands",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#discovery",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#about",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#gifts",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#journal",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#discovery-sets",
+      "group": "landing",
+      "case": "",
+      "page": "home",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog",
+      "group": "public",
+      "case": "",
+      "page": "catalog",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands",
+      "group": "public",
+      "case": "",
+      "page": "brands",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/about",
+      "group": "public",
+      "case": "",
+      "page": "about",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/contact",
+      "group": "public",
+      "case": "",
+      "page": "contact",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/journal",
+      "group": "public",
+      "case": "",
+      "page": "journal",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families",
+      "group": "public",
+      "case": "",
+      "page": "families",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes",
+      "group": "public",
+      "case": "",
+      "page": "notes",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/compare",
+      "group": "public",
+      "case": "",
+      "page": "compare",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/cart",
+      "group": "public",
+      "case": "",
+      "page": "cart",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/checkout",
+      "group": "public",
+      "case": "",
+      "page": "checkout",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account",
+      "group": "public",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/form-studio",
+      "group": "public",
+      "case": "",
+      "page": "form-studio",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/women",
+      "group": "collection",
+      "case": "عطرهای زنانه",
+      "page": "collection",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/men",
+      "group": "collection",
+      "case": "عطرهای مردانه",
+      "page": "collection",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/unisex",
+      "group": "collection",
+      "case": "عطرهای یونیسکس",
+      "page": "collection",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/niche",
+      "group": "collection",
+      "case": "عطرهای نیش",
+      "page": "collection",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/gifts",
+      "group": "collection",
+      "case": "هدیه و ست‌ها",
+      "page": "collection",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-chanel",
+      "group": "brand",
+      "case": "Chanel",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-dior",
+      "group": "brand",
+      "case": "Dior",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-creed",
+      "group": "brand",
+      "case": "Creed",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-ysl",
+      "group": "brand",
+      "case": "Yves Saint Laurent",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-gucci",
+      "group": "brand",
+      "case": "Gucci",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/study-chloe",
+      "group": "brand",
+      "case": "Chloé",
+      "page": "brand",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/coco-mademoiselle",
+      "group": "product",
+      "case": "Coco Mademoiselle",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/coco-mademoiselle?variant=study-p1-0-EDP",
+      "group": "product-variant",
+      "case": "Coco Mademoiselle 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/coco-mademoiselle?variant=study-p1-1-EDP",
+      "group": "product-variant",
+      "case": "Coco Mademoiselle 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/sauvage",
+      "group": "product",
+      "case": "Sauvage",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/sauvage?variant=study-p2-0-EDP",
+      "group": "product-variant",
+      "case": "Sauvage 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/sauvage?variant=study-p2-1-EDP",
+      "group": "product-variant",
+      "case": "Sauvage 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bleu-de-chanel",
+      "group": "product",
+      "case": "Bleu de Chanel",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bleu-de-chanel?variant=study-p3-0-EDP",
+      "group": "product-variant",
+      "case": "Bleu de Chanel 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bleu-de-chanel?variant=study-p3-1-EDP",
+      "group": "product-variant",
+      "case": "Bleu de Chanel 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/aventus",
+      "group": "product",
+      "case": "Aventus",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/aventus?variant=study-p4-0-EDP",
+      "group": "product-variant",
+      "case": "Aventus 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/aventus?variant=study-p4-1-EDP",
+      "group": "product-variant",
+      "case": "Aventus 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/libre",
+      "group": "product",
+      "case": "Libre",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/libre?variant=study-p5-0-EDP",
+      "group": "product-variant",
+      "case": "Libre 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/libre?variant=study-p5-1-EDP",
+      "group": "product-variant",
+      "case": "Libre 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/libre?variant=study-p5-2-EDP",
+      "group": "product-variant",
+      "case": "Libre 10",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/miss-dior",
+      "group": "product",
+      "case": "Miss Dior",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/miss-dior?variant=study-p6-0-EDP",
+      "group": "product-variant",
+      "case": "Miss Dior 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/miss-dior?variant=study-p6-1-EDP",
+      "group": "product-variant",
+      "case": "Miss Dior 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bloom",
+      "group": "product",
+      "case": "Bloom",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bloom?variant=study-p7-0-EDP",
+      "group": "product-variant",
+      "case": "Bloom 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/bloom?variant=study-p7-1-EDP",
+      "group": "product-variant",
+      "case": "Bloom 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/jasmin-des-anges",
+      "group": "product",
+      "case": "Jasmin des Anges",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/jasmin-des-anges?variant=study-p8-0-EDP",
+      "group": "product-variant",
+      "case": "Jasmin des Anges 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/jasmin-des-anges?variant=study-p8-1-EDP",
+      "group": "product-variant",
+      "case": "Jasmin des Anges 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/chloe",
+      "group": "product",
+      "case": "Chloé",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/chloe?variant=study-p9-0-EDP",
+      "group": "product-variant",
+      "case": "Chloé 50",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/chloe?variant=study-p9-1-EDP",
+      "group": "product-variant",
+      "case": "Chloé 100",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/floral",
+      "group": "family",
+      "case": "گلی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/woody",
+      "group": "family",
+      "case": "چوبی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/citrus",
+      "group": "family",
+      "case": "مرکباتی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/aquatic",
+      "group": "family",
+      "case": "تازه / دریایی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/amber",
+      "group": "family",
+      "case": "عنبری",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/fruity",
+      "group": "family",
+      "case": "میوه‌ای",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/spicy",
+      "group": "family",
+      "case": "ادویه‌ای",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/gourmand",
+      "group": "family",
+      "case": "خوراکی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/aromatic",
+      "group": "family",
+      "case": "آروماتیک",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/chypre",
+      "group": "family",
+      "case": "شیپر",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/fougere",
+      "group": "family",
+      "case": "فوژه",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/leather",
+      "group": "family",
+      "case": "چرمی",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/green",
+      "group": "family",
+      "case": "سبز",
+      "page": "family",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/rose",
+      "group": "note",
+      "case": "گل رز",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/jasmine",
+      "group": "note",
+      "case": "یاس",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/bergamot",
+      "group": "note",
+      "case": "برگاموت",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/lemon",
+      "group": "note",
+      "case": "لیمو",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/cedar",
+      "group": "note",
+      "case": "سدر",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/sandalwood",
+      "group": "note",
+      "case": "صندل",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/seasalt",
+      "group": "note",
+      "case": "نمک دریا",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/amber",
+      "group": "note",
+      "case": "عنبر",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/pear",
+      "group": "note",
+      "case": "گلابی",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/pepper",
+      "group": "note",
+      "case": "فلفل",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/vanilla",
+      "group": "note",
+      "case": "وانیل",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/musk",
+      "group": "note",
+      "case": "مشک",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/lavender",
+      "group": "note",
+      "case": "اسطوخودوس",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/oud",
+      "group": "note",
+      "case": "عود",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/patchouli",
+      "group": "note",
+      "case": "پچولی",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/vetiver",
+      "group": "note",
+      "case": "وتیور",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/mint",
+      "group": "note",
+      "case": "نعنا",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/iris",
+      "group": "note",
+      "case": "زنبق",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/leather",
+      "group": "note",
+      "case": "چرم",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/incense",
+      "group": "note",
+      "case": "بخور",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/apricot",
+      "group": "note",
+      "case": "زردآلو",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/tuberose",
+      "group": "note",
+      "case": "مریم",
+      "page": "note",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/overview",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/profile",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/addresses",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/orders",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/wishlist",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/cabinet",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/recent",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/preferences",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/reviews",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/support",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/notifications",
+      "group": "account",
+      "case": "",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/orders/DEMO-1001",
+      "group": "customer-order",
+      "case": "opt-in fictional record",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/orders/DEMO-1002",
+      "group": "customer-order",
+      "case": "opt-in fictional record",
+      "page": "account",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller",
+      "group": "seller",
+      "case": "",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/overview",
+      "group": "seller",
+      "case": "نمای کلی",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products",
+      "group": "seller",
+      "case": "محصولات",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/product-new",
+      "group": "seller",
+      "case": "افزودن محصول",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/brands",
+      "group": "seller",
+      "case": "برندها",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/families",
+      "group": "seller",
+      "case": "خانواده‌های رایحه",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/notes",
+      "group": "seller",
+      "case": "نت‌های بویایی",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/variants",
+      "group": "seller",
+      "case": "حجم و قیمت",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/inventory",
+      "group": "seller",
+      "case": "موجودی",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders",
+      "group": "seller",
+      "case": "سفارش‌ها",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/customers",
+      "group": "seller",
+      "case": "جستجوی مشتری",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/campaigns",
+      "group": "seller",
+      "case": "تخفیف و کمپین",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/reviews",
+      "group": "seller",
+      "case": "مدیریت دیدگاه‌ها",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/content",
+      "group": "seller",
+      "case": "محتوای صفحهٔ اول",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/shipping",
+      "group": "seller",
+      "case": "تنظیمات ارسال",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/support",
+      "group": "seller",
+      "case": "پشتیبانی",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/reports",
+      "group": "seller",
+      "case": "گزارش فروش",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/settings",
+      "group": "seller",
+      "case": "فروشگاه و پروفایل",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/study-p1",
+      "group": "seller",
+      "case": "existing product editor",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/DEMO-1001",
+      "group": "seller",
+      "case": "existing order",
+      "page": "seller",
+      "expected": "valid",
+      "seller": true,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "not-found",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "product",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/collections/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "collection",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/brands/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "brand",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/families/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "family",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/notes/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "note",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/account/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "not-found",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "seller",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "seller",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/missing",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "seller",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/platform",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "not-found",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/platform/users",
+      "group": "negative",
+      "case": "missing/removed route",
+      "page": "not-found",
+      "expected": "not-found",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/compare?ids=study-p1,study-p2,study-p3",
+      "group": "comparison",
+      "case": "three selected products",
+      "page": "compare",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?query=NO-MATCH-QA",
+      "group": "catalog-empty",
+      "case": "no matches",
+      "page": "catalog",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?page=2",
+      "group": "catalog-pagination",
+      "case": "second page",
+      "page": "catalog",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/product/coco-mademoiselle?variant=missing",
+      "group": "invalid-variant",
+      "case": "valid fallback",
+      "page": "product",
+      "expected": "valid",
+      "seller": false,
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/compare?ids=",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-floral",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-woody",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-citrus",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-aquatic",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-amber",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-fruity",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-spicy",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-gourmand",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-aromatic",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-chypre",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-fougere",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-leather",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?familyId=f-green",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-rose",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-jasmine",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-bergamot",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-lemon",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-cedar",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-sandalwood",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-seasalt",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-amber",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-pear",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-pepper",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-vanilla",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-musk",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-lavender",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-oud",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-patchouli",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-vetiver",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-mint",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-iris",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-leather",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-incense",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-apricot",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/catalog?noteIds=n-tuberose",
+      "group": "linked-filter",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/study-p4",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/study-p3",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/study-p7",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/products/study-p9",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/DEMO-1002",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/DEMO-1003",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/DEMO-1004",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    },
+    {
+      "hash": "#/seller/orders/DEMO-1005",
+      "group": "seller-linked",
+      "expected": "valid",
+      "case": "Additional link discovered in rendered UI",
+      "testedWidths": [
+        360,
+        390,
+        768,
+        1024,
+        1440
+      ]
+    }
+  ]
+}
