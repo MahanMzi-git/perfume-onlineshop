@@ -14,6 +14,7 @@ import { catalogHref, filtersFromParams, sortFromParams } from '../lib/routes';
 import type { Filters, SortOrder } from '../types/product';
 
 export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { params: URLSearchParams; collection?: Collection; baseHref?: string }) {
+  const warmGiftPalette = collection?.slug === 'gifts';
   const scope = collection?.filters ?? {};
   const filters = { ...filtersFromParams(params), ...scope };
   const visibleFilters = { ...filters };
@@ -45,7 +46,8 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
     location.hash = href(filters, { sort, wishlist: wishlistOnly, page: value });
     requestAnimationFrame(() => document.getElementById('catalog-results')?.scrollIntoView({ block: 'start' }));
   }
-  return <section className="step2-page container section" aria-labelledby="catalog-title">
+  return <section className="step2-page container section" aria-labelledby="catalog-title" data-gift-palette={warmGiftPalette ? 'warm' : undefined}>
+    {collection?.slug === 'gifts' && <figure className="gift-collection-hero"><img src="/images/gifts/perfume-gift-sets-1536.webp" srcSet="/images/gifts/perfume-gift-sets-768.webp 768w, /images/gifts/perfume-gift-sets-1536.webp 1536w" sizes="(max-width:700px) calc(100vw - 32px), (max-width:1164px) calc(100vw - 64px), 1100px" width={1536} height={1024} loading="eager" fetchPriority="high" alt="پک‌های هدیهٔ عطر در اندازه‌های مختلف با جعبه‌های کرمی، مشکی و طلایی، روبان ساتن و ست عطرهای کوچک" /></figure>}
     <nav className="breadcrumbs" aria-label="مسیر صفحه"><a href="#home">خانه</a><span>/</span><a href="#/catalog">کاتالوگ</a>{collection && <><span>/</span><span>{collection.title}</span></>}</nav>
     <p className="eyebrow">THE FRAGRANCE CATALOG</p><h1 id="catalog-title">{collection?.title ?? (wishlistOnly ? 'علاقه‌مندی‌های شما' : 'عطر بعدی‌ات را کشف کن.')}</h1>
     {collection && <p className="collection-intro">{collection.intro}</p>}
@@ -54,7 +56,7 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
       <label>جستجوی نام، برند یا نت<input type="search" maxLength={120} value={filters.query} onChange={e => update({ query: e.target.value }, true)} placeholder="نام عطر، برند یا نت…" /></label>
       <LuxurySelect label="مرتب‌سازی" value={sort} options={Object.entries(sortLabels).map(([value, label]) => ({ value, label }))} onChange={value => { location.hash = href(filters, { sort: value as SortOrder, wishlist: wishlistOnly }); }} />
     </div>
-    <AdvancedFilters lockedKeys={Object.keys(scope) as (keyof Filters)[]} filters={filters} onChange={patch => update(patch, patch.minPrice !== undefined || patch.maxPrice !== undefined)} />
+    <AdvancedFilters study={warmGiftPalette} lockedKeys={Object.keys(scope) as (keyof Filters)[]} filters={filters} onChange={patch => update(patch, 'minPrice' in patch || 'maxPrice' in patch)} />
     <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
     <div id="catalog-results" className="catalog-result-area"><h2 className="sr">نتایج کاتالوگ</h2>
       <ActiveFilters filters={visibleFilters} wishlistOnly={wishlistOnly} count={results.length} onRemoveNote={toggleNote} onRemove={key => update({ [key]: key === 'query' ? '' : undefined })} onReset={reset} />

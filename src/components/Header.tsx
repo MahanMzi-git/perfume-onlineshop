@@ -77,17 +77,20 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
   useLayoutEffect(() => {
     if (!header.current) return;
     let frame = 0;
+    let lastHeight = '', lastBottom = '', lastExpanded = '';
     const measure = () => {
       if (!header.current) return;
       const rect = header.current.getBoundingClientRect();
-      document.documentElement.style.setProperty('--header-height', rect.height + 'px');
-      document.documentElement.style.setProperty('--header-bottom', rect.bottom + 'px');
-      if (matchMedia('(min-width:901px), (min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape)').matches && header.current.dataset.collapsed !== 'true') header.current.style.setProperty('--header-expanded-height', rect.height + 'px');
+      const height = rect.height + 'px', bottom = rect.bottom + 'px';
+      if (height !== lastHeight) { document.documentElement.style.setProperty('--header-height', height); lastHeight = height; }
+      if (bottom !== lastBottom) { document.documentElement.style.setProperty('--header-bottom', bottom); lastBottom = bottom; }
+      if (matchMedia('(min-width:901px), (min-width:601px) and (max-width:900px) and (max-height:500px) and (orientation:landscape)').matches && header.current.dataset.collapsed !== 'true' && height !== lastExpanded) { header.current.style.setProperty('--header-expanded-height', height); lastExpanded = height; }
     };
     const onScroll = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(measure); };
     const observer = new ResizeObserver(measure);
     observer.observe(header.current);
-    window.addEventListener('scroll', onScroll, { passive: true });
+    // Only open menus need their viewport bottom tracked while scrolling.
+    if (menu || desktopMenu) window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     measure();
     return () => {
@@ -98,7 +101,7 @@ export function Header({ isHome, query, onQuery, onAction, onSearch, favouriteCo
       document.documentElement.style.removeProperty('--header-height');
       document.documentElement.style.removeProperty('--header-bottom');
     };
-  }, []);
+  }, [menu, desktopMenu]);
 
   useLayoutEffect(() => {
     const media = matchMedia('(max-width:600px)');
