@@ -1,0 +1,7 @@
+const step=100000;
+export function PriceRange({min,max,ceiling,onChange}:{min?:number;max?:number;ceiling:number;onChange:(patch:{minPrice?:number;maxPrice?:number})=>void}) {
+ const limit=Math.ceil(Math.max(ceiling,min??0,max??0,step)/step)*step;
+ const low=Math.min(min??0,max??limit),high=Math.max(low,max??limit);
+ const money=(n:number)=>new Intl.NumberFormat('fa-IR').format(n)+' تومان';
+ return <fieldset className="filter-price"><legend>بازهٔ قیمت</legend><div className="filter-price-values"><span>حداقل مبلغ<strong>{money(low)}</strong></span><span>حداکثر مبلغ<strong>{money(high)}</strong></span></div><div className="filter-price-rail" style={{background:`linear-gradient(to left,#D9CAC2 ${low/limit*100}%,#A66B32 ${low/limit*100}%,#A66B32 ${high/limit*100}%,#D9CAC2 ${high/limit*100}%)`}}><input type="range" aria-label="حداقل قیمت" aria-valuetext={money(low)} min={0} max={limit} step={step} value={low} onChange={e=>{const value=Math.min(Number(e.target.value),high);onChange({minPrice:value===0?undefined:value});}}/><input type="range" aria-label="حداکثر قیمت" aria-valuetext={money(high)} min={0} max={limit} step={step} value={high} onChange={e=>{const value=Math.max(Number(e.target.value),low);onChange({maxPrice:value===limit?undefined:value});}}/></div><p className="filter-price-help">قلب‌ها را جابه‌جا کنید؛ راست حداقل، چپ حداکثر.</p><button className="text-link" type="button" disabled={min===undefined&&max===undefined} onClick={()=>onChange({minPrice:undefined,maxPrice:undefined})}>حذف محدودیت قیمت</button></fieldset>;
+}

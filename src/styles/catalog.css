@@ -9,6 +9,8 @@
 .comparison-feedback:empty { @apply tw:hidden; }
 .comparison-feedback:not(:empty) { padding-block:8px; }
 .step2-page.section { --control-min:32px; padding-top:32px; }
+.gift-collection-hero { width:100%; max-width:1100px; margin:0 auto 28px; }
+.gift-collection-hero img { @apply tw:block tw:w-full tw:h-auto tw:rounded-[24px]; aspect-ratio:3/2; }
 .step2-page h1 { font-size:clamp(1.5rem,3vw,2.4rem); @apply tw:font-medium; line-height:1.6; margin-bottom:16px; }
 .step2-page .page-intro { @apply tw:max-w-[70ch]; margin-bottom:28px; line-height:1.9; font-size:.9375rem; }
 .breadcrumbs { @apply tw:flex; @apply tw:flex-wrap tw:gap-[10px] tw:text-aroma-muted; font-size:.75rem; margin-bottom:24px; }
