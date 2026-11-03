@@ -55,6 +55,21 @@
 .filter-price input[type=range]::-moz-range-thumb { width:40px; height:44px; pointer-events:auto; cursor:ew-resize; border:0; border-radius:0; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M14 24 4 14C-3 6 8-1 14 7 20-1 31 6 24 14Z' fill='%237A3045' stroke='%23BE9A58' stroke-width='1.5'/%3E%3C/svg%3E") center/24px 24px no-repeat; }
 .filter-price input[type=range]:focus-visible { z-index:2; outline:2px solid #7A3045; outline-offset:3px; }
 .filter-price-help { font-size:.6875rem; color:var(--muted); }
+@media (min-width:901px) {
+  .filter-disclosure:is(.advanced-filters,.note-filter-panel) {
+    max-inline-size:840px;
+    margin-inline:auto;
+    border-radius:20px;
+  }
+  .filter-disclosure > summary {
+    min-height:60px;
+    padding:8px 14px;
+    border-radius:19px;
+  }
+  .filter-disclosure[open] > summary { border-radius:19px 19px 0 0; }
+  .filter-disclosure .filter-disclosure-icon { width:32px; height:32px; border-radius:11px; }
+  .filter-price { inline-size:100%; max-inline-size:420px; }
+}
 [data-gift-palette=warm] .filter-disclosure:is(.advanced-filters,.note-filter-panel) {
   border-color:#DCC5A5; background:linear-gradient(120deg,#F6ECD9,#FCFAF6 85%);
   box-shadow:0 4px 16px rgb(122 48 69 / 4%);
