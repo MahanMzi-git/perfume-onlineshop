@@ -68,10 +68,10 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-form-submit[data-full-width] > button { width:100%; }
 .admin-form-submit small { color:#6A6257; font-size:12px; }
 .admin-error { color:#98354D; font-size:13px; margin-top:8px; grid-column:1/-1; }
-.admin-image-picker { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:14px; padding:14px; border:1px solid #DFC39F; border-radius:18px; margin-block:20px; background:#FBF1E3; }
+.admin-image-picker { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:12px; padding:8px 14px; border:1px solid #DFC39F; border-radius:18px; margin-block:20px; background:#FBF1E3; }
 .admin-image-preview { display:grid; place-items:center; width:clamp(60px, 18vw, 96px); aspect-ratio:1; border:1px dashed #BD8952; border-radius:14px; background:#F2D8B6; color:#794717; overflow:hidden; }
 .admin-image-preview img { width:100%; height:100%; object-fit:contain; }
-.admin-image-details { display:grid; justify-items:start; gap:4px; }
+.admin-image-details { display:grid; justify-items:start; gap:2px; }
 .admin-image-details h3 { margin:0; font-size:15px; }
 .admin-image-picker p { margin:0; font-size:12px; line-height:1.7; }
 .admin-image-action { position:relative; display:inline-flex; align-items:center; min-height:44px; padding-inline:14px; border:1px solid #915522; border-radius:999px; background:#915522; color:#FFF8EE; font-size:13px; cursor:pointer; }

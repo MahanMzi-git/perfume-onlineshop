@@ -77,14 +77,14 @@ export function saveProductDraft(
   const newBrand: AdminRecord | undefined = matched ? undefined : {
     id: ids.brand,
     name: requestedName,
-    detail: values.newBrandDetail?.trim() || 'برند جدید؛ ثبت هم‌زمان با محصول آزمایشی',
+    detail: values.newBrandDetail?.trim() || 'برند جدید؛ ثبت هم‌زمان با محصول',
     status: 'فعال',
     value: '',
   };
   const newFamily: AdminRecord | undefined = family ? undefined : {
     id: ids.family!,
     name: requestedFamilyName,
-    detail: values.newFamilyDetail?.trim() || 'خانوادهٔ رایحهٔ جدید؛ ثبت هم‌زمان با محصول آزمایشی',
+    detail: values.newFamilyDetail?.trim() || 'خانوادهٔ رایحهٔ جدید؛ ثبت هم‌زمان با محصول',
     status: 'فعال',
     value: values.newFamilyEnglish?.trim() ?? '',
   };
