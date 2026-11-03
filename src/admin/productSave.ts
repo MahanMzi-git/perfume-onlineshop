@@ -79,7 +79,7 @@ export function saveProductDraft(
     dayTimes:values.dayTimes===undefined?existing?.dayTimes??[]:splitUsage(values.dayTimes),
     audience: values.audience ?? existing?.audience ?? 'یونیسکس',
     status: values.status,
-    image: existing?.image ?? '/images/hero-editorial.svg',
+    image: existing?.image ?? `${import.meta.env.BASE_URL}images/hero-editorial.svg`,
     variants: existing?.variants ?? [{ id: ids.variant, volume: 50, price: 5000000, stock: 0 }],
   };
   return {

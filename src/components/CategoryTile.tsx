@@ -11,8 +11,8 @@ export function CategoryTile({ category, active, onSelect }: Props) {
   return (
     <button type="button" className="tile" aria-pressed={category.scrollTo ? undefined : active} onClick={() => onSelect(category)}>
       <div className="category-orbit-dock" data-orbit-dock={category.id} style={sceneStyle}>
-        {scene && <img className="category-podium-scene" src={`/images/category-scenes/${scene.image}`} alt="" loading="lazy" decoding="async" />}
-        <DemoImage className="category-dock-bottle" src={scene ? `/images/orbit-photos/${scene.bottle}` : category.image} alt="" width={400} height={500} loading="lazy" />
+        {scene && <img className="category-podium-scene" src={`${import.meta.env.BASE_URL}images/category-scenes/${scene.image}`} alt="" loading="lazy" decoding="async" />}
+        <DemoImage className="category-dock-bottle" src={scene ? `${import.meta.env.BASE_URL}images/orbit-photos/${scene.bottle}` : category.image} alt="" width={400} height={500} loading="lazy" />
         {scene && <i className="category-landing-point" data-orbit-landing aria-hidden="true" />}
       </div>
       <span className="category-caption">{category.label}<ArrowUpRight size={13} aria-hidden="true" /></span>

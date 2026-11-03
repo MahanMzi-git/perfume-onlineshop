@@ -24,14 +24,14 @@ function p(i: number, name: string, brandId: string, price: number, audience: Au
   if (i === 5) variants[1].compareAtPrice = variants[1].price + 900000;
   return {
     id: 'p' + i, slug: name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-    name, brandId, price, image: '/images/p' + i + '.svg', currency: 'تومان',
+    name, brandId, price, image: `${import.meta.env.BASE_URL}images/p` + i + '.svg', currency: 'تومان',
     targetAudience: audience, fragranceFamilyIds: families, concentration,
     scentNoteIds: [...new Set([...profile.notePyramid.top, ...profile.notePyramid.middle, ...profile.notePyramid.base])],
     isNiche: false, isFeatured: false, isBestseller: true, availability: 'demo',
     ...profile, variants, productType: extra.isGiftSet ? 'gift-set' : 'perfume',
     gallery: [
-      { src: '/images/p' + i + '.svg', alt: 'تصویرسازی نمایشی بطری ' + name, view: 'bottle' },
-      { src: '/images/p' + i + '.svg', alt: 'برش نزدیک از همان تصویرسازی نمایشی ' + name, view: 'detail' },
+      { src: `${import.meta.env.BASE_URL}images/p` + i + '.svg', alt: 'تصویرسازی نمایشی بطری ' + name, view: 'bottle' },
+      { src: `${import.meta.env.BASE_URL}images/p` + i + '.svg', alt: 'برش نزدیک از همان تصویرسازی نمایشی ' + name, view: 'detail' },
     ],
     addedAt: '2026-09-' + String(i + 10).padStart(2, '0'),
     reviews: i === 7 ? [] : [

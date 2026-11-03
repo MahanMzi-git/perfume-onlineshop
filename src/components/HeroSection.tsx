@@ -6,6 +6,6 @@ export function HeroSection() {
       <p>رایحه‌ای را کشف کن که امضای تو باشد.</p>
       <div className="hero-actions"><a className="cta" href="#products">کشف عطرها <ArrowUpLeft size={18} /></a><a className="quiet-link" href="#discovery">از کدام رایحه شروع کنم؟</a></div>
       <div className="hero-caption"><span /> انتخاب با شناخت، تجربه با حوصله</div>
-    </div><figure className="hero-art"><img src="/images/hero-editorial.svg" alt="تصویرسازی نمایشی بطری عطر آروما با شاخه‌های گیاهی و زمینهٔ کرم" width={720} height={650} loading="eager" /><figcaption>AROMA ATELIER <span>تصویرسازی نمایشی · ۰۱</span></figcaption></figure>
+    </div><figure className="hero-art"><img src={`${import.meta.env.BASE_URL}images/hero-editorial.svg`} alt="تصویرسازی نمایشی بطری عطر آروما با شاخه‌های گیاهی و زمینهٔ کرم" width={720} height={650} loading="eager" /><figcaption>AROMA ATELIER <span>تصویرسازی نمایشی · ۰۱</span></figcaption></figure>
   </div></section>;
 }
