@@ -22,7 +22,7 @@ function makePhoto(asset,height){
  const backing=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({color:0x5b4934,transparent:true,opacity:.10,depthWrite:false,toneMapped:false}));backing.position.set(.018,-.018,-.025);backing.renderOrder=1;g.add(backing);
  const shadow=new THREE.Mesh(new THREE.PlaneGeometry(width*1.35,.28),new THREE.MeshBasicMaterial({map:shadowTexture,transparent:true,depthWrite:false,toneMapped:false,opacity:.65}));shadow.position.set(.04,-height/2-.06,-.04);g.add(shadow);
  g.userData={height:height+.18,photoHeight:height,width};scene.add(g);
- loads.push(loader.loadAsync(asset.src).then(texture=>{if(disposed){texture.dispose();return;}texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());material.map=texture;material.needsUpdate=true;backing.material.map=texture;backing.material.needsUpdate=true;}));return g;
+ loads.push(loader.loadAsync(new URL(`..${asset.src}`, import.meta.url).href).then(texture=>{if(disposed){texture.dispose();return;}texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());material.map=texture;material.needsUpdate=true;backing.material.map=texture;backing.material.needsUpdate=true;}));return g;
 }
 const central=makePhoto(photoAssets.central,3.15);
 const configs=[{kind:'bomba',volume:50},{kind:'creed',volume:100},{kind:'kilian',volume:75},{kind:'dune',volume:30},{kind:'libre',volume:2},{kind:'baccarat',volume:10}];
