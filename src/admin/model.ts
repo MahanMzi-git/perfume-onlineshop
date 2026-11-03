@@ -20,7 +20,8 @@ export function parseAdminPath(segments:string[]): AdminRoute | undefined {
  if(segments.length<=2&&pages.some(([key])=>key===section))return {group,section};
  if(group==='seller'&&segments.length===3&&['products','orders'].includes(section))return {group,section:section==='products'?'product-edit':'order-detail',id:segments[2]};
 }
-export interface AdminVariant { id:string; volume:number; price:number; stock:number }
+export const sellerConcentrations = ['EDP', 'EDT'];
+export interface AdminVariant { concentration?:string; id:string; volume:number; price:number; stock:number }
 export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; audience?:string; seasons?:string[]; occasions?:string[]; dayTimes?:string[]; image:string; status:string; variants:AdminVariant[] }
 export interface AdminRecord { id:string; name:string; detail:string; status:string; value:string }
 export const orderSteps=['در حال پردازش','در حال بسته‌بندی','آمادهٔ ارسال','ارسال شده','تحویل شده'];
@@ -34,11 +35,11 @@ export function validateAdminProduct(p:Pick<AdminProduct,'name'|'brand'|'family'
  if(!p.brand.trim())e.brand='برند را انتخاب کنید.';if(!p.family.trim())e.family='خانوادهٔ رایحه را انتخاب کنید.';
  if(!p.notes.trim())e.notes='دست‌کم یک نت بویایی بنویسید.';return e;
 }
-export function updateVariant(state:AdminState,productId:string,variantId:string,patch:Partial<Pick<AdminVariant,'stock'|'price'|'volume'>>):AdminState {
+export function updateVariant(state:AdminState,productId:string,variantId:string,patch:Partial<Pick<AdminVariant,'stock'|'price'|'volume'|'concentration'>>):AdminState {
  const product=state.products.find(p=>p.id===productId),variant=product?.variants.find(v=>v.id===variantId);if(!variant)return state;
  const next={...variant,...patch};
  if(!Number.isInteger(next.stock)||next.stock<0||next.stock>9999||!Number.isSafeInteger(next.price)||next.price<1||!Number.isInteger(next.volume)||next.volume<1||next.volume>1000)return state;
- if(product!.variants.some(v=>v.id!==variantId&&v.volume===next.volume))return state;
+ if((next.volume!==variant.volume||next.concentration!==variant.concentration)&&product!.variants.some(v=>v.id!==variantId&&v.volume===next.volume&&v.concentration===next.concentration))return state;
  return {...state,products:state.products.map(p=>p.id!==productId?p:{...p,variants:p.variants.map(v=>v.id===variantId?next:v)})};
 }
 export function advanceOrder(state:AdminState,id:string,next:string):AdminState {
@@ -48,7 +49,7 @@ export function advanceOrder(state:AdminState,id:string,next:string):AdminState 
 const record=(id:string,name:string,detail:string,status='فعال',value=''):AdminRecord=>({id,name,detail,status,value});
 export function createAdminState():AdminState {
  return {
-  products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,audience:({women:'زنانه',men:'مردانه',unisex:'یونیسکس'}[p.targetAudience]),family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),seasons:p.seasons.map(s=>seasonLabels[s]),occasions:p.occasions.map(o=>occasionLabels[o]).filter(o=>o!=='عصر و شب'),dayTimes:p.occasions.includes('evening')?['عصر','شب']:[],image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,price:v.price,stock:v.stock}))})),
+  products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,audience:({women:'زنانه',men:'مردانه',unisex:'یونیسکس'}[p.targetAudience]),family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),seasons:p.seasons.map(s=>seasonLabels[s]),occasions:p.occasions.map(o=>occasionLabels[o]).filter(o=>o!=='عصر و شب'),dayTimes:p.occasions.includes('evening')?['عصر','شب']:[],image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,concentration:v.concentration,price:v.price,stock:v.stock}))})),
   orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری آزمایشی '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
   records:{
    brands:brands.map((b,i)=>record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی آزمایشی')),

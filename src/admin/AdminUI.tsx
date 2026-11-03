@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { Fragment, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Search, ChevronLeft, ChevronRight, X, AlertCircle } from 'lucide-react';
 import { LuxurySelect } from '../components/LuxurySelect';
 import { containDialogFocus } from '../lib/dialogFocus';
@@ -23,8 +23,8 @@ export function DataTable<T extends {id:string;name:string;status:string}>({rows
   <div className="admin-pagination"><span>{number(filtered.length)} نتیجه · صفحهٔ {number(current)} از {number(pages)}</span><button aria-label="صفحهٔ قبل" disabled={current===1} onClick={()=>setPage(current-1)}><ChevronRight size={16} /></button><button aria-label="صفحهٔ بعد" disabled={current===pages} onClick={()=>setPage(current+1)}><ChevronLeft size={16} /></button></div>
  </section>;
 }
-export interface FormField { key:string; label:string; type?:'text'|'email'|'number'|'textarea'|'select'|'notes'|'choices'; optionEnglish?:Record<string,string>; options?:string[]; required?:boolean; placeholder?:string; min?:number; max?:number; hint?:string; when?:(values:Record<string,string>)=>boolean }
-export function AdminForm({fields,initial,onSave,validate,disabled=false,submit='ذخیرهٔ آزمایشی'}:{fields:FormField[];initial:Record<string,string>;onSave:(values:Record<string,string>)=>void;validate?:(v:Record<string,string>)=>Record<string,string>;disabled?:boolean;submit?:string}) {
+export interface FormField { key:string; sectionTitle?:string; fullWidth?:boolean; label:string; type?:'text'|'email'|'number'|'textarea'|'select'|'notes'|'choices'; optionEnglish?:Record<string,string>; options?:string[]; required?:boolean; placeholder?:string; min?:number; max?:number; hint?:string; when?:(values:Record<string,string>)=>boolean }
+export function AdminForm({fields,initial,onSave,validate,disabled=false,mobileColumns=false,fullWidthSubmit=false,beforeSubmit,submit='ذخیرهٔ آزمایشی'}:{fields:FormField[];initial:Record<string,string>;onSave:(values:Record<string,string>)=>void;validate?:(v:Record<string,string>)=>Record<string,string>;disabled?:boolean;mobileColumns?:boolean;fullWidthSubmit?:boolean;beforeSubmit?:ReactNode;submit?:string}) {
  const [values,setValues]=useState(initial),[errors,setErrors]=useState<Record<string,string>>({});const id=useId();const form=useRef<HTMLFormElement>(null);
  const visibleFields=fields.filter(field=>!field.when||field.when(values));
  const visibleErrors=Object.fromEntries(Object.entries(errors).filter(([key])=>visibleFields.some(field=>field.key===key)));
@@ -38,13 +38,15 @@ export function AdminForm({fields,initial,onSave,validate,disabled=false,submit=
   Object.assign(next,validate?.(values));setErrors(next);
   if(Object.keys(next).length){requestAnimationFrame(()=>form.current?.querySelector<HTMLElement>('[aria-invalid=true]')?.focus());return;}onSave(Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.trim()])));
  }
- return <form ref={form} className="admin-form" noValidate onSubmit={save}>
+ return <form ref={form} className={mobileColumns?"admin-form admin-form-compact":"admin-form"} noValidate onSubmit={save}>
   {!!Object.keys(visibleErrors).length&&<p role="alert" className="admin-error">اطلاعات فرم را بررسی کنید؛ {number(Object.keys(visibleErrors).length)} خطا وجود دارد.</p>}
-  {visibleFields.map(f=>{const describedBy=[f.hint?id+f.key+'hint':undefined,errors[f.key]?id+f.key+'error':undefined].filter(Boolean).join(' ')||undefined;return <div className="customer-field" key={f.key}>
+  {visibleFields.map(f=>{const describedBy=[f.hint?id+f.key+'hint':undefined,errors[f.key]?id+f.key+'error':undefined].filter(Boolean).join(' ')||undefined;return <Fragment key={f.key}>
+   {f.sectionTitle&&<h3 className="admin-form-section">{f.sectionTitle}</h3>}
+   <div className={f.fullWidth?"customer-field admin-form-section":"customer-field"} data-wide={f.type==='notes'||f.type==='choices'?true:undefined}>
    {f.type==='choices'?<UsageChoices label={f.label} value={values[f.key]??''} options={f.options??[]} onChange={v=>updateField(f.key,v)} disabled={disabled}/>:f.type==='notes'?<NotePicker label={f.label} inputId={id+f.key} value={values[f.key]??''} options={f.options??[]} onChange={v=>updateField(f.key,v)} disabled={disabled} invalid={!!errors[f.key]} describedBy={describedBy}/>:f.type==='select'?<LuxurySelect label={f.label} inputId={id+f.key} required={f.required} value={values[f.key]??''} options={[{value:'',label:'انتخاب کنید',disabled:true},...(f.options??[]).map(v=>({value:v,label:v,englishLabel:f.optionEnglish?.[v]}))]} onChange={v=>updateField(f.key,v)} disabled={disabled} invalid={!!errors[f.key]} describedBy={describedBy} />:<><label htmlFor={id+f.key}>{f.label}{f.required?' *':''}</label>{f.type==='textarea'?<textarea id={id+f.key} maxLength={1000} rows={3} value={values[f.key]??''} placeholder={f.placeholder} disabled={disabled} onChange={e=>updateField(f.key,e.target.value)} aria-invalid={!!errors[f.key]} aria-describedby={describedBy} />:<input id={id+f.key} type={f.type??'text'} inputMode={f.type==='number'?'numeric':undefined} maxLength={180} min={f.min} max={f.max} step={f.type==='number'?1:undefined} value={values[f.key]??''} placeholder={f.placeholder} disabled={disabled} onChange={e=>updateField(f.key,e.target.value)} aria-invalid={!!errors[f.key]} aria-describedby={describedBy} required={f.required} />}</>}
    {f.hint&&<p className="admin-field-hint" id={id+f.key+'hint'}>{f.hint}</p>}
    {errors[f.key]&&<p id={id+f.key+'error'} className="admin-error">{errors[f.key]}</p>}
-  </div>})}<div className="admin-form-submit"><button className="admin-primary" disabled={disabled} type="submit">{submit}</button><small>فقط حافظهٔ همین صفحه؛ بدون ارسال به سرور</small></div>
+  </div></Fragment>})}{beforeSubmit}<div className="admin-form-submit" data-full-width={fullWidthSubmit||undefined}><button className="admin-primary" disabled={disabled} type="submit">{submit}</button><small>فقط حافظهٔ همین صفحه؛ بدون ارسال به سرور</small></div>
  </form>;
 }
 export function ConfirmDialog({title,detail,onConfirm,onClose}:{title:string;detail:string;onConfirm:()=>void;onClose:()=>void}) {

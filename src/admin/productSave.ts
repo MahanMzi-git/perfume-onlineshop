@@ -1,5 +1,5 @@
 import {usageFields,splitUsage} from './usageOptions';
-import { validateAdminProduct, type AdminProduct, type AdminRecord, type AdminState } from './model';
+import { sellerConcentrations, validInteger, validateAdminProduct, type AdminProduct, type AdminRecord, type AdminState } from './model';
 
 export const NEW_BRAND_OPTION = 'افزودن برند جدید…';
 export const NEW_FAMILY_OPTION = 'افزودن خانوادهٔ رایحهٔ جدید…';
@@ -8,7 +8,12 @@ const recordName = (value: string) => value.trim().replace(/\s+/gu, ' ');
 const recordKey = (value: string) => value.normalize('NFKC').toLocaleLowerCase('fa-IR')
   .replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/[\s\u200c]+/gu, ' ').trim();
 
-export function validateProductDraft(values: Record<string, string>): Record<string, string> {
+export const productVariantFields = [
+  { key: 'volume', label: 'حجم (میلی‌لیتر)', min: 1, max: 1000 },
+  { key: 'price', label: 'قیمت (تومان)', min: 1, max: 999999999 },
+] as const;
+
+export function validateProductDraft(values: Record<string, string>, variantIds: string[] = []): Record<string, string> {
   const creatingBrand = values.brand === NEW_BRAND_OPTION;
   const creatingFamily = values.family === NEW_FAMILY_OPTION;
   const name = creatingBrand ? recordName(values.newBrand ?? '') : (values.brand ?? '').trim();
@@ -26,6 +31,20 @@ export function validateProductDraft(values: Record<string, string>): Record<str
   for(const f of usageFields)if(values[f.key]!==undefined&&splitUsage(values[f.key]).some(v=>!f.options.includes(v)))errors[f.key]='از گزینه‌های موجود انتخاب کنید.';
   if(values.audience!==undefined&&!['زنانه','مردانه','یونیسکس'].includes(values.audience))errors.audience='مخاطب عطر را انتخاب کنید.';
   if (!['فعال', 'پیش‌نویس'].includes(values.status ?? '')) errors.status = 'وضعیت انتشار را از فهرست انتخاب کنید.';
+  const volumes = new Set<string>();
+  for (const id of variantIds) {
+    for (const { key, label, min, max } of productVariantFields) {
+      const field = id + key;
+      if (!validInteger(values[field] ?? '', min, max)) errors[field] = `مقدار معتبر برای «${label}» وارد کنید.`;
+    }
+    const concentration = values[id + 'concentration'];
+    if (!sellerConcentrations.includes(concentration)) errors[id + 'concentration'] = 'غلظت عطر را انتخاب کنید.';
+    const volume = Number(values[id + 'volume']) + ':' + concentration;
+    if (!errors[id + 'volume'] && !errors[id + 'concentration']) {
+      if (volumes.has(volume)) errors[id + 'volume'] = 'این ترکیب حجم و غلظت قبلاً وارد شده است.';
+      volumes.add(volume);
+    }
+  }
   return errors;
 }
 
@@ -35,8 +54,9 @@ export function saveProductDraft(
   values: Record<string, string>,
   ids: { product: string; brand: string; variant: string; family?: string },
   existingId?: string,
+  variantIds: string[] = [],
 ): AdminState {
-  if (Object.keys(validateProductDraft(values)).length) return state;
+  if (Object.keys(validateProductDraft(values, variantIds)).length) return state;
   const existing = existingId === undefined ? undefined : state.products.find(product => product.id === existingId);
   if (existingId !== undefined && !existing) return state;
   const families = state.records.families ?? [];
@@ -80,7 +100,13 @@ export function saveProductDraft(
     audience: values.audience ?? existing?.audience ?? 'یونیسکس',
     status: values.status,
     image: existing?.image ?? `${import.meta.env.BASE_URL}images/hero-editorial.svg`,
-    variants: existing?.variants ?? [{ id: ids.variant, volume: 50, price: 5000000, stock: 0 }],
+    variants: existing?.variants ?? (variantIds.length ? variantIds.map(id => ({
+      id: ids.variant + '-' + id,
+      volume: Number(values[id + 'volume']),
+      price: Number(values[id + 'price']),
+      concentration: values[id + 'concentration'],
+      stock: 0,
+    })) : [{ id: ids.variant, volume: 50, price: 5000000, stock: 0 }]),
   };
   return {
     ...state,
