@@ -10,7 +10,7 @@ export function FragranceOrbit() {
     const element = host.current!;
     const observer = new MutationObserver(() => setReady(element.dataset.ready === 'true'));
     observer.observe(element, { attributes: true, attributeFilter: ['data-ready'] });
-    const modulePath = new URL(import.meta.env.BASE_URL + 'motion-lab/photo-orbit.js', window.location.origin).href;
+    const modulePath = new URL(import.meta.env.BASE_URL + 'motion-lab/photo-orbit.js?v=2', window.location.origin).href;
     import(/* @vite-ignore */ modulePath).then(module => {
       if (disposed) return;
       cleanup = module.mountOrbit({ host: element, hero: document.getElementById('home'), docks: [...document.querySelectorAll('[data-orbit-dock]')], onPauseChange: setPaused });
