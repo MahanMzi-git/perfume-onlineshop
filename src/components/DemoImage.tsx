@@ -1,6 +1,6 @@
 import type { ImgHTMLAttributes } from 'react';
 
-const fallback = '/images/placeholder.svg';
+const fallback = `${import.meta.env.BASE_URL}images/placeholder.svg`;
 
 /** Use a neutral demo placeholder, never another product's artwork. */
 export function DemoImage(props: ImgHTMLAttributes<HTMLImageElement>) {
