@@ -76,3 +76,9 @@ The homepage now uses three tapered ribbons and two muted burgundy dotted orbits
 
 ## Phase 1 — Step 5
 Frontend QA covered 187 route/query cases at five required widths (935 DOM/render checks), representative Chrome interaction/keyboard flows and responsive screenshots. Local fixes preserve the approved design; 34 tests and the TypeScript/Vite build pass. The platform console remains removed. The separately reviewed city cleanup is now approved and applied, and browser/accessibility limits are explicit. See [audit results and limitations](docs/phase-1-step-5.md), [route inventory](docs/phase-1-step-5-routes.json) and [machine-readable results](docs/phase-1-step-5-results.json). No backend was added in this step.
+
+### اتصال پیشنهاد لوگوی برند به بک‌اند
+
+- پنل فروشنده برای برندهای شناخته‌شده آیکون سایت را نمایش می‌دهد. فرم برند امکان پیشنهاد بر اساس دامنه، تأیید پیشنهاد و انتخاب دستی فایل را دارد.
+- هنگام پیاده‌سازی بک‌اند، سرویس پیشنهاد لوگو را به `VITE_BRAND_LOGO_ENDPOINT` وصل کنید. فرم با `GET ?name=<brand>` نام برند را می‌فرستد و پاسخ `{ domain, logo }` را می‌گیرد. آدرس تصویر باید HTTPS باشد.
+- دامنه و لوگوی پیشنهادی را پیش از ثبت به فروشنده نشان دهید و فقط پس از تأیید او ذخیره کنید. انتخاب دستی فایل هم در دسترس باشد.

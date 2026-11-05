@@ -1,3 +1,4 @@
+import { officialBrandLogo } from './brandLogos';
 import {seasonLabels,occasionLabels} from '../data/catalogLabels';
 import { products } from '../data/products';
 import { brands } from '../data/brands';
@@ -23,7 +24,7 @@ export function parseAdminPath(segments:string[]): AdminRoute | undefined {
 export const sellerConcentrations = ['EDP', 'EDT'];
 export interface AdminVariant { concentration?:string; id:string; volume:number; price:number; stock:number }
 export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; audience?:string; seasons?:string[]; occasions?:string[]; dayTimes?:string[]; image:string; status:string; variants:AdminVariant[] }
-export interface AdminRecord { id:string; name:string; detail:string; status:string; value:string }
+export interface AdminRecord { logo?:string; domain?:string; id:string; name:string; detail:string; status:string; value:string }
 export const orderSteps=['در حال پردازش','در حال بسته‌بندی','آمادهٔ ارسال','ارسال شده','تحویل شده'];
 export interface AdminOrder { id:string; customer:string; status:string; product:string; quantity:number; total:number; history:string[] }
 export interface AdminState { products:AdminProduct[]; orders:AdminOrder[]; records:Record<string,AdminRecord[]>; settings:Record<string,Record<string,string>> }
@@ -52,7 +53,7 @@ export function createAdminState():AdminState {
   products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,audience:({women:'زنانه',men:'مردانه',unisex:'یونیسکس'}[p.targetAudience]),family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),seasons:p.seasons.map(s=>seasonLabels[s]),occasions:p.occasions.map(o=>occasionLabels[o]).filter(o=>o!=='عصر و شب'),dayTimes:p.occasions.includes('evening')?['عصر','شب']:[],image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,concentration:v.concentration,price:v.price,stock:v.stock}))})),
   orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
   records:{
-   brands:brands.map((b,i)=>record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی')),
+   brands:brands.map((b,i)=>({...record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی'),...officialBrandLogo(b.id)})),
    families:fragranceFamilies.map((f,i)=>record('family-'+i,f.name,'دسته‌بندی')),
    notes:scentNotes.map((n,i)=>record('note-'+i,n.name,'نت منتخب')),
    customers:Array.from({length:8},(_,i)=>record('CUSTOMER-DEMO-'+(i+1),'مشتری '+number(i+1),'همراه: 09•• ••• ••'+(10+i),'اطلاعات تماس',number(i%3+1)+' سفارش')),
