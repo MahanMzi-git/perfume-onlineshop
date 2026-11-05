@@ -52,12 +52,14 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
     <p className="eyebrow">THE FRAGRANCE CATALOG</p><h1 id="catalog-title">{collection?.title ?? (wishlistOnly ? 'علاقه‌مندی‌های شما' : 'عطر بعدی‌ات را کشف کن.')}</h1>
     {collection && <p className="collection-intro">{collection.intro}</p>}
     <p className="page-intro">{isCardStudy ? 'نام و عکس عطرها واقعی و نت‌ها برگرفته از معرفی برندند؛ قیمت، حجم‌های انتخابی، موجودی و ویژگی‌های خرید صرفاً نمایشی‌اند.' : 'هشت عطر خیالی، با مشخصات قابل مقایسه. قیمت، موجودی، تاریخ و امتیازها صرفاً برای پیش‌نمایش‌اند.'}</p>
-    <div className="catalog-search-sort">
-      <label>جستجوی نام، برند یا نت<input type="search" maxLength={120} value={filters.query} onChange={e => update({ query: e.target.value }, true)} placeholder="نام عطر، برند یا نت…" /></label>
-      <LuxurySelect label="مرتب‌سازی" value={sort} options={Object.entries(sortLabels).map(([value, label]) => ({ value, label }))} onChange={value => { location.hash = href(filters, { sort: value as SortOrder, wishlist: wishlistOnly }); }} />
+    <div className="gift-filter-layout">
+      <div className="catalog-search-sort">
+        <label>جستجوی نام، برند یا نت<input type="search" maxLength={120} value={filters.query} onChange={e => update({ query: e.target.value }, true)} placeholder="نام عطر، برند یا نت…" /></label>
+        <LuxurySelect label="مرتب‌سازی" value={sort} options={Object.entries(sortLabels).map(([value, label]) => ({ value, label }))} onChange={value => { location.hash = href(filters, { sort: value as SortOrder, wishlist: wishlistOnly }); }} />
+      </div>
+      <AdvancedFilters study={warmGiftPalette} lockedKeys={Object.keys(scope) as (keyof Filters)[]} filters={filters} onChange={patch => update(patch, 'minPrice' in patch || 'maxPrice' in patch)} />
+      <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
     </div>
-    <AdvancedFilters study={warmGiftPalette} lockedKeys={Object.keys(scope) as (keyof Filters)[]} filters={filters} onChange={patch => update(patch, 'minPrice' in patch || 'maxPrice' in patch)} />
-    <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
     <div id="catalog-results" className="catalog-result-area"><h2 className="sr">نتایج کاتالوگ</h2>
       <ActiveFilters filters={visibleFilters} wishlistOnly={wishlistOnly} count={results.length} onRemoveNote={toggleNote} onRemove={key => update({ [key]: key === 'query' ? '' : undefined })} onReset={reset} />
       {results.length ? <><p className="fine-print">قیمت کارت مربوط به اولین حجم و غلظت منطبق با فیلترهاست؛ نسخهٔ دقیق را در جزئیات انتخاب کنید.</p><ProductGrid list={results.slice((page - 1) * pageSize, page * pageSize)} filters={filters} onNote={toggleNote} /></> : emptyCollection ? <div className="empty"><h2>این مجموعه فعلاً محصول نمایشی ندارد.</h2><p>می‌توانید عطرهای مجموعه‌های دیگر را ببینید.</p><a className="step-action" href="#/catalog">دیدن همهٔ عطرها</a></div> : <div className="empty"><h2>عطری مطابق این انتخاب پیدا نشد.</h2><p>می‌توانید یک فیلتر را حذف کنید یا از ابتدا شروع کنید.</p><button className="step-action" onClick={reset}>پاک کردن همهٔ فیلترها</button></div>}
