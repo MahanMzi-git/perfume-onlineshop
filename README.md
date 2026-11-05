@@ -1,6 +1,11 @@
 # Aroma — perfume storefront
 A responsive Persian RTL demo storefront built with React 18, strict TypeScript and Vite. All products, brands, prices and bestseller labels are demo data.
 #demo: https://mahanmzi-git.github.io/perfume-onlineshop/
+
+![Aroma Perfume Store on Desktop and Mobile](./readme-storefront.png)
+
+![Aroma Seller Dashboard: Brand Management and Product Creation](./readme-seller-panel.png)
+
 ## Commands
 - npm ci: install locked dependencies.
 - npm run dev: local Vite preview (default http://localhost:5173).
