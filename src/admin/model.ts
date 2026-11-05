@@ -1,3 +1,4 @@
+import { officialBrandLogo } from './brandLogos';
 import {seasonLabels,occasionLabels} from '../data/catalogLabels';
 import { products } from '../data/products';
 import { brands } from '../data/brands';
@@ -6,7 +7,7 @@ import { scentNotes } from '../data/scentNotes';
 
 export type AdminRole = 'visitor' | 'seller' | 'analyst';
 export type AdminGroup = 'seller';
-export const roles: Record<AdminRole,string> = { visitor:'بازدیدکنندهٔ نمایشی', seller:'فروشندهٔ نمایشی', analyst:'تحلیلگر فقط‌خواندنی' };
+export const roles: Record<AdminRole,string> = { visitor:'بازدیدکننده', seller:'فروشنده', analyst:'تحلیلگر فقط‌خواندنی' };
 export function canAccess(role: AdminRole, group: AdminGroup) { return group === 'seller' && (role === 'seller' || role === 'analyst'); }
 export function canEdit(role: AdminRole, group: AdminGroup) { return canAccess(role,group) && role !== 'analyst'; }
 export const sellerPages = [
@@ -23,7 +24,7 @@ export function parseAdminPath(segments:string[]): AdminRoute | undefined {
 export const sellerConcentrations = ['EDP', 'EDT'];
 export interface AdminVariant { concentration?:string; id:string; volume:number; price:number; stock:number }
 export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; audience?:string; seasons?:string[]; occasions?:string[]; dayTimes?:string[]; image:string; status:string; variants:AdminVariant[] }
-export interface AdminRecord { id:string; name:string; detail:string; status:string; value:string }
+export interface AdminRecord { logo?:string; domain?:string; id:string; name:string; detail:string; status:string; value:string }
 export const orderSteps=['در حال پردازش','در حال بسته‌بندی','آمادهٔ ارسال','ارسال شده','تحویل شده'];
 export interface AdminOrder { id:string; customer:string; status:string; product:string; quantity:number; total:number; history:string[] }
 export interface AdminState { products:AdminProduct[]; orders:AdminOrder[]; records:Record<string,AdminRecord[]>; settings:Record<string,Record<string,string>> }
@@ -50,17 +51,17 @@ const record=(id:string,name:string,detail:string,status='فعال',value=''):Ad
 export function createAdminState():AdminState {
  return {
   products:products.map(p=>({id:p.id,name:p.name,brand:brands.find(b=>b.id===p.brandId)?.name??p.brandId,audience:({women:'زنانه',men:'مردانه',unisex:'یونیسکس'}[p.targetAudience]),family:fragranceFamilies.find(f=>f.id===p.fragranceFamilyIds[0])?.name??'گلی',notes:p.scentNoteIds.map(id=>scentNotes.find(n=>n.id===id)?.name).filter(Boolean).join('، '),seasons:p.seasons.map(s=>seasonLabels[s]),occasions:p.occasions.map(o=>occasionLabels[o]).filter(o=>o!=='عصر و شب'),dayTimes:p.occasions.includes('evening')?['عصر','شب']:[],image:p.image,status:'فعال',variants:p.variants.map(v=>({id:v.id,volume:v.volumeMl,concentration:v.concentration,price:v.price,stock:v.stock}))})),
-  orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری آزمایشی '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
+  orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
   records:{
-   brands:brands.map((b,i)=>record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی آزمایشی')),
-   families:fragranceFamilies.map((f,i)=>record('family-'+i,f.name,'دسته‌بندی آزمایشی')),
-   notes:scentNotes.map((n,i)=>record('note-'+i,n.name,'نت منتخب آزمایشی')),
-   customers:Array.from({length:8},(_,i)=>record('CUSTOMER-DEMO-'+(i+1),'مشتری آزمایشی '+number(i+1),'همراه: 09•• ••• ••'+(10+i),'بدون اطلاعات واقعی',number(i%3+1)+' سفارش نمونه')),
-   campaigns:[record('campaign-1','AROMA10','کد تخفیف آزمایشی؛ به سبد عمومی متصل نیست','فعال','10'),record('campaign-2','DISCOVERY','کمپین ست کشف رایحه','پیش‌نویس','15')],
-   reviews:products.slice(0,6).map((p,i)=>record('review-'+i,p.name,'متن ساختگی: رایحهٔ نمونه را برای تست رابط بررسی کردم.',i%2?'تأیید شده':'در انتظار','4')),
-   content:[record('banner-1','پیام بالای فروشگاه','آروما در حال شکل‌گیری است.','پیش‌نویس','هیرو'),record('banner-2','راهنمای کشف رایحه','محتوای نمونه برای ویرایش محلی','فعال','مجله')],
-   support:[record('ticket-1','DEMO-TICKET-01','پرسش ساختگی دربارهٔ ارسال نمونه','باز',''),record('ticket-2','DEMO-TICKET-02','پرسش ساختگی دربارهٔ حجم عطر','در حال بررسی','')],
+   brands:brands.map((b,i)=>({...record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی'),...officialBrandLogo(b.id)})),
+   families:fragranceFamilies.map((f,i)=>record('family-'+i,f.name,'دسته‌بندی')),
+   notes:scentNotes.map((n,i)=>record('note-'+i,n.name,'نت منتخب')),
+   customers:Array.from({length:8},(_,i)=>record('CUSTOMER-DEMO-'+(i+1),'مشتری '+number(i+1),'همراه: 09•• ••• ••'+(10+i),'اطلاعات تماس',number(i%3+1)+' سفارش')),
+   campaigns:[record('campaign-1','AROMA10','کد تخفیف','فعال','10'),record('campaign-2','DISCOVERY','کمپین ست کشف رایحه','پیش‌نویس','15')],
+   reviews:products.slice(0,6).map((p,i)=>record('review-'+i,p.name,'رایحهٔ خوشایند و متعادل.',i%2?'تأیید شده':'در انتظار','4')),
+   content:[record('banner-1','پیام بالای فروشگاه','آروما در حال شکل‌گیری است.','پیش‌نویس','هیرو'),record('banner-2','راهنمای کشف رایحه','محتوای برای امکان ویرایش','فعال','مجله')],
+   support:[record('ticket-1','DEMO-TICKET-01','پرسش دربارهٔ ارسال','باز',''),record('ticket-2','DEMO-TICKET-02','پرسش دربارهٔ حجم عطر','در حال بررسی','')],
   },
-  settings:{shipping:{standard:'80000',express:'150000',threshold:'5000000'},settings:{name:'فروشگاه نمایشی آروما',owner:'فروشندهٔ آزمایشی آروما',contact:'store@example.invalid',description:'فقط برای تست رابط؛ اطلاعات واقعی وارد نکنید.'}},
+  settings:{shipping:{standard:'80000',express:'150000',threshold:'5000000'},settings:{name:'فروشگاه آروما',owner:'فروشندهٔ آروما',contact:'store@example.invalid',description:'فروشگاه عطر آروما'}},
  };
 }
