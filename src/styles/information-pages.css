@@ -18,3 +18,67 @@
 @media(prefers-reduced-motion:reduce) { .brand-directory-link { transition:none; } }
 
 .information-page .step-action,.form-studio .step-action { @apply tw:min-h-[44px]; }
+
+.brand-directory-link {
+  grid-template-columns:clamp(58px, 18%, 88px) minmax(0,1fr) 20px;
+  align-items:center;
+}
+.brand-directory-link > svg { grid-column:3; grid-row:1; }
+.brand-directory-link > .brand-directory-logo {
+  position:relative;
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border:1px solid var(--line);
+  border-radius:50%;
+  overflow:hidden;
+  background:#fff;
+}
+.brand-directory-logo img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  padding:8%;
+  object-fit:contain;
+  background:#fff;
+}
+.brand-directory-copy {
+  display:grid;
+  gap:6px;
+  text-align:left;
+}
+.brand-directory-copy > span {
+  @apply tw:font-aroma-serif;
+  font-size:1.5rem;
+  overflow-wrap:anywhere;
+}
+
+.brand-directory-logo img[src$="/ysl-monogram.jpeg"] {
+  padding:0;
+  clip-path:circle(25% at center);
+  transform:scale(2);
+}
+
+.contact-layout .customer-form {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.contact-layout .customer-field { min-width:0; }
+.contact-layout .customer-field input { width:100%; min-width:0; }
+.contact-layout .customer-form > :not(.customer-field),
+.contact-layout .customer-field:has(textarea) { grid-column:1/-1; }
+.contact-channels {
+  list-style:none;
+  padding:0;
+  margin:12px 0 18px;
+}
+.contact-channels li {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding-block:10px;
+  border-bottom:1px solid var(--line);
+}
+.contact-channels small { display:block; color:var(--muted); }
