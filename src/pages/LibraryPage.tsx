@@ -5,6 +5,8 @@ import { ScentNoteIcon } from '../components/ScentNoteIcon';
 import { ProductGrid } from '../components/ProductGrid';
 import { catalogHref } from '../lib/routes';
 
+const noteImageNames: Record<string, string> = { seasalt: 'sea-salt', pepper: 'black-pepper' };
+
 interface Props { mode: 'families' | 'family' | 'notes' | 'note'; slug?: string }
 export function LibraryPage({ mode, slug }: Props) {
   const isNotes = mode === 'notes' || mode === 'note';
@@ -24,7 +26,7 @@ export function LibraryPage({ mode, slug }: Props) {
     </> : note ? <>
       <div className="library-feature"><ScentNoteIcon note={note} size={64} decorative /><div><h2>{note.name}</h2><p>{note.description ?? 'این نت یک برداشت بویایی است؛ نقش و شدت آن بسته به فرمول عطر تغییر می‌کند.'}</p><p className="fine-print">وجود نام یک نت، تضمین‌کنندهٔ مادهٔ طبیعی، شدت مشخص یا رفتار یکسان روی پوست نیست.</p></div></div>
       <a className="text-link" href={catalogHref({ noteIds: [note.id] })}>دیدن همهٔ عطرهای دارای {note.name} ↖</a>
-    </> : <div className="library-grid">{isNotes ? scentNotes.map(n => <a className="library-card" key={n.id} href={'#/notes/' + n.slug}><ScentNoteIcon note={n} size={42} decorative /><h2>{n.name}</h2><p>{products.filter(p => p.scentNoteIds.includes(n.id)).length} محصول نمایشی مرتبط</p><span>شناخت نت ↖</span></a>) : fragranceFamilies.map(f => <a className="library-card" key={f.id} href={'#/families/' + f.slug}><ScentNoteIcon note={noteById(f.representativeNoteIds[0])!} size={48} decorative /><h2>{f.name}</h2><p>{f.description}</p><span>{f.subfamilies.join(' · ')} ↖</span></a>)}</div>}
+    </> : <div className={isNotes ? "library-grid note-library-grid" : "library-grid"}>{isNotes ? scentNotes.map(n => <a className="library-card family-library-card" key={n.id} href={'#/notes/' + n.slug}><div><ScentNoteIcon note={n} size={42} decorative /><h2>{n.name}</h2><p>{products.filter(p => p.scentNoteIds.includes(n.id)).length} محصول نمایشی مرتبط</p><span>شناخت نت ↖</span></div><img className="family-library-image" src={`${import.meta.env.BASE_URL}images/notes/${noteImageNames[n.slug] ?? n.slug}.png`} alt="" loading="lazy" decoding="async" /></a>) : fragranceFamilies.map(f => <a className="library-card family-library-card" key={f.id} href={'#/families/' + f.slug}><div className="family-library-copy"><ScentNoteIcon note={noteById(f.representativeNoteIds[0])!} size={48} decorative /><h2>{f.name}</h2><p>{f.description}</p><span>{f.subfamilies.join(' · ')} ↖</span></div><img className="family-library-image" src={`${import.meta.env.BASE_URL}images/families/${f.slug}.jpg`} alt="" loading="lazy" decoding="async" /></a>)}</div>}
     {(family || note) && <section className="related-section"><h2>عطرهای مرتبط · نمایشی</h2>{matches.length ? <ProductGrid list={matches} /> : <div className="empty"><p>در مجموعهٔ فعلی محصولی با این ویژگی نداریم.</p><a className="text-link" href="#/catalog">بازگشت به کاتالوگ ↖</a></div>}</section>}
     <p className="fine-print library-source">برای مطالعهٔ بیشتر دربارهٔ طبقه‌بندی رایحه: <a href="https://ffonline.fragrancesoftheworld.com/family/details/01" target="_blank" rel="noreferrer">Fragrances of the World</a>. برچسب‌های این فروشگاه مسیر کشف هستند، نه طبقه‌بندی انحصاری یا تأیید رسمی.</p>
   </section>;

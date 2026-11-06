@@ -48,10 +48,25 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
   }
   return <section className="step2-page container section" aria-labelledby="catalog-title" data-men-filters={collection?.slug === 'men' ? 'petrol' : undefined} data-women-filters={collection?.slug === 'women' ? 'pastel' : undefined} data-gift-palette={warmGiftPalette ? 'warm' : undefined}>
     {collection?.slug === 'gifts' && <figure className="gift-collection-hero"><img src={`${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-1536.webp`} srcSet={`${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-768.webp 768w, ${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-1536.webp 1536w`} sizes="(max-width:700px) calc(100vw - 32px), (max-width:1164px) calc(100vw - 64px), 1100px" width={1536} height={1024} loading="eager" fetchPriority="high" alt="پک‌های هدیهٔ عطر در اندازه‌های مختلف با جعبه‌های کرمی، مشکی و طلایی، روبان ساتن و ست عطرهای کوچک" /></figure>}
+    {collection?.slug === 'women' && (
+      <figure className="audience-collection-hero">
+        <img src={`${import.meta.env.BASE_URL}images/female-section.png`} width={2172} height={724} fetchPriority="high" alt="شیشه‌های عطر زنانه کنار گل رز و گل‌های سفید" />
+      </figure>
+    )}
+    {collection?.slug === 'men' && (
+      <figure className="audience-collection-hero">
+        <img src={`${import.meta.env.BASE_URL}images/male-section.png`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای مردانه" />
+      </figure>
+    )}
+    {collection?.slug === 'niche' && (
+      <figure className="audience-collection-hero">
+        <img src={`${import.meta.env.BASE_URL}images/niche.png`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای نیش" />
+      </figure>
+    )}
     <nav className="breadcrumbs" aria-label="مسیر صفحه"><a href="#home">خانه</a><span>/</span><a href="#/catalog">کاتالوگ</a>{collection && <><span>/</span><span>{collection.title}</span></>}</nav>
     <p className="eyebrow">THE FRAGRANCE CATALOG</p><h1 id="catalog-title">{collection?.title ?? (wishlistOnly ? 'علاقه‌مندی‌های شما' : 'عطر بعدی‌ات را کشف کن.')}</h1>
     {collection && <p className="collection-intro">{collection.intro}</p>}
-    <p className="page-intro">{isCardStudy ? 'نام و عکس عطرها واقعی و نت‌ها برگرفته از معرفی برندند؛ قیمت، حجم‌های انتخابی، موجودی و ویژگی‌های خرید صرفاً نمایشی‌اند.' : 'هشت عطر خیالی، با مشخصات قابل مقایسه. قیمت، موجودی، تاریخ و امتیازها صرفاً برای پیش‌نمایش‌اند.'}</p>
+    <p className="page-intro">{collection?.slug === 'women' ? 'برای پیدا کردن عطر امسال‌تان، از نت‌هایی شروع کنید که دوست دارید. رایحه‌های گلی برای حال‌وهوایی لطیف، مرکباتی برای حس تازگی و چوبی یا عنبری برای انتخابی گرم‌تر. از میان پیشنهادهای آروما، کوکو مادمازل، لیبر و میس دیور را بر اساس نت‌ها مقایسه کنید و پیش از انتخاب، رایحهٔ دلخواهتان را روی پوست امتحان کنید.' : collection?.slug === 'men' ? 'برای انتخاب عطر مردانه، به موقعیتی فکر کنید که بیشتر از عطر استفاده می‌کنید. رایحه‌های مرکباتی برای شروعی تازه، نت‌های چوبی برای روزهای کاری و رایحه‌های ادویه‌ای برای یک عصر خنک انتخاب‌های خوبی‌اند. از میان پیشنهادهای آروما، بلو د شنل و ساواژ را بر اساس نت‌ها مقایسه کنید و ببینید هر رایحه پس از چند ساعت روی پوستتان چه حسی دارد.' : collection?.slug === 'unisex' ? 'برای انتخاب عطر یونیسکس، از نت‌هایی شروع کنید که به سلیقه‌تان نزدیک‌اند. مرکبات حس تازگی می‌دهند، چوب صندل رایحه را گرم‌تر می‌کند و مشک حال‌وهوایی نرم و آرام دارد. چند رایحه را بر اساس نت‌ها مقایسه کنید و به هرکدام روی پوست کمی فرصت بدهید تا ببینید کدام بیشتر به دلتان می‌نشیند.' : collection?.slug === 'niche' ? 'برای کشف عطرهای نیش، از یک نت آشنا شروع کنید و ببینید در کنار چه رایحه‌هایی چهرهٔ تازه‌ای پیدا می‌کند. مثلاً به لطافت گل‌ها در کنار گرمای چوب یا به تازگی مرکبات در کنار ادویه توجه کنید. عطر را روی پوست امتحان کنید و به آن زمان بدهید تا هم شروع رایحه و هم نت‌هایی را که می‌مانند بشناسید.' : collection?.slug === 'gifts' ? 'برای انتخاب هدیه، از رایحه‌هایی شروع کنید که طرف مقابل دوست دارد. اگر عطر محبوبش را می‌شناسید، سراغ نت‌های آشنای همان رایحه بروید. اگر هنوز از سلیقه‌اش مطمئن نیستید، یک ست آشنایی با چند رایحهٔ متفاوت به او فرصت می‌دهد عطر دلخواهش را خودش پیدا کند.' : isCardStudy ? 'نام و عکس عطرها واقعی و نت‌ها برگرفته از معرفی برندند؛ قیمت، حجم‌های انتخابی، موجودی و ویژگی‌های خرید صرفاً نمایشی‌اند.' : 'هشت عطر خیالی، با مشخصات قابل مقایسه. قیمت، موجودی، تاریخ و امتیازها صرفاً برای پیش‌نمایش‌اند.'}</p>
     <div className="catalog-filter-layout">
       <div className="catalog-search-sort">
         <label>جستجوی نام، برند یا نت<input type="search" maxLength={120} value={filters.query} onChange={e => update({ query: e.target.value }, true)} placeholder="نام عطر، برند یا نت…" /></label>
