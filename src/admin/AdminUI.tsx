@@ -16,11 +16,20 @@ export function DataTable<T extends {id:string;name:string;status:string}>({rows
  const pages=Math.max(1,Math.ceil(filtered.length/5)),current=Math.min(page,pages);
  const visibleRows=filtered.slice((current-1)*5,current*5);
  return <section className="admin-panel admin-data" aria-label={label}>
-  <div className="admin-table-tools"><label className="admin-search"><span><Search size={16} aria-hidden="true" /> جستجو در {label}</span><input type="search" value={query} placeholder="نام یا شناسه…" maxLength={100} onChange={e=>{setQuery(e.target.value);setPage(1);}} /></label>
+  <div className="admin-table-tools"><label className="admin-search"><Search size={17} aria-hidden="true" /><input type="search" aria-label={'جست‌وجو در '+label} value={query} placeholder={'جست‌وجو در '+label+'…'} maxLength={100} onChange={e=>{setQuery(e.target.value);setPage(1);}} /></label>
    <LuxurySelect label="وضعیت" value={status} options={[{value:'all',label:'همهٔ وضعیت‌ها'},...[...new Set(rows.map(r=>r.status))].map(s=>({value:s,label:s}))]} onChange={v=>{setStatus(v);setPage(1);}} />
    <LuxurySelect label="مرتب‌سازی نام" value={sort} options={[{value:'asc',label:'نام؛ صعودی'},{value:'desc',label:'نام؛ نزولی'}]} onChange={v=>{setSort(v);setPage(1);}} />
   </div>
-  {!filtered.length?<div className="admin-empty"><Search aria-hidden="true" /><h3>موردی پیدا نشد</h3><p>عبارت یا فیلتر وضعیت را تغییر دهید.</p><button onClick={()=>{setQuery('');setStatus('all');}}>پاک کردن فیلترها</button></div>:renderCard?<ul className="admin-product-grid" aria-label={label}>{visibleRows.map(row=><li key={row.id}>{renderCard(row)}</li>)}</ul>:<table><caption>{label}</caption><thead><tr>{columns.map(c=><th scope="col" key={c.key}>{c.label}</th>)}</tr></thead><tbody>{visibleRows.map(row=><tr key={row.id}>{columns.map(c=><td data-label={c.label} key={c.key}>{c.render(row)}</td>)}</tr>)}</tbody></table>}
+  {!filtered.length?<div className="admin-empty"><Search aria-hidden="true" /><h3>موردی پیدا نشد</h3><p>عبارت یا فیلتر وضعیت را تغییر دهید.</p><button onClick={()=>{setQuery('');setStatus('all');}}>پاک کردن فیلترها</button></div>:<ul className="admin-product-grid" aria-label={label}>{visibleRows.map(row=><li key={row.id}>
+   {renderCard?renderCard(row):<article className="admin-product-card admin-record-summary">
+    <div className="admin-product-card-header" data-draft={row.status==='پیش‌نویس'||undefined}>
+     <div className="admin-product-card-title"><h3>{columns[0]?.render(row)}</h3></div>
+     <AdminBadge>{row.status}</AdminBadge>
+    </div>
+    <dl>{columns.slice(1).filter(column=>!['status','action','edit'].includes(column.key)).map(column=><div key={column.key}><dt>{column.label}</dt><dd>{column.render(row)}</dd></div>)}</dl>
+    {columns.filter(column=>['action','edit'].includes(column.key)).map(column=><div className="admin-product-card-footer" key={column.key}>{column.render(row)}</div>)}
+   </article>}
+  </li>)}</ul>}
   <div className="admin-pagination"><span>{number(filtered.length)} نتیجه · صفحهٔ {number(current)} از {number(pages)}</span><button aria-label="صفحهٔ قبل" disabled={current===1} onClick={()=>setPage(current-1)}><ChevronRight size={16} /></button><button aria-label="صفحهٔ بعد" disabled={current===pages} onClick={()=>setPage(current+1)}><ChevronLeft size={16} /></button></div>
  </section>;
 }

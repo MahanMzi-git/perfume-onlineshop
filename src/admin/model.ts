@@ -24,7 +24,8 @@ export function parseAdminPath(segments:string[]): AdminRoute | undefined {
 export const sellerConcentrations = ['EDP', 'EDT'];
 export interface AdminVariant { concentration?:string; id:string; volume:number; price:number; stock:number }
 export interface AdminProduct { id:string; name:string; brand:string; family:string; notes:string; audience?:string; seasons?:string[]; occasions?:string[]; dayTimes?:string[]; image:string; status:string; variants:AdminVariant[] }
-export interface AdminRecord { logo?:string; domain?:string; id:string; name:string; detail:string; status:string; value:string }
+const illustratedFamilies = new Set(['gourmand','spicy','fruity','amber','aquatic','citrus','woody','floral','fougere','green','leather','chypre','aromatic']);
+export interface AdminRecord { representativeNotes?:string; noteId?:string; logo?:string; imageZoom?:number; imageCrop?:{x:number;y:number}; domain?:string; id:string; name:string; detail:string; status:string; value:string }
 export const orderSteps=['در حال پردازش','در حال بسته‌بندی','آمادهٔ ارسال','ارسال شده','تحویل شده'];
 export interface AdminOrder { id:string; customer:string; status:string; product:string; quantity:number; total:number; history:string[] }
 export interface AdminState { products:AdminProduct[]; orders:AdminOrder[]; records:Record<string,AdminRecord[]>; settings:Record<string,Record<string,string>> }
@@ -54,8 +55,16 @@ export function createAdminState():AdminState {
   orders:products.slice(0,6).map((p,i)=>({id:'DEMO-'+(1001+i),customer:'مشتری '+number(i+1),status:orderSteps[i%5],product:p.name,quantity:i%2+1,total:p.price*(i%2+1),history:orderSteps.slice(0,i%5+1)})),
   records:{
    brands:brands.map((b,i)=>({...record('brand-'+i,b.name,'برند مرجع؛ رکورد مدیریتی'),...officialBrandLogo(b.id)})),
-   families:fragranceFamilies.map((f,i)=>record('family-'+i,f.name,'دسته‌بندی')),
-   notes:scentNotes.map((n,i)=>record('note-'+i,n.name,'نت منتخب')),
+   families:fragranceFamilies.map((family,i)=>({
+    ...record('family-'+i,family.name,family.description),
+    logo:illustratedFamilies.has(family.slug)?`${import.meta.env.BASE_URL}images/seller-families/${family.slug}.png`:undefined,
+    representativeNotes:family.representativeNoteIds.map(id=>scentNotes.find(note=>note.id===id)?.name).filter(Boolean).join('، '),
+   })),
+   notes:scentNotes.map((note,i)=>({
+    ...record('note-'+i,note.name,note.description??note.name),
+    noteId:note.id,
+    value:fragranceFamilies.filter(family=>family.representativeNoteIds.includes(note.id)).map(family=>family.name).join('، '),
+   })),
    customers:Array.from({length:8},(_,i)=>record('CUSTOMER-DEMO-'+(i+1),'مشتری '+number(i+1),'همراه: 09•• ••• ••'+(10+i),'اطلاعات تماس',number(i%3+1)+' سفارش')),
    campaigns:[record('campaign-1','AROMA10','کد تخفیف','فعال','10'),record('campaign-2','DISCOVERY','کمپین ست کشف رایحه','پیش‌نویس','15')],
    reviews:products.slice(0,6).map((p,i)=>record('review-'+i,p.name,'رایحهٔ خوشایند و متعادل.',i%2?'تأیید شده':'در انتظار','4')),
