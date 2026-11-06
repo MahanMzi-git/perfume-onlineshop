@@ -1,3 +1,4 @@
+import { loadSavedFamilies, saveFamily } from './familyStorage';
 import { brandLookupEndpoint, lookupBrandLogo, officialDomain, siteIcon } from './brandLogos';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BadgePercent, Boxes, ChartNoAxesColumn, ClipboardList, Droplets, Flower2, Layers, LifeBuoy, MessageSquare, PanelTop, PlusSquare, Settings, Tag, Users, LayoutDashboard, Package, ShieldCheck, Menu, ArrowUpLeft, Truck, Star, Activity, Store, Search, X, ImagePlus, Check, AlertCircle } from 'lucide-react';
@@ -24,6 +25,21 @@ const sellerPageIcons = {
 
 export function AdminApp({route}:{route:AdminRoute}) {
  const [state,setState]=useState(createAdminState),[role,setRole]=useState<AdminRole>('visitor'),[notice,setNotice]=useState('');
+ const [familiesReady,setFamiliesReady]=useState(false);
+ useEffect(()=>{
+  let active=true;
+  loadSavedFamilies().then(saved=>{
+   if(!active||!saved.length)return;
+   setState(current=>{
+    const families=new Map(current.records.families.map(family=>[family.id,family]));
+    for(const family of saved)families.set(family.id,family);
+    return {...current,records:{...current.records,families:[...families.values()]}};
+   });
+  }).catch(()=>{
+   if(active)setNotice('خواندن خانواده‌های ذخیره‌شده ممکن نبود.');
+  }).finally(()=>{if(active)setFamiliesReady(true);});
+  return ()=>{active=false;};
+ },[]);
  const [menu,setMenu]=useState(false),[view,setView]=useState('normal');const menuList=useRef<HTMLElement>(null);
  const menuToggle=useRef<HTMLButtonElement>(null),menuClose=useRef<HTMLButtonElement>(null);
  function closeMenu(){setMenu(false);menuToggle.current?.focus();}
@@ -40,6 +56,7 @@ export function AdminApp({route}:{route:AdminRoute}) {
  const workspace:Workspace={state,editable,mutate,confirm:(title,detail,action)=>setConfirmation({title,detail,action})};
  let content:ReactNode;
  if(route.section==='overview')content=<Overview workspace={workspace}/>;
+ else if(route.section==='families'&&!familiesReady)content=<p role="status">در حال بارگذاری خانواده‌های رایحه…</p>;
  else content=<SellerPage key={route.section+route.id} route={route} workspace={workspace}/>;
  return <div className={'admin-app admin-'+route.group} data-field-style="capsule-sage" dir="rtl">
   <a className="skip" href="#admin-main" onClick={event=>{event.preventDefault();document.getElementById('admin-main')?.focus({preventScroll:true});}}>پرش به محتوای پنل</a>
@@ -201,14 +218,24 @@ const recordSchemas:Record<string,{title:string;fields:FormField[];statuses:stri
  customers:{title:'مشتری',fields:[],statuses:[],readOnly:true},
  reviews:{title:'دیدگاه',fields:[],statuses:[],readOnly:true},support:{title:'درخواست پشتیبانی',fields:[],statuses:[],readOnly:true},
 };
+const centeredCrop={x:50,y:50};
+function imageFraming(zoom=1,crop=centeredCrop){
+ const position=crop.x+'% '+crop.y+'%';
+ return {objectPosition:position,transformOrigin:position,transform:'scale('+zoom+')'};
+}
+
 function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace}) {
  const [editing,setEditing]=useState<AdminRecord|null>(),[selected,setSelected]=useState<AdminRecord>();
+ const [savingFamily,setSavingFamily]=useState(false);
+ const [familySaveError,setFamilySaveError]=useState('');
  const editorStart=useRef<HTMLButtonElement>(null);
  useEffect(()=>{
-  if(editing===undefined)return;
+  if(editing===undefined||(section==='families'&&editing))return;
   editorStart.current?.scrollIntoView({block:'start'});
   editorStart.current?.focus({preventScroll:true});
- },[editing]);
+ },[editing,section]);
+ const [imageZoom,setImageZoom]=useState(1);
+ const [imageCrop,setImageCrop]=useState(centeredCrop);
  const [logo,setLogo]=useState<string>(),[logoError,setLogoError]=useState(''),[readingLogo,setReadingLogo]=useState(false);
  const logoReader=useRef<FileReader>();
  const [brandDomain,setBrandDomain]=useState('');
@@ -220,13 +247,16 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
  const [suggestionError,setSuggestionError]=useState('');
  useEffect(()=>()=>{logoReader.current?.abort();lookupRequest.current?.abort();},[]);
  function openRecord(record?:AdminRecord|null){
+  if(savingFamily)return;
+  setFamilySaveError('');
   if(record!==undefined&&record===editing){
+   if(section==='families'&&record)return;
    editorStart.current?.scrollIntoView({block:'start'});
    editorStart.current?.focus({preventScroll:true});
    return;
   }
   logoReader.current?.abort();
-  setLogo(record?.logo);setLogoError('');setReadingLogo(false);setEditing(record);
+  setLogo(record?.logo);setImageZoom(record?.imageZoom??1);setImageCrop(record?.imageCrop??centeredCrop);setLogoError('');setReadingLogo(false);setEditing(record);
   lookupRequest.current?.abort();setLookingUp(false);
   setBrandName(record?.name??'');setBrandDomain(record?.domain??'');setLogoDomain(record?.domain);
   setLogoSuggestion(undefined);setSuggestionError('');
@@ -268,10 +298,11 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
   const reader=new FileReader();
   logoReader.current=reader;
   setLogoError('');setReadingLogo(true);
-  reader.onload=()=>{setLogo(String(reader.result));setReadingLogo(false);};
+  reader.onload=()=>{setLogo(String(reader.result));setImageZoom(1);setImageCrop(centeredCrop);setReadingLogo(false);};
   reader.onerror=()=>{setLogoError('خواندن تصویر ممکن نبود.');setReadingLogo(false);};
   reader.readAsDataURL(file);
  }
+ const hasImage=section==='brands'||section==='families';
  const schema=recordSchemas[section];if(!schema)return <Missing href={link('seller','overview')}/>;
  const rows=w.state.records[section]??[];
  const update=(r:AdminRecord,status:string,value=r.value)=>w.confirm('تغییر '+schema.title,r.name+' ← '+status,()=>w.mutate('تغییر '+schema.title,s=>({...s,records:{...s.records,[section]:s.records[section].map(item=>item.id===r.id?{...item,status,value}:item)}})));
@@ -282,13 +313,30 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
   if(section==='customers')return <button onClick={()=>setSelected(r)}>نمایش اطلاعات</button>;
   return <span>فقط مشاهده</span>;
  }
- return <>{!schema.readOnly&&<div className="admin-actions"><button className="admin-primary" disabled={!w.editable} onClick={()=>openRecord(null)}>افزودن {schema.title}</button></div>}
-  {editing!==undefined&&<Panel title={(editing?'ویرایش ':'افزودن ')+schema.title}><button ref={editorStart} onClick={()=>openRecord()}>بستن فرم</button>
-   {section==='brands'&&<div className="admin-image-picker admin-brand-picker">
-    <div className="admin-image-preview">{logo?<img src={logo} alt="پیش‌نمایش لوگو"/>:<Tag size={24} aria-hidden="true"/>}</div>
+ const inlineEdit=section==='families'&&!!editing;
+ const editor=editing!==undefined?(<Panel title={(editing?'ویرایش ':'افزودن ')+schema.title}><button ref={editorStart} onClick={()=>openRecord()}>بستن فرم</button>
+   {hasImage&&<div className="admin-image-picker admin-brand-picker">
+    <div className={section==='families'?"admin-image-preview admin-family-image":"admin-image-preview"}>{logo?<img src={logo} style={imageFraming(imageZoom,imageCrop)} alt={section==='brands'?'پیش‌نمایش لوگو':'پیش‌نمایش تصویر خانواده'}/>:<Tag size={24} aria-hidden="true"/>}</div>
     <div className="admin-image-details">
-     <div className="admin-brand-upload"><label className="admin-image-action"><input type="file" accept="image/png,image/jpeg,image/webp" disabled={!w.editable} onChange={event=>readLogo(event.currentTarget)}/><span>{logo?'تغییر لوگو':'انتخاب لوگو'}</span></label>
+     <div className="admin-brand-upload"><label className="admin-image-action"><input type="file" accept="image/png,image/jpeg,image/webp" disabled={!w.editable} onChange={event=>readLogo(event.currentTarget)}/><span>{section==='families'?(logo?'تغییر تصویر':'انتخاب تصویر'):(logo?'تغییر لوگو':'انتخاب لوگو')}</span></label>
      <p>PNG، JPEG یا WebP تا ۲ مگابایت</p></div>
+     {section==='families'&&logo&&<><label className="admin-family-zoom">
+      بزرگ‌نمایی تصویر
+      <input type="range" min={1} max={3} step={0.05} value={imageZoom} disabled={!w.editable}
+       onChange={event=>setImageZoom(Number(event.target.value))}/>
+     </label>
+     <details className="admin-family-zoom">
+      <summary>برش تصویر</summary>
+      <label>موقعیت افقی
+       <input type="range" dir="ltr" min={0} max={100} value={imageCrop.x} disabled={!w.editable}
+        onChange={event=>setImageCrop({...imageCrop,x:Number(event.target.value)})}/>
+      </label>
+      <label>موقعیت عمودی
+       <input type="range" dir="ltr" min={0} max={100} value={imageCrop.y} disabled={!w.editable}
+        onChange={event=>setImageCrop({...imageCrop,y:Number(event.target.value)})}/>
+      </label>
+     </details></>}
+     {section==='brands'&&<>
      <label htmlFor="brand-logo-domain">دامنهٔ رسمی برند</label>
      <div className="admin-brand-domain"><input id="brand-logo-domain" type="text" dir="ltr" placeholder="example.com" disabled={!w.editable}
       value={brandDomain} onChange={event=>{lookupRequest.current?.abort();setLookingUp(false);setBrandDomain(event.target.value);setLogoSuggestion(undefined);setSuggestionError('');}}/>
@@ -300,25 +348,51 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
       <button type="button" disabled={!w.editable||!logoSuggestion.loaded||readingLogo} onClick={()=>{setLogo(logoSuggestion.url);setLogoDomain(logoSuggestion.domain);setBrandDomain(logoSuggestion.domain);setLogoError('');setLogoSuggestion(undefined);}}>استفاده از این لوگو</button>
      </div>}
      {suggestionError&&<p role="alert" className="admin-error">{suggestionError}</p>}
+     </>}
     </div>
     {logoError&&<p role="alert" className="admin-error">{logoError}</p>}
    </div>}
    <AdminForm onFieldChange={(key,value)=>{
     if(section!=='brands'||key!=='name')return;
     lookupRequest.current?.abort();setLookingUp(false);setBrandName(value);setLogoSuggestion(undefined);setSuggestionError('');
-   }} mobileColumns={section==='brands'} key={editing?.id??'new'} disabled={!w.editable||readingLogo} fields={[...schema.fields,{key:'status',label:'وضعیت',type:'select',required:true,options:schema.statuses}]} initial={editing?{...editing}:{name:'',detail:'',value:section==='content'?'هیرو':'',status:schema.statuses[0]}} validate={(v):Record<string,string>=>rows.some(r=>r.id!==editing?.id&&r.name.trim().toLocaleLowerCase()===v.name.trim().toLocaleLowerCase())?{name:'این نام یا کد قبلاً استفاده شده است.'}:{}} onSave={v=>{const row:AdminRecord={id:editing?.id??'LOCAL-'+Date.now(),name:v.name,detail:v.detail,status:v.status,value:v.value??'',...(section==='brands'&&logo?{logo,domain:logoDomain}:{})};const save=()=>{w.mutate('ذخیرهٔ '+schema.title,s=>({...s,records:{...s.records,[section]:editing?s.records[section].map(r=>r.id===row.id?row:r):[row,...(s.records[section]??[])]}}));setEditing(undefined);};save();}}/></Panel>}
+   }} mobileColumns={hasImage} key={editing?.id??'new'} disabled={!w.editable||readingLogo||savingFamily} fields={[...schema.fields,{key:'status',label:'وضعیت',type:'select',required:true,options:schema.statuses}]} initial={editing?{name:editing.name,detail:editing.detail,value:editing.value,status:editing.status}:{name:'',detail:'',value:section==='content'?'هیرو':'',status:schema.statuses[0]}} validate={(v):Record<string,string>=>rows.some(r=>r.id!==editing?.id&&r.name.trim().toLocaleLowerCase()===v.name.trim().toLocaleLowerCase())?{name:'این نام یا کد قبلاً استفاده شده است.'}:{}} onSave={async v=>{
+    const row:AdminRecord={
+     ...editing,id:editing?.id??'LOCAL-'+crypto.randomUUID(),
+     name:v.name,detail:v.detail,status:v.status,value:v.value??editing?.value??'',
+     ...(hasImage&&logo?{logo,domain:logoDomain,imageZoom,imageCrop}:{}),
+    };
+    if(section==='families'){
+     setSavingFamily(true);setFamilySaveError('');
+     try {
+      await saveFamily(row);
+     } catch {
+      setFamilySaveError('ذخیره در مرورگر انجام نشد. دوباره تلاش کنید.');
+      return;
+     } finally {
+      setSavingFamily(false);
+     }
+    }
+    w.mutate('تغییرات '+schema.title,s=>{
+     const records=s.records[section]??[];
+     return {...s,records:{...s.records,[section]:editing?records.map(record=>record.id===row.id?row:record):[row,...records]}};
+    });
+    setEditing(undefined);
+   }} />{familySaveError&&<p role="alert" className="admin-error">{familySaveError}</p>}</Panel>):null;
+ return <>{!schema.readOnly&&<div className="admin-actions"><button className="admin-primary" disabled={!w.editable} onClick={()=>openRecord(null)}>افزودن {schema.title}</button></div>}
+  {!inlineEdit&&editor}
   {selected&&<Panel title={selected.name}><button onClick={()=>setSelected(undefined)}>بستن جزئیات</button><p>{selected.detail}</p>{section==='customers'?<><p>شناسه: {selected.id} · {selected.value}</p><a href={link('seller','orders')}>سفارش‌های فروشگاه</a></>:<><AdminBadge>{rows.find(r=>r.id===selected.id)?.status}</AdminBadge><AdminForm key={selected.id} disabled={!w.editable} fields={[{key:'value',label:'متن پاسخ',type:'textarea',required:true},{key:'status',label:'وضعیت درخواست',type:'select',required:true,options:['باز','در حال بررسی','بسته شده']}]} initial={{value:selected.value,status:selected.status}} onSave={v=>{update(selected,v.status,v.value);setSelected(undefined);}}/></>}</Panel>}
-  <DataTable label={schema.title} rows={rows} renderCard={section==='brands'?record=><article className="admin-product-card admin-brand-card">
+  <DataTable label={schema.title} rows={rows} renderCard={hasImage?record=><article className="admin-product-card admin-brand-card">
    <div className="admin-product-card-header" data-draft={record.status==='پیش‌نویس'||undefined}>
-    <span className="admin-brand-logo">{record.logo&&<img src={record.logo} alt="" width={42} height={42} referrerPolicy="no-referrer" onError={event=>{event.currentTarget.hidden=true;}}/>}<bdi aria-hidden="true">{Array.from(record.name)[0]?.toLocaleUpperCase()}</bdi></span>
+    <span className={section==='families'?"admin-brand-logo admin-family-image":"admin-brand-logo"}>{record.logo&&<img key={record.logo} src={record.logo} style={imageFraming(record.imageZoom,record.imageCrop)} alt="" width={42} height={42} referrerPolicy="no-referrer" onError={event=>{event.currentTarget.hidden=true;}}/>}<bdi aria-hidden="true">{Array.from(record.name)[0]?.toLocaleUpperCase()}</bdi></span>
     <div className="admin-product-card-title"><h3><bdi>{record.name}</bdi></h3><small><bdi>{record.id}</bdi></small></div>
     <AdminBadge>{record.status}</AdminBadge>
    </div>
    {record.detail&&<p>{record.detail}</p>}
    <div className="admin-product-card-footer">
-    {record.value&&<span dir="auto">{record.value}</span>}
+    {record.representativeNotes?<span>نت‌های شاخص: {record.representativeNotes}</span>:record.value&&<span dir="auto">{record.value}</span>}
     {actions(record)}
    </div>
+   {inlineEdit&&editing?.id===record.id&&<div className="admin-family-inline-editor">{editor}</div>}
   </article>:undefined} columns={[{key:'name',label:'عنوان / شناسه',render:r=><><strong dir="auto">{r.name}</strong><small className="admin-id">{r.id}</small></>},{key:'detail',label:'توضیح',render:r=>r.detail},statusColumn,{key:'value',label:'اطلاعات',render:r=>r.value||'—'},{key:'action',label:'عملیات',render:actions}]}/>
  </>;
 }

@@ -207,3 +207,9 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-app .admin-brand-domain button { flex:none; padding-inline:8px; font-size:12px; }
 .admin-brand-picker + .admin-form { margin-top:10px; gap:10px; }
 .admin-brand-logo img:not([hidden]) + bdi { display:none; }
+
+.admin-family-image { position:relative; border-radius:50%; height:42px; }
+.admin-family-image img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+.admin-family-zoom { display:grid; gap:4px; font-size:12px; }
+.admin-family-zoom input { width:100%; min-width:0; accent-color:var(--admin-accent); }
+.admin-family-inline-editor > .admin-panel { margin:8px 0 0; padding:10px 0 0; border:0; border-top:1px solid #EBE5DB; border-radius:0; background:transparent; }
