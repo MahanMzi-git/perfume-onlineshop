@@ -63,6 +63,7 @@ export function createAdminState():AdminState {
    notes:scentNotes.map((note,i)=>({
     ...record('note-'+i,note.name,note.description??note.name),
     noteId:note.id,
+    logo:`${import.meta.env.BASE_URL}images/seller-notes/${note.slug}.png`,
     value:fragranceFamilies.filter(family=>family.representativeNoteIds.includes(note.id)).map(family=>family.name).join('، '),
    })),
    customers:Array.from({length:8},(_,i)=>record('CUSTOMER-DEMO-'+(i+1),'مشتری '+number(i+1),'همراه: 09•• ••• ••'+(10+i),'اطلاعات تماس',number(i%3+1)+' سفارش')),
