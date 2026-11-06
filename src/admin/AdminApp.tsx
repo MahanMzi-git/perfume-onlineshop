@@ -1,4 +1,6 @@
-import { loadSavedFamilies, saveFamily } from './familyStorage';
+import { ScentNoteIcon } from '../components/ScentNoteIcon';
+import { scentNotes } from '../data/scentNotes';
+import { loadSavedRecords, saveRecord } from './familyStorage';
 import { brandLookupEndpoint, lookupBrandLogo, officialDomain, siteIcon } from './brandLogos';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BadgePercent, Boxes, ChartNoAxesColumn, ClipboardList, Droplets, Flower2, Layers, LifeBuoy, MessageSquare, PanelTop, PlusSquare, Settings, Tag, Users, LayoutDashboard, Package, ShieldCheck, Menu, ArrowUpLeft, Truck, Star, Activity, Store, Search, X, ImagePlus, Check, AlertCircle } from 'lucide-react';
@@ -25,19 +27,26 @@ const sellerPageIcons = {
 
 export function AdminApp({route}:{route:AdminRoute}) {
  const [state,setState]=useState(createAdminState),[role,setRole]=useState<AdminRole>('visitor'),[notice,setNotice]=useState('');
- const [familiesReady,setFamiliesReady]=useState(false);
+ const [libraryReady,setLibraryReady]=useState(false);
  useEffect(()=>{
   let active=true;
-  loadSavedFamilies().then(saved=>{
-   if(!active||!saved.length)return;
+  const sections=['families','notes'] as const;
+  Promise.allSettled(sections.map(section=>loadSavedRecords(section))).then(results=>{
+   if(!active)return;
    setState(current=>{
-    const families=new Map(current.records.families.map(family=>[family.id,family]));
-    for(const family of saved)families.set(family.id,family);
-    return {...current,records:{...current.records,families:[...families.values()]}};
+    const records={...current.records};
+    for(const [index,result] of results.entries()){
+     if(result.status!=='fulfilled')continue;
+     const section=sections[index];
+     const items=new Map(records[section].map(record=>[record.id,record]));
+     for(const record of result.value)items.set(record.id,record);
+     records[section]=[...items.values()];
+    }
+    return {...current,records};
    });
-  }).catch(()=>{
-   if(active)setNotice('خواندن خانواده‌های ذخیره‌شده ممکن نبود.');
-  }).finally(()=>{if(active)setFamiliesReady(true);});
+   if(results.some(result=>result.status==='rejected'))setNotice('خواندن بخشی از کتابخانهٔ ذخیره‌شده ممکن نبود.');
+   setLibraryReady(true);
+  });
   return ()=>{active=false;};
  },[]);
  const [menu,setMenu]=useState(false),[view,setView]=useState('normal');const menuList=useRef<HTMLElement>(null);
@@ -56,7 +65,7 @@ export function AdminApp({route}:{route:AdminRoute}) {
  const workspace:Workspace={state,editable,mutate,confirm:(title,detail,action)=>setConfirmation({title,detail,action})};
  let content:ReactNode;
  if(route.section==='overview')content=<Overview workspace={workspace}/>;
- else if(route.section==='families'&&!familiesReady)content=<p role="status">در حال بارگذاری خانواده‌های رایحه…</p>;
+ else if((route.section==='families'||route.section==='notes')&&!libraryReady)content=<p role="status">در حال بارگذاری کتابخانهٔ رایحه…</p>;
  else content=<SellerPage key={route.section+route.id} route={route} workspace={workspace}/>;
  return <div className={'admin-app admin-'+route.group} data-field-style="capsule-sage" dir="rtl">
   <a className="skip" href="#admin-main" onClick={event=>{event.preventDefault();document.getElementById('admin-main')?.focus({preventScroll:true});}}>پرش به محتوای پنل</a>
@@ -225,15 +234,16 @@ function imageFraming(zoom=1,crop=centeredCrop){
 }
 
 function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace}) {
+ const isLibrary=section==='families'||section==='notes';
  const [editing,setEditing]=useState<AdminRecord|null>(),[selected,setSelected]=useState<AdminRecord>();
  const [savingFamily,setSavingFamily]=useState(false);
  const [familySaveError,setFamilySaveError]=useState('');
  const editorStart=useRef<HTMLButtonElement>(null);
  useEffect(()=>{
-  if(editing===undefined||(section==='families'&&editing))return;
+  if(editing===undefined||editing)return;
   editorStart.current?.scrollIntoView({block:'start'});
   editorStart.current?.focus({preventScroll:true});
- },[editing,section]);
+ },[editing]);
  const [imageZoom,setImageZoom]=useState(1);
  const [imageCrop,setImageCrop]=useState(centeredCrop);
  const [logo,setLogo]=useState<string>(),[logoError,setLogoError]=useState(''),[readingLogo,setReadingLogo]=useState(false);
@@ -250,7 +260,7 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
   if(savingFamily)return;
   setFamilySaveError('');
   if(record!==undefined&&record===editing){
-   if(section==='families'&&record)return;
+   if(record)return;
    editorStart.current?.scrollIntoView({block:'start'});
    editorStart.current?.focus({preventScroll:true});
    return;
@@ -302,7 +312,7 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
   reader.onerror=()=>{setLogoError('خواندن تصویر ممکن نبود.');setReadingLogo(false);};
   reader.readAsDataURL(file);
  }
- const hasImage=section==='brands'||section==='families';
+ const hasImage=section==='brands'||isLibrary;
  const schema=recordSchemas[section];if(!schema)return <Missing href={link('seller','overview')}/>;
  const rows=w.state.records[section]??[];
  const update=(r:AdminRecord,status:string,value=r.value)=>w.confirm('تغییر '+schema.title,r.name+' ← '+status,()=>w.mutate('تغییر '+schema.title,s=>({...s,records:{...s.records,[section]:s.records[section].map(item=>item.id===r.id?{...item,status,value}:item)}})));
@@ -313,14 +323,14 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
   if(section==='customers')return <button onClick={()=>setSelected(r)}>نمایش اطلاعات</button>;
   return <span>فقط مشاهده</span>;
  }
- const inlineEdit=section==='families'&&!!editing;
+ const inlineEdit=!!editing;
  const editor=editing!==undefined?(<Panel title={(editing?'ویرایش ':'افزودن ')+schema.title}><button ref={editorStart} onClick={()=>openRecord()}>بستن فرم</button>
    {hasImage&&<div className="admin-image-picker admin-brand-picker">
-    <div className={section==='families'?"admin-image-preview admin-family-image":"admin-image-preview"}>{logo?<img src={logo} style={imageFraming(imageZoom,imageCrop)} alt={section==='brands'?'پیش‌نمایش لوگو':'پیش‌نمایش تصویر خانواده'}/>:<Tag size={24} aria-hidden="true"/>}</div>
+    <div className={isLibrary?"admin-image-preview admin-family-image":"admin-image-preview"}>{logo?<img src={logo} style={imageFraming(imageZoom,imageCrop)} alt={section==='brands'?'پیش‌نمایش لوگو':'پیش‌نمایش تصویر'}/>:<Tag size={24} aria-hidden="true"/>}</div>
     <div className="admin-image-details">
-     <div className="admin-brand-upload"><label className="admin-image-action"><input type="file" accept="image/png,image/jpeg,image/webp" disabled={!w.editable} onChange={event=>readLogo(event.currentTarget)}/><span>{section==='families'?(logo?'تغییر تصویر':'انتخاب تصویر'):(logo?'تغییر لوگو':'انتخاب لوگو')}</span></label>
+     <div className="admin-brand-upload"><label className="admin-image-action"><input type="file" accept="image/png,image/jpeg,image/webp" disabled={!w.editable} onChange={event=>readLogo(event.currentTarget)}/><span>{isLibrary?(logo?'تغییر تصویر':'انتخاب تصویر'):(logo?'تغییر لوگو':'انتخاب لوگو')}</span></label>
      <p>PNG، JPEG یا WebP تا ۲ مگابایت</p></div>
-     {section==='families'&&logo&&<><label className="admin-family-zoom">
+     {isLibrary&&logo&&<><label className="admin-family-zoom">
       بزرگ‌نمایی تصویر
       <input type="range" min={1} max={3} step={0.05} value={imageZoom} disabled={!w.editable}
        onChange={event=>setImageZoom(Number(event.target.value))}/>
@@ -361,10 +371,10 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
      name:v.name,detail:v.detail,status:v.status,value:v.value??editing?.value??'',
      ...(hasImage&&logo?{logo,domain:logoDomain,imageZoom,imageCrop}:{}),
     };
-    if(section==='families'){
+    if(section==='families'||section==='notes'){
      setSavingFamily(true);setFamilySaveError('');
      try {
-      await saveFamily(row);
+      await saveRecord(section,row);
      } catch {
       setFamilySaveError('ذخیره در مرورگر انجام نشد. دوباره تلاش کنید.');
       return;
@@ -381,19 +391,21 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
  return <>{!schema.readOnly&&<div className="admin-actions"><button className="admin-primary" disabled={!w.editable} onClick={()=>openRecord(null)}>افزودن {schema.title}</button></div>}
   {!inlineEdit&&editor}
   {selected&&<Panel title={selected.name}><button onClick={()=>setSelected(undefined)}>بستن جزئیات</button><p>{selected.detail}</p>{section==='customers'?<><p>شناسه: {selected.id} · {selected.value}</p><a href={link('seller','orders')}>سفارش‌های فروشگاه</a></>:<><AdminBadge>{rows.find(r=>r.id===selected.id)?.status}</AdminBadge><AdminForm key={selected.id} disabled={!w.editable} fields={[{key:'value',label:'متن پاسخ',type:'textarea',required:true},{key:'status',label:'وضعیت درخواست',type:'select',required:true,options:['باز','در حال بررسی','بسته شده']}]} initial={{value:selected.value,status:selected.status}} onSave={v=>{update(selected,v.status,v.value);setSelected(undefined);}}/></>}</Panel>}
-  <DataTable label={schema.title} rows={rows} renderCard={hasImage?record=><article className="admin-product-card admin-brand-card">
+  <DataTable label={schema.title} rows={rows} renderCard={record=>{
+   const note=scentNotes.find(item=>item.id===record.noteId);
+   return <article className="admin-product-card admin-brand-card">
    <div className="admin-product-card-header" data-draft={record.status==='پیش‌نویس'||undefined}>
-    <span className={section==='families'?"admin-brand-logo admin-family-image":"admin-brand-logo"}>{record.logo&&<img key={record.logo} src={record.logo} style={imageFraming(record.imageZoom,record.imageCrop)} alt="" width={42} height={42} referrerPolicy="no-referrer" onError={event=>{event.currentTarget.hidden=true;}}/>}<bdi aria-hidden="true">{Array.from(record.name)[0]?.toLocaleUpperCase()}</bdi></span>
+    <span className={isLibrary?"admin-brand-logo admin-family-image":"admin-brand-logo"}>{record.logo&&<img key={record.logo} src={record.logo} style={imageFraming(record.imageZoom,record.imageCrop)} alt="" width={42} height={42} referrerPolicy="no-referrer" onError={event=>{event.currentTarget.hidden=true;}}/>}<bdi aria-hidden="true">{note?<ScentNoteIcon note={note} decorative/>:Array.from(record.name)[0]?.toLocaleUpperCase()}</bdi></span>
     <div className="admin-product-card-title"><h3><bdi>{record.name}</bdi></h3><small><bdi>{record.id}</bdi></small></div>
     <AdminBadge>{record.status}</AdminBadge>
    </div>
    {record.detail&&<p>{record.detail}</p>}
    <div className="admin-product-card-footer">
-    {record.representativeNotes?<span>نت‌های شاخص: {record.representativeNotes}</span>:record.value&&<span dir="auto">{record.value}</span>}
+    {record.representativeNotes?<span>نت‌های شاخص: {record.representativeNotes}</span>:record.value&&<span dir="auto">{section==='notes'&&'خانواده‌ها: '}{record.value}</span>}
     {actions(record)}
    </div>
    {inlineEdit&&editing?.id===record.id&&<div className="admin-family-inline-editor">{editor}</div>}
-  </article>:undefined} columns={[{key:'name',label:'عنوان / شناسه',render:r=><><strong dir="auto">{r.name}</strong><small className="admin-id">{r.id}</small></>},{key:'detail',label:'توضیح',render:r=>r.detail},statusColumn,{key:'value',label:'اطلاعات',render:r=>r.value||'—'},{key:'action',label:'عملیات',render:actions}]}/>
+  </article>;}} />
  </>;
 }
 
