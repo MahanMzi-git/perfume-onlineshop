@@ -148,7 +148,7 @@
 .card-brand-row .card-audience-shoe { margin:0; color:#FFF; filter:drop-shadow(0 1px 2px rgb(0 0 0 / 70%)); }
 
 /* A product-level mark remains visible when another volume is in the shared cart. */
-.card-cart-bag { inset:0 auto auto 0; }
+.card-cart-bag { position:absolute; inset:0; background:currentColor; mask:url('../components/shopaholic.svg') center / contain no-repeat; }
 .card-cart-icon .card-cart-presence { inset:auto -5px -4px auto; @apply tw:box-content; padding:1px; border:1px solid #9B7428; @apply tw:rounded-[50%]; background:#9B7428; color:#F5F0E8; stroke-width:2.6; animation:card-cart-confirm .24s ease both; }
 @keyframes card-cart-confirm { from { opacity:0; transform:rotate(-65deg) scale(.45); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion:reduce) { .card-cart-icon .card-cart-presence { animation:none; } }
