@@ -1,3 +1,11 @@
+const localBrandLogos: Record<string, string> = {
+  'study-dior': 'dior.jpg',
+  'study-creed': 'creed.jpg',
+  'study-gucci': 'gucci.png',
+  'study-chanel': 'chanel.jpg',
+  'study-ysl': 'ysl-monogram.jpeg',
+};
+
 const officialBrands: Record<string, { domain: string; logo?: string }> = {
   'study-chanel': { domain: 'www.chanel.com' },
   'study-dior': { domain: 'www.dior.com' },
@@ -9,7 +17,11 @@ const officialBrands: Record<string, { domain: string; logo?: string }> = {
 
 export function officialBrandLogo(id: string) {
   const brand = officialBrands[id];
-  return brand && { domain: brand.domain, logo: brand.logo ?? siteIcon(brand.domain) };
+  const localLogo = localBrandLogos[id];
+  return brand && {
+    domain: brand.domain,
+    logo: localLogo ? import.meta.env.BASE_URL + "images/brands/" + localLogo : brand.logo ?? siteIcon(brand.domain),
+  };
 }
 
 export function siteIcon(domain: string) {
