@@ -1,3 +1,4 @@
+import { familyImageUrl, noteImageUrl } from '../data/fragranceImages';
 import type { AdminRecord } from './model';
 
 async function openRecordStorage(): Promise<IDBDatabase> {
@@ -18,7 +19,16 @@ export async function loadSavedRecords(section: 'families' | 'notes'): Promise<A
   try {
     return await new Promise((resolve, reject) => {
       const request = db.transaction(section).objectStore(section).getAll();
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const records: AdminRecord[] = request.result;
+        const prefix = import.meta.env.BASE_URL + (section === 'notes' ? 'images/seller-notes/' : 'images/seller-families/');
+        const imageUrl = section === 'notes' ? noteImageUrl : familyImageUrl;
+        resolve(records.map(record => {
+          if (!record.logo?.startsWith(prefix)) return record;
+          const slug = record.logo.slice(prefix.length).match(/^([a-z0-9-]+)\.png$/)?.[1];
+          return slug ? { ...record, logo: imageUrl(slug) } : record;
+        }));
+      };
       request.onerror = () => reject(request.error);
     });
   } finally {
