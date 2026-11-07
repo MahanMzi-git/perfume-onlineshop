@@ -8,11 +8,18 @@ import { NotePicker } from './NotePicker';
 
 export function AdminBadge({children}:{children:ReactNode}) { return <span className="admin-badge">{children}</span>; }
 export function Panel({title,children}:{title:string;children:ReactNode}) { return <section className="admin-panel"><h2>{title}</h2>{children}</section>; }
-export function InlineEditor({children}:{children:ReactNode}) {
+export function InlineEditor({children,onClose}:{children:ReactNode;onClose?:()=>void}) {
  const region=useRef<HTMLDivElement>(null);
+ const desktop=typeof matchMedia==='function'&&matchMedia('(min-width: 901px)').matches;
  useEffect(()=>{
   const target=region.current;
   if(!target)return;
+  const desktop=matchMedia('(min-width: 901px)').matches;
+  const previous=document.activeElement as HTMLElement|null;
+  if(desktop){
+   requestAnimationFrame(()=>target.querySelector<HTMLElement>('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), [tabindex="0"]')?.focus({preventScroll:true}));
+   return()=>previous?.focus({preventScroll:true});
+  }
   const bounds=(target.querySelector('form')??target).getBoundingClientRect();
   const top=(document.querySelector('.admin-topbar')?.getBoundingClientRect().bottom??0)+12;
   const availableHeight=window.innerHeight-top-12;
@@ -20,7 +27,9 @@ export function InlineEditor({children}:{children:ReactNode}) {
   const offset=(bounds.top-centeredTop)*0.64;
   if(offset)window.scrollBy({top:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
  },[]);
- return <div className="admin-family-inline-editor" ref={region}>{children}</div>;
+ return <div className="admin-family-inline-editor" ref={region} role={desktop?'dialog':undefined} aria-modal={desktop||undefined} aria-label={desktop?'فرم ویرایش':undefined}
+  onClick={event=>{if(event.target===event.currentTarget&&matchMedia('(min-width: 901px)').matches)onClose?.();}}
+  onKeyDown={event=>{if(!matchMedia('(min-width: 901px)').matches)return;if(event.key==='Escape'){event.preventDefault();onClose?.();return;}containDialogFocus(event);}}>{children}</div>;
 }
 export interface Column<T> { key:string; label:string; render:(row:T)=>ReactNode }
 export function DataTable<T extends {id:string;name:string;status:string}>({rows,columns=[],label,renderCard,renderEditor}:{rows:T[];columns?:Column<T>[];label:string;renderCard?:(row:T)=>ReactNode;renderEditor?:(row:T)=>ReactNode}) {

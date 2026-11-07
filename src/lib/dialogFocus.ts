@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from 'react';
 
 /** Keep Tab navigation inside dialogs, including when the dialog itself has focus. */
-export function containDialogFocus(event: KeyboardEvent<HTMLDialogElement>) {
+export function containDialogFocus(event: KeyboardEvent<HTMLElement>) {
   if (event.key !== 'Tab') return;
   const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
     'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]',
