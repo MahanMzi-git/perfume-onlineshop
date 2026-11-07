@@ -235,3 +235,5 @@ html:has(.admin-app) { scroll-padding-top:90px; }
  .admin-table-tools .luxury-select-label { font-size:12px; color:var(--admin-accent); }
  .admin-table-tools .luxury-select-trigger { background:#fff; }
 }
+.admin-two-columns.admin-variant-selectors { grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media (max-width:600px) { .admin-variant-selectors { gap:10px; } }

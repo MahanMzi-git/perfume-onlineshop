@@ -8,8 +8,22 @@ import { NotePicker } from './NotePicker';
 
 export function AdminBadge({children}:{children:ReactNode}) { return <span className="admin-badge">{children}</span>; }
 export function Panel({title,children}:{title:string;children:ReactNode}) { return <section className="admin-panel"><h2>{title}</h2>{children}</section>; }
+export function InlineEditor({children}:{children:ReactNode}) {
+ const region=useRef<HTMLDivElement>(null);
+ useEffect(()=>{
+  const target=region.current;
+  if(!target)return;
+  const bounds=(target.querySelector('form')??target).getBoundingClientRect();
+  const top=(document.querySelector('.admin-topbar')?.getBoundingClientRect().bottom??0)+12;
+  const availableHeight=window.innerHeight-top-12;
+  const centeredTop=top+Math.max(0,(availableHeight-bounds.height)/2);
+  const offset=(bounds.top-centeredTop)*0.64;
+  if(offset)window.scrollBy({top:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+ },[]);
+ return <div className="admin-family-inline-editor" ref={region}>{children}</div>;
+}
 export interface Column<T> { key:string; label:string; render:(row:T)=>ReactNode }
-export function DataTable<T extends {id:string;name:string;status:string}>({rows,columns=[],label,renderCard}:{rows:T[];columns?:Column<T>[];label:string;renderCard?:(row:T)=>ReactNode}) {
+export function DataTable<T extends {id:string;name:string;status:string}>({rows,columns=[],label,renderCard,renderEditor}:{rows:T[];columns?:Column<T>[];label:string;renderCard?:(row:T)=>ReactNode;renderEditor?:(row:T)=>ReactNode}) {
  const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[sort,setSort]=useState('asc'),[page,setPage]=useState(1);
  const normalized=(s:string)=>s.toLocaleLowerCase('fa').replace(/ي/g,'ی').replace(/ك/g,'ک');
  const filtered=rows.filter(r=>(status==='all'||r.status===status)&&normalized([r.name,r.id,r.status,...Object.values(r).filter(v=>typeof v==='string')].join(' ')).includes(normalized(query))).sort((a,b)=>a.name.localeCompare(b.name,'fa')*(sort==='asc'?1:-1));
@@ -28,6 +42,7 @@ export function DataTable<T extends {id:string;name:string;status:string}>({rows
     </div>
     <dl>{columns.slice(1).filter(column=>!['status','action','edit'].includes(column.key)).map(column=><div key={column.key}><dt>{column.label}</dt><dd>{column.render(row)}</dd></div>)}</dl>
     {columns.filter(column=>['action','edit'].includes(column.key)).map(column=><div className="admin-product-card-footer" key={column.key}>{column.render(row)}</div>)}
+    {renderEditor?.(row)}
    </article>}
   </li>)}</ul>}
   <div className="admin-pagination"><span>{number(filtered.length)} نتیجه · صفحهٔ {number(current)} از {number(pages)}</span><button aria-label="صفحهٔ قبل" disabled={current===1} onClick={()=>setPage(current-1)}><ChevronRight size={16} /></button><button aria-label="صفحهٔ بعد" disabled={current===pages} onClick={()=>setPage(current+1)}><ChevronLeft size={16} /></button></div>

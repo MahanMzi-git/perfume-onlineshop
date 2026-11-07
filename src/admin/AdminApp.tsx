@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BadgePercent, Boxes, ChartNoAxesColumn, ClipboardList, Droplets, Flower2, Layers, LifeBuoy, MessageSquare, PanelTop, PlusSquare, Settings, Tag, Users, LayoutDashboard, Package, ShieldCheck, Menu, ArrowUpLeft, Truck, Star, Activity, Store, Search, X, ImagePlus, Check, AlertCircle } from 'lucide-react';
 import { LuxurySelect } from '../components/LuxurySelect';
 import { ScrollRail } from '../components/ScrollRail';
-import { AdminBadge, AdminForm, ConfirmDialog, DataTable, Panel, type FormField } from './AdminUI';
+import { AdminBadge, AdminForm, ConfirmDialog, DataTable, InlineEditor, Panel, type FormField } from './AdminUI';
 import { type AdminProduct, sellerConcentrations, advanceOrder, canAccess, canEdit, createAdminState, money, number, orderSteps, roles, sellerPages, updateVariant, type AdminGroup, type AdminRecord, type AdminRole, type AdminRoute, type AdminState } from './model';
 import {usageFields} from './UsageChoices';
 import { familyEnglish } from './fragranceLabels';
@@ -39,7 +39,10 @@ export function AdminApp({route}:{route:AdminRoute}) {
      if(result.status!=='fulfilled')continue;
      const section=sections[index];
      const items=new Map(records[section].map(record=>[record.id,record]));
-     for(const record of result.value)items.set(record.id,record);
+     for(const record of result.value){
+      const initial=items.get(record.id);
+      items.set(record.id,{...initial,...record,logo:record.logo??initial?.logo});
+     }
      records[section]=[...items.values()];
     }
     return {...current,records};
@@ -200,13 +203,19 @@ const concentrationField:FormField={key:'concentration',label:'غلظت عطر',
 
 function VariantEditor({workspace:w,inventory}:{workspace:Workspace;inventory:boolean}) {
  const [adding,setAdding]=useState(false);
+ const [inlineId,setInlineId]=useState<string>();
  const [productId,setProductId]=useState(w.state.products[0]?.id??''),[variantId,setVariantId]=useState('');
  const product=w.state.products.find(p=>p.id===productId),variant=product?.variants.find(v=>v.id===variantId)??product?.variants[0];
  if(!product||!variant)return <Missing href={link('seller','products')}/>;
  const rows=w.state.products.flatMap(p=>p.variants.map(v=>({id:v.id,name:p.name,status:v.stock===0?'ناموجود':v.stock<=3?'موجودی کم':'موجود',volume:v.volume,concentration:v.concentration,price:v.price,stock:v.stock,productId:p.id})));
- return <><Panel title={inventory?'اصلاح موجودی':'ویرایش حجم و قیمت'}><div className="admin-two-columns"><LuxurySelect label="محصول" value={product.id} options={w.state.products.map(p=>({value:p.id,label:p.name}))} onChange={v=>{setProductId(v);setVariantId('');}}/><LuxurySelect label="حجم" value={variant.id} options={product.variants.map(v=>({value:v.id,label:number(v.volume)+' میل'+(v.concentration?' · '+v.concentration:'')}))} onChange={setVariantId}/></div>
-  <AdminForm key={variant.id+variant.price+variant.stock+variant.volume+variant.concentration} disabled={!w.editable} initial={{stock:String(variant.stock),price:String(variant.price),volume:String(variant.volume),concentration:variant.concentration??''}} fields={inventory?[{key:'stock',label:'موجودی',type:'number',min:0,max:9999,required:true}]:[{...concentrationField,options:[...new Set([...sellerConcentrations,...(variant.concentration?[variant.concentration]:[])])]}, {key:'volume',label:'حجم (میلی‌لیتر)',type:'number',min:1,max:1000,required:true},{key:'price',label:'قیمت (تومان)',type:'number',min:1,max:999999999,required:true},{key:'stock',label:'موجودی',type:'number',min:0,max:9999,required:true}]} validate={(v):Record<string,string>=>!inventory&&(Number(v.volume)!==variant.volume||v.concentration!==variant.concentration)&&product.variants.some(item=>item.id!==variant.id&&item.volume===Number(v.volume)&&item.concentration===v.concentration)?{volume:'این ترکیب حجم و غلظت قبلاً ثبت شده است.'}:{}} onSave={v=>w.confirm('ثبت تغییر',product.name+' · '+number(variant.volume)+' میل',()=>w.mutate(inventory?'اصلاح موجودی':'اصلاح حجم و قیمت',s=>updateVariant(s,product.id,variant.id,inventory?{stock:Number(v.stock)}:{concentration:v.concentration,volume:Number(v.volume),price:Number(v.price),stock:Number(v.stock)})))}/>
- </Panel>{!inventory&&<Panel title="حجم تازه برای محصول انتخاب‌شده"><p>{product.name}</p><button disabled={!w.editable} onClick={()=>setAdding(v=>!v)}>{adding?'بستن فرم حجم تازه':'افزودن حجم'}</button>{adding&&<AdminForm key={product.id} disabled={!w.editable} initial={{volume:'',price:'',stock:'0',concentration:''}} fields={[concentrationField,{key:'volume',label:'حجم جدید (میلی‌لیتر)',type:'number',min:1,max:1000,required:true},{key:'price',label:'قیمت حجم جدید (تومان)',type:'number',min:1,max:999999999,required:true},{key:'stock',label:'موجودی حجم جدید',type:'number',min:0,max:9999,required:true}]} validate={(v):Record<string,string>=>product.variants.some(item=>item.volume===Number(v.volume)&&item.concentration===v.concentration)?{volume:'این ترکیب حجم و غلظت قبلاً ثبت شده است.'}:{}} onSave={v=>w.confirm('افزودن حجم',product.name+' · '+v.volume+' میل',()=>{const newVariant={id:'LOCAL-VARIANT-'+Date.now(),concentration:v.concentration,volume:Number(v.volume),price:Number(v.price),stock:Number(v.stock)};w.mutate('افزودن حجم',s=>({...s,products:s.products.map(p=>p.id===product.id?{...p,variants:[...p.variants,newVariant]}:p)}));setAdding(false);})}/>}</Panel>}<DataTable rows={rows} label="موجودی و حجم‌ها" columns={[{key:'name',label:'محصول',render:r=>r.name},{key:'volume',label:'حجم',render:r=>number(r.volume)+' میل'},{key:'concentration',label:'غلظت',render:r=>r.concentration??'—'},{key:'price',label:'قیمت',render:r=>money(r.price)},{key:'stock',label:'موجودی',render:r=>number(r.stock)},statusColumn,{key:'edit',label:'عملیات',render:r=><button onClick={()=>{setProductId(r.productId);setVariantId(r.id);window.scrollTo({top:0,behavior:'smooth'});}}>انتخاب برای ویرایش</button>}]} /></>;
+ const editForm=<AdminForm mobileColumns key={variant.id+variant.price+variant.stock+variant.volume+variant.concentration} disabled={!w.editable} initial={{stock:String(variant.stock),price:String(variant.price),volume:String(variant.volume),concentration:variant.concentration??''}} fields={inventory?[{key:'stock',label:'موجودی',type:'number',min:0,max:9999,required:true}]:[{...concentrationField,options:[...new Set([...sellerConcentrations,...(variant.concentration?[variant.concentration]:[])])]}, {key:'volume',label:'حجم (میلی‌لیتر)',type:'number',min:1,max:1000,required:true},{key:'price',label:'قیمت (تومان)',type:'number',min:1,max:999999999,required:true},{key:'stock',label:'موجودی',type:'number',min:0,max:9999,required:true}]} validate={(v):Record<string,string>=>!inventory&&(Number(v.volume)!==variant.volume||v.concentration!==variant.concentration)&&product.variants.some(item=>item.id!==variant.id&&item.volume===Number(v.volume)&&item.concentration===v.concentration)?{volume:'این ترکیب حجم و غلظت قبلاً ثبت شده است.'}:{}} onSave={v=>w.confirm('ثبت تغییر',product.name+' · '+number(variant.volume)+' میل',()=>w.mutate(inventory?'اصلاح موجودی':'اصلاح حجم و قیمت',s=>updateVariant(s,product.id,variant.id,inventory?{stock:Number(v.stock)}:{concentration:v.concentration,volume:Number(v.volume),price:Number(v.price),stock:Number(v.stock)})))}/>;
+ return <><Panel title={inventory?'اصلاح موجودی':'ویرایش حجم و قیمت'}><div className="admin-two-columns admin-variant-selectors"><LuxurySelect label="محصول" value={product.id} options={w.state.products.map(p=>({value:p.id,label:p.name}))} onChange={v=>{setProductId(v);setVariantId('');setInlineId(undefined);}}/><LuxurySelect label="حجم" value={variant.id} options={product.variants.map(v=>({value:v.id,label:number(v.volume)+' میل'+(v.concentration?' · '+v.concentration:'')}))} onChange={id=>{setVariantId(id);setInlineId(undefined);}}/></div>
+  {!inlineId&&editForm}
+ </Panel>{!inventory&&<Panel title="حجم تازه برای محصول انتخاب‌شده"><p>{product.name}</p><button disabled={!w.editable} onClick={()=>setAdding(v=>!v)}>{adding?'بستن فرم حجم تازه':'افزودن حجم'}</button>{adding&&<AdminForm mobileColumns key={product.id} disabled={!w.editable} initial={{volume:'',price:'',stock:'0',concentration:''}} fields={[concentrationField,{key:'volume',label:'حجم جدید (میلی‌لیتر)',type:'number',min:1,max:1000,required:true},{key:'price',label:'قیمت حجم جدید (تومان)',type:'number',min:1,max:999999999,required:true},{key:'stock',label:'موجودی حجم جدید',type:'number',min:0,max:9999,required:true}]} validate={(v):Record<string,string>=>product.variants.some(item=>item.volume===Number(v.volume)&&item.concentration===v.concentration)?{volume:'این ترکیب حجم و غلظت قبلاً ثبت شده است.'}:{}} onSave={v=>w.confirm('افزودن حجم',product.name+' · '+v.volume+' میل',()=>{const newVariant={id:'LOCAL-VARIANT-'+Date.now(),concentration:v.concentration,volume:Number(v.volume),price:Number(v.price),stock:Number(v.stock)};w.mutate('افزودن حجم',s=>({...s,products:s.products.map(p=>p.id===product.id?{...p,variants:[...p.variants,newVariant]}:p)}));setAdding(false);})}/>}</Panel>}<DataTable rows={rows} label="موجودی و حجم‌ها" renderEditor={row=>inlineId===row.id&&
+  <InlineEditor><Panel title={inventory?'اصلاح موجودی':'ویرایش حجم و قیمت'}>
+   <button type="button" onClick={()=>setInlineId(undefined)}>بستن فرم</button>
+   {editForm}
+  </Panel></InlineEditor>} columns={[{key:'name',label:'محصول',render:r=>r.name},{key:'volume',label:'حجم',render:r=>number(r.volume)+' میل'},{key:'concentration',label:'غلظت',render:r=>r.concentration??'—'},{key:'price',label:'قیمت',render:r=>money(r.price)},{key:'stock',label:'موجودی',render:r=>number(r.stock)},statusColumn,{key:'edit',label:'عملیات',render:r=><button disabled={!w.editable} aria-expanded={inlineId===r.id} onClick={()=>{setProductId(r.productId);setVariantId(r.id);setInlineId(current=>current===r.id?undefined:r.id);}}>انتخاب برای ویرایش</button>}]} /></>;
 }
 
 function OrderDetail({id,workspace:w}:{id?:string;workspace:Workspace}) {
@@ -259,8 +268,8 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
  function openRecord(record?:AdminRecord|null){
   if(savingFamily)return;
   setFamilySaveError('');
-  if(record!==undefined&&record===editing){
-   if(record)return;
+  if(record&&record.id===editing?.id)record=undefined;
+  if(record===null&&editing===null){
    editorStart.current?.scrollIntoView({block:'start'});
    editorStart.current?.focus({preventScroll:true});
    return;
@@ -317,7 +326,7 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
  const rows=w.state.records[section]??[];
  const update=(r:AdminRecord,status:string,value=r.value)=>w.confirm('تغییر '+schema.title,r.name+' ← '+status,()=>w.mutate('تغییر '+schema.title,s=>({...s,records:{...s.records,[section]:s.records[section].map(item=>item.id===r.id?{...item,status,value}:item)}})));
  function actions(r:AdminRecord){
-  if(!schema.readOnly)return <button disabled={!w.editable} onClick={()=>openRecord(r)}>ویرایش</button>;
+  if(!schema.readOnly)return <button disabled={!w.editable||savingFamily} aria-expanded={editing?.id===r.id} onClick={()=>openRecord(r)}>ویرایش</button>;
   if(section==='reviews')return <div className="admin-actions"><button disabled={!w.editable||r.status==='تأیید شده'} onClick={()=>update(r,'تأیید شده')}>تأیید</button><button disabled={!w.editable||r.status==='رد شده'} onClick={()=>update(r,'رد شده')}>رد دیدگاه</button></div>;
   if(section==='support')return <button onClick={()=>setSelected(r)}>جزئیات و پاسخ</button>;
   if(section==='customers')return <button onClick={()=>setSelected(r)}>نمایش اطلاعات</button>;
@@ -404,7 +413,7 @@ function RecordsPage({section,workspace:w}:{section:string;workspace:Workspace})
     {record.representativeNotes?<span>نت‌های شاخص: {record.representativeNotes}</span>:record.value&&<span dir="auto">{section==='notes'&&'خانواده‌ها: '}{record.value}</span>}
     {actions(record)}
    </div>
-   {inlineEdit&&editing?.id===record.id&&<div className="admin-family-inline-editor">{editor}</div>}
+   {inlineEdit&&editing?.id===record.id&&<InlineEditor>{editor}</InlineEditor>}
   </article>;}} />
  </>;
 }
