@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from 'react';
-import { Check, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { Check, Minus, Plus } from 'lucide-react';
 import type { Product, ProductVariant } from '../types/product';
 import { useStore } from './StoreContext';
 
@@ -43,7 +43,7 @@ export function CardCartControl({ product, variant }: { product: Product; varian
         <span>{unavailable ? 'ناموجود' : 'افزودن به سبد'}</span>
       </button>
       <span className="card-cart-status" aria-hidden="true">
-        <span className="card-cart-icon"><ShoppingBag className="card-cart-bag" size={16} />{inBag && <Check className="card-cart-presence" size={12} />}</span>
+        <span className="card-cart-icon"><span className="card-cart-bag" />{inBag && <Check className="card-cart-presence" size={12} />}</span>
       </span>
       {added && <div className="card-cart-stepper">
         <button ref={plusButton} type="button" className="card-cart-plus" disabled={unavailable || atLimit} aria-label={`افزایش تعداد: ${context}`} onClick={increment}><Plus size={15} aria-hidden="true" /></button>
