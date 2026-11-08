@@ -4,6 +4,7 @@ const localBrandLogos: Record<string, string> = {
   'study-gucci': 'gucci.png',
   'study-chanel': 'chanel.jpg',
   'study-ysl': 'ysl-monogram.jpeg',
+  'study-chloe': 'chloe.svg',
 };
 
 const officialBrands: Record<string, { domain: string; logo?: string }> = {
@@ -12,7 +13,7 @@ const officialBrands: Record<string, { domain: string; logo?: string }> = {
   'study-creed': { domain: 'creedboutique.com', logo: 'https://creedboutique.com/cdn/shop/files/creed-favicon.png?height=32&width=32' },
   'study-ysl': { domain: 'www.ysl.com' },
   'study-gucci': { domain: 'www.gucci.com' },
-  'study-chloe': { domain: 'www.chloe.com', logo: 'https://www.chloe.com/on/demandware.static/Sites-ChloeUS-Site/-/default/dw810b8c3b/images/favicons/favicon.svg?v=2' },
+  'study-chloe': { domain: 'www.chloe.com' },
 };
 
 export function officialBrandLogo(id: string) {
