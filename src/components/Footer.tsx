@@ -5,7 +5,7 @@ export function Footer({ onInfo }: { onInfo: (id: string) => void }) {
   const title = (text: string) => <><span>{text}</span><ChevronDown size={17} aria-hidden="true" /></>;
   return <footer className="footer">
     <div className="container footer-intro">
-      <div className="footer-brand"><p className="logo" dir="ltr">AROMA<span>THE FRAGRANCE EDIT</span></p><span className="badge">فروشگاه نمایشی</span></div>
+      <div className="footer-brand"><p className="logo" dir="ltr">AROMA<span>THE FRAGRANCE EDIT</span></p><span className="badge">فروشگاه اینترنتی آروما</span></div>
       <p>روایتِ تو، به زبانِ رایحه.<br />فضایی برای شناخت و کشف دنیای عطر.</p>
     </div>
     <div className="container foot-grid">

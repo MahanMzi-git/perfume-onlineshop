@@ -260,7 +260,7 @@ input[type=checkbox]{
   border-color:#80683D}
 .brand-section{
   @apply tw:grid;
-  grid-template-columns:230px 1fr;
+  grid-template-columns:230px minmax(0,1fr);
   @apply tw:gap-[40px] tw:items-center;
   padding-block:30px;
   border-block:1px solid var(--line)}
@@ -270,16 +270,55 @@ input[type=checkbox]{
   font-size:.65rem;
   @apply tw:text-aroma-muted}
 .brand-list{
-  @apply tw:grid;
-  grid-template-columns:repeat(4,1fr);
-  @apply tw:gap-[18px]}
+  min-width:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+  scroll-behavior:auto;
+  container-type:inline-size}
+.brand-list::-webkit-scrollbar{
+  display:none}
+.brand-marquee-track,.brand-marquee-group{
+  display:flex;
+  width:max-content}
+.brand-marquee-group{
+  flex:none;
+  align-items:center;
+  justify-content:space-around;
+  min-width:100cqw;
+  gap:clamp(18px,3vw,40px);
+  padding-inline:12px}
+.brand-list button:focus-visible{
+  outline-offset:-3px}
+@media(prefers-reduced-motion:reduce){
+  .brand-marquee-group[aria-hidden=true]{display:none}
+  .brand-list{scrollbar-width:thin}
+  .brand-list::-webkit-scrollbar{display:block;height:5px}
+}
 .brand-list button{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
   @apply tw:font-aroma-serif;
   font-size:1.5rem;
+  white-space:nowrap;
   background:none;
   border:0;
   @apply tw:min-h-[55px];
   padding:8px}
+.brand-marquee-logo-frame{
+  width:36px;
+  height:36px;
+  flex:none;
+  overflow:hidden;
+  border-radius:50%;
+  background:white}
+.brand-marquee-logo-frame:has(img[hidden]){display:none}
+.brand-marquee-logo{
+  width:100%;
+  height:100%;
+  object-fit:contain}
+.brand-marquee-logo-frame[data-brand="study-ysl"] .brand-marquee-logo{
+  transform:scale(2.15)}
 .brand-list button:hover,.brand-list button[aria-pressed=true]{
   color:#80683D;
   text-decoration:underline;
@@ -735,10 +774,8 @@ dialog::backdrop{
   grid-template-columns:repeat(3,1fr);
   @apply tw:gap-[16px]}
 .brand-section{
-  grid-template-columns:1fr;
+  grid-template-columns:minmax(0,1fr);
   @apply tw:text-center tw:gap-[20px]}
-.brand-list{
-  @apply tw:gap-[12px]}
 .grid{
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:30px 20px}
@@ -828,9 +865,6 @@ dialog::backdrop{
 .tile span{
   font-size:.63rem;
   padding:11px 2px}
-.brand-list{
-  grid-template-columns:repeat(2,1fr);
-  @apply tw:gap-[5px]}
 .brand-list button{
   font-size:1.5rem}
 .brand-section{

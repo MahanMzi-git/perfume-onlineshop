@@ -7,6 +7,7 @@ import { CategoryTile } from './components/CategoryTile';
 import { ProductCard } from './components/ProductCard';
 import { FragranceDiscovery } from './components/FragranceDiscovery';
 import { BrandBenefits } from './components/BrandBenefits';
+import { BrandMarquee } from './components/BrandMarquee';
 import { Footer } from './components/Footer';
 import { Dialog, SectionHeading, TextLink } from './components/SharedUI';
 import { collections } from './data/collections';
@@ -149,9 +150,18 @@ export default function App() {
       <section className="section container" aria-label="دسته‌بندی عطرها"><SectionHeading eyebrow="YOUR SCENT, YOUR WORLD" title="دنیای عطر، به انتخاب شما"><TextLink href="#discovery">شناخت رایحه‌ها</TextLink></SectionHeading>
         <div id="categories-title" className="tiles">{categories.map(c => <CategoryTile key={c.id} category={c} active={activeCat === c.id} onSelect={selectCat} />)}</div>
       </section>
-      <section id="brands" className="brand-section container" aria-label="برندهای نمایشی"><div><p className="eyebrow">THE BRAND EDIT</p><h2>{isCardStudy ? 'هر نام، یک جهان رایحه' : 'چهار نام، چهار جهان'}</h2><small>{isCardStudy ? 'نام‌های واقعی برای آزمون طراحی؛ خرید و موجودی نمایشی' : 'برندهای خیالی این مجموعه'}</small></div><div className="brand-list">{brands.map(b => <button key={b.id} dir="ltr" aria-pressed={filters.brandId === b.id} onClick={() => { setWishlistOnly(false); set({ brandId: filters.brandId === b.id ? undefined : b.id }); navigateToSection('products'); }}>{b.name}</button>)}</div></section>
+      <section id="brands" className="brand-section container" aria-label="برندهای نمایشی">
+        <div>
+          <h2>{isCardStudy ? 'هر نام، یک جهان رایحه' : 'چهار نام، چهار جهان'}</h2>
+        </div>
+        <BrandMarquee selectedBrandId={filters.brandId} onSelect={id => {
+          setWishlistOnly(false);
+          set({ brandId: filters.brandId === id ? undefined : id });
+          navigateToSection('products');
+        }} />
+      </section>
       <section id="products" className="section product-section"><div className="container"><SectionHeading eyebrow="THE FRAGRANCE SELECTION" title={wishlistOnly ? 'عطرهای مورد علاقهٔ شما' : 'منتخب عطرهای آروما'}><button className="text-link" onClick={reset}>مشاهدهٔ همه <ArrowUpLeft aria-hidden="true" size={17} /></button></SectionHeading>
-        <div className="catalog-toolbar"><div className="chips" role="group" aria-label="نوع مجموعه"><button className="chip catalog-tab" aria-pressed={!filters.bestseller && !filters.featured && !wishlistOnly && !filters.audience && !filters.brandId && !filters.familyId && !filters.noteIds?.length && !filters.query && !filters.niche && !filters.giftSet} onClick={reset}>همهٔ عطرها</button><button className="chip catalog-tab" aria-pressed={!!filters.bestseller} onClick={() => { setWishlistOnly(false); set({ bestseller: filters.bestseller ? undefined : true, featured: undefined }); }}>پرفروش‌ها · نمایشی</button><button className="chip catalog-tab" aria-pressed={!!filters.featured} onClick={() => { setWishlistOnly(false); set({ featured: filters.featured ? undefined : true, bestseller: undefined }); }}>پیشنهاد آروما</button></div><span className="badge">محصولات و قیمت‌های نمایشی</span></div>
+        <div className="catalog-toolbar"><div className="chips" role="group" aria-label="نوع مجموعه"><button className="chip catalog-tab" aria-pressed={!filters.bestseller && !filters.featured && !wishlistOnly && !filters.audience && !filters.brandId && !filters.familyId && !filters.noteIds?.length && !filters.query && !filters.niche && !filters.giftSet} onClick={reset}>همهٔ عطرها</button><button className="chip catalog-tab" aria-pressed={!!filters.bestseller} onClick={() => { setWishlistOnly(false); set({ bestseller: filters.bestseller ? undefined : true, featured: undefined }); }}>پرفروش‌ها · نمایشی</button><button className="chip catalog-tab" aria-pressed={!!filters.featured} onClick={() => { setWishlistOnly(false); set({ featured: filters.featured ? undefined : true, bestseller: undefined }); }}>پیشنهاد آروما</button></div></div>
         <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
         <div id="home-product-results" className="home-product-results">
         <ActiveFilters filters={filters} wishlistOnly={wishlistOnly} count={results.length} onRemoveNote={toggleNote} onRemove={key => set({ [key]: key === 'query' ? '' : undefined })} onReset={reset} />
