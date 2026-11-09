@@ -8,7 +8,7 @@ export function SectionHeading({ eyebrow, title, children }: { eyebrow: string; 
 export function TextLink({ href, children }: { href: string; children: ReactNode }) {
   return <a className="text-link" href={href}>{children}<ArrowUpLeft size={17} aria-hidden="true" /></a>;
 }
-export function Dialog({ title, children, onClose }: { title: string; children: ReactNode; onClose: () => void }) {
+export function Dialog({ title, children, onClose, className }: { title: string; children: ReactNode; onClose: () => void; className?: string }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
@@ -18,7 +18,7 @@ export function Dialog({ title, children, onClose }: { title: string; children: 
     dialog?.showModal();
     return () => { dialog?.close(); document.body.style.overflow = overflow; previous?.focus(); };
   }, []);
-  return <dialog ref={ref} className="dialog" aria-labelledby="dialog-title" onKeyDown={containDialogFocus} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+  return <dialog ref={ref} className={className ? 'dialog ' + className : 'dialog'} aria-labelledby="dialog-title" onKeyDown={containDialogFocus} onCancel={onClose} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
     <button className="icon-btn dialog-close" aria-label="بستن" onClick={onClose}><X aria-hidden="true" /></button>
     <p className="eyebrow">AROMA · نسخهٔ نمایشی</p><h2 id="dialog-title">{title}</h2><div className="dialog-content">{children}</div>
   </dialog>;
