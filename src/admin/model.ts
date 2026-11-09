@@ -13,7 +13,7 @@ export function canEdit(role: AdminRole, group: AdminGroup) { return canAccess(r
 export const sellerPages = [
  ['overview','نمای کلی'],['products','محصولات'],['product-new','افزودن محصول'],['brands','برندها'],['families','خانواده‌های رایحه'],['notes','نت‌های بویایی'],['variants','حجم و قیمت'],['inventory','موجودی'],['orders','سفارش‌ها'],['customers','جستجوی مشتری'],['campaigns','تخفیف و کمپین'],['reviews','مدیریت دیدگاه‌ها'],['content','محتوای صفحهٔ اول'],['shipping','تنظیمات ارسال'],['support','پشتیبانی'],['reports','گزارش فروش'],['settings','فروشگاه و پروفایل'],
 ] as const;
-export interface AdminRoute { group:AdminGroup; section:string; id?:string }
+export interface AdminRoute { group:AdminGroup; section:string; id?:string; galleryPreview?:boolean }
 export function parseAdminPath(segments:string[]): AdminRoute | undefined {
  const group=segments[0]; if(group!=='seller')return;
  const section=segments[1]??'overview';

@@ -79,6 +79,59 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-image-action:focus-within { outline:2px solid #915522; outline-offset:2px; }
 .admin-image-action:has(input:disabled) { opacity:.55; cursor:default; }
 .admin-image-picker > .admin-error { grid-column:1/-1; }
+.admin-gallery-preview { padding:12px; }
+.admin-gallery-preview .admin-image-details { gap:6px; }
+.admin-gallery-sort-hint { grid-column:1/-1; color:#624827; }
+.admin-gallery-photos {
+ grid-column:1/-1; display:grid; gap:8px; min-width:0; max-inline-size:718px;
+ grid-template-columns:repeat(auto-fill,minmax(max(90px,calc((100% - 40px) / 6)),1fr));
+ list-style:none; padding:3px; margin:0;
+}
+.admin-gallery-photo {
+ min-width:0;
+ border:1px solid #DFC39F; border-radius:12px; background:#fffaf4;
+}
+.admin-gallery-photo[data-cover] { border-color:#BC8B58; }
+.admin-gallery-photo[data-dragging] { opacity:.55; }
+.admin-gallery-photo[data-drop-target] { outline:2px dashed #915522; outline-offset:1px; background:#F2D8B6; }
+.admin-gallery-thumbnail { position:relative; }
+.admin-gallery-thumbnail img {
+ display:block; width:100%; height:auto; aspect-ratio:1; object-fit:cover; border-radius:11px;
+}
+.admin-gallery-caption {
+ position:absolute; inset-inline-start:4px; bottom:4px; display:flex; align-items:center;
+ gap:4px; padding:2px 4px; border-radius:999px; background:#fffaf4; color:#624017;
+ font-size:11px; font-weight:700; white-space:nowrap;
+}
+.admin-gallery-position { display:grid; place-items:center; width:18px; height:18px; border-radius:50%; background:#F2D8B6; }
+.admin-app .admin-gallery-thumbnail button {
+ position:absolute; top:0; display:grid; place-items:center; width:44px; height:44px;
+ padding:0; border:0; border-radius:10px; background:transparent;
+}
+.admin-gallery-delete { left:0; }
+.admin-gallery-promote { right:0; }
+.admin-gallery-thumbnail button svg {
+ box-sizing:content-box; padding:5px; border-radius:50%; background:#fffaf4; color:#624017;
+ box-shadow:0 1px 4px rgb(0 0 0 / 22%);
+}
+.admin-gallery-delete svg { color:#853541; }
+.admin-app button.admin-gallery-grip {
+ display:grid; place-items:center; width:100%; min-height:44px; padding:0;
+ border:0; border-radius:0 0 11px 11px; background:transparent; color:#794717;
+ cursor:grab; touch-action:none; user-select:none;
+}
+.admin-app button.admin-gallery-grip:active { cursor:grabbing; }
+.admin-app .admin-gallery-photo button:focus-visible { outline:2px solid var(--admin-accent); outline-offset:-3px; }
+@media (max-width:600px) {
+ .admin-gallery-photos { grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+ .admin-app .admin-gallery-thumbnail button { width:50%; max-width:44px; }
+ .admin-gallery-thumbnail button svg { width:12px; height:12px; padding:4px; }
+ .admin-gallery-caption {
+  inset-inline-start:2px; bottom:2px; gap:2px; padding:1px 3px; font-size:9px;
+  pointer-events:none;
+ }
+ .admin-gallery-position { width:14px; height:14px; }
+}
 .admin-facts { display:grid; grid-template-columns:auto 1fr; gap:10px 24px; margin-block:24px; }
 .admin-facts dt { color:#766B5D; }.admin-facts dd { margin:0; }
 .admin-timeline { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); padding:0; list-style:none; margin-block:28px; }
