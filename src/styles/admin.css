@@ -116,8 +116,9 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 }
 .admin-gallery-delete svg { color:#853541; }
 .admin-app button.admin-gallery-grip {
- display:grid; place-items:center; width:100%; min-height:44px; padding:0;
- border:0; border-radius:0 0 11px 11px; background:transparent; color:#794717;
+ position:relative; display:grid; place-items:center;
+ width:min(44px,100%); height:24px; min-height:0; margin:-10px auto 0; padding:6px 0 0;
+ border:0; border-radius:999px; background:transparent; color:#794717;
  cursor:grab; touch-action:none; user-select:none;
 }
 .admin-app button.admin-gallery-grip:active { cursor:grabbing; }

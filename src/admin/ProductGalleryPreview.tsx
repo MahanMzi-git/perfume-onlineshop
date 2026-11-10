@@ -168,7 +168,7 @@ export function ProductGalleryPreview({ image, editable }: { image?: string; edi
                 handle.scrollIntoView({ block: 'nearest', inline: 'nearest' });
               });
             }}>
-            <GripHorizontal size={20} aria-hidden="true"/>
+            <GripHorizontal size={16} aria-hidden="true"/>
           </button>}
         </li>;
       })}
