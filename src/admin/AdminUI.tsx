@@ -5,10 +5,11 @@ import { containDialogFocus } from '../lib/dialogFocus';
 import { number } from './model';
 import { UsageChoices } from './UsageChoices';
 import { NotePicker } from './NotePicker';
+import { VariantCode } from '../components/VariantCode';
 
 export function AdminBadge({children}:{children:ReactNode}) { return <span className="admin-badge">{children}</span>; }
 export function Panel({title,children}:{title:string;children:ReactNode}) { return <section className="admin-panel"><h2>{title}</h2>{children}</section>; }
-export function InlineEditor({children,onClose}:{children:ReactNode;onClose?:()=>void}) {
+export function InlineEditor({children,onClose,label='فرم ویرایش'}:{children:ReactNode;onClose?:()=>void;label?:string}) {
  const region=useRef<HTMLDivElement>(null);
  const desktop=typeof matchMedia==='function'&&matchMedia('(min-width: 901px)').matches;
  useEffect(()=>{
@@ -27,27 +28,32 @@ export function InlineEditor({children,onClose}:{children:ReactNode;onClose?:()=
   const offset=(bounds.top-centeredTop)*0.64;
   if(offset)window.scrollBy({top:offset,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
  },[]);
- return <div className="admin-family-inline-editor" ref={region} role={desktop?'dialog':undefined} aria-modal={desktop||undefined} aria-label={desktop?'فرم ویرایش':undefined}
+ return <div className="admin-family-inline-editor" ref={region} role={desktop?'dialog':undefined} aria-modal={desktop||undefined} aria-label={desktop?label:undefined}
   onClick={event=>{if(event.target===event.currentTarget&&matchMedia('(min-width: 901px)').matches)onClose?.();}}
   onKeyDown={event=>{if(!matchMedia('(min-width: 901px)').matches)return;if(event.key==='Escape'){event.preventDefault();onClose?.();return;}containDialogFocus(event);}}>{children}</div>;
 }
 export interface Column<T> { key:string; label:string; render:(row:T)=>ReactNode }
-export function DataTable<T extends {id:string;name:string;status:string}>({rows,columns=[],label,renderCard,renderEditor}:{rows:T[];columns?:Column<T>[];label:string;renderCard?:(row:T)=>ReactNode;renderEditor?:(row:T)=>ReactNode}) {
- const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[sort,setSort]=useState('asc'),[page,setPage]=useState(1);
+export function DataTable<T extends {id:string;name:string;status:string;code?:string;createdAt?:number}>({rows,columns=[],label,initialStatus='all',renderCard,renderEditor}:{rows:T[];columns?:Column<T>[];label:string;initialStatus?:string;renderCard?:(row:T)=>ReactNode;renderEditor?:(row:T)=>ReactNode}) {
+ const [query,setQuery]=useState(''),[status,setStatus]=useState(initialStatus),[sort,setSort]=useState('asc'),[page,setPage]=useState(1);
+ const statuses=new Set(rows.map(row=>row.status));
+ if(status!=='all')statuses.add(status);
  const normalized=(s:string)=>s.toLocaleLowerCase('fa').replace(/ي/g,'ی').replace(/ك/g,'ک');
- const filtered=rows.filter(r=>(status==='all'||r.status===status)&&normalized([r.name,r.id,r.status,...Object.values(r).filter(v=>typeof v==='string')].join(' ')).includes(normalized(query))).sort((a,b)=>a.name.localeCompare(b.name,'fa')*(sort==='asc'?1:-1));
+ const filtered=rows.filter(r=>(status==='all'||r.status===status)&&normalized([r.name,r.id,r.status,...Object.values(r).filter(v=>typeof v==='string')].join(' ')).includes(normalized(query)));
+ filtered.sort((a,b)=>sort==='newest'
+  ? (b.createdAt??0)-(a.createdAt??0)
+  : a.name.localeCompare(b.name,'fa')*(sort==='desc'?-1:1));
  const pages=Math.max(1,Math.ceil(filtered.length/5)),current=Math.min(page,pages);
  const visibleRows=filtered.slice((current-1)*5,current*5);
  return <section className="admin-panel admin-data" aria-label={label}>
   <div className="admin-table-tools"><label className="admin-search"><Search size={17} aria-hidden="true" /><input type="search" aria-label={'جست‌وجو در '+label} value={query} placeholder={'جست‌وجو در '+label+'…'} maxLength={100} onChange={e=>{setQuery(e.target.value);setPage(1);}} /></label>
-   <LuxurySelect label="وضعیت" value={status} options={[{value:'all',label:'همهٔ وضعیت‌ها'},...[...new Set(rows.map(r=>r.status))].map(s=>({value:s,label:s}))]} onChange={v=>{setStatus(v);setPage(1);}} />
-   <LuxurySelect label="مرتب‌سازی نام" value={sort} options={[{value:'asc',label:'نام؛ صعودی'},{value:'desc',label:'نام؛ نزولی'}]} onChange={v=>{setSort(v);setPage(1);}} />
+   <LuxurySelect label="وضعیت" value={status} options={[{value:'all',label:'همهٔ وضعیت‌ها'},...Array.from(statuses,s=>({value:s,label:s}))]} onChange={v=>{setStatus(v);setPage(1);}} />
+   <LuxurySelect label="مرتب‌سازی" value={sort} options={[{value:'asc',label:'نام؛ صعودی'},{value:'desc',label:'نام؛ نزولی'},{value:'newest',label:'جدیدترین'}]} onChange={v=>{setSort(v);setPage(1);}} />
   </div>
   {!filtered.length?<div className="admin-empty"><Search aria-hidden="true" /><h3>موردی پیدا نشد</h3><p>عبارت یا فیلتر وضعیت را تغییر دهید.</p><button onClick={()=>{setQuery('');setStatus('all');}}>پاک کردن فیلترها</button></div>:<ul className="admin-product-grid" aria-label={label}>{visibleRows.map(row=><li key={row.id}>
    {renderCard?renderCard(row):<article className="admin-product-card admin-record-summary">
     <div className="admin-product-card-header" data-draft={row.status==='پیش‌نویس'||undefined}>
      <div className="admin-product-card-title"><h3>{columns[0]?.render(row)}</h3></div>
-     <AdminBadge>{row.status}</AdminBadge>
+     <div className="admin-record-card-labels"><AdminBadge>{row.status}</AdminBadge>{row.code&&<VariantCode code={row.code}/>}</div>
     </div>
     <dl>{columns.slice(1).filter(column=>!['status','action','edit'].includes(column.key)).map(column=><div key={column.key}><dt>{column.label}</dt><dd>{column.render(row)}</dd></div>)}</dl>
     {columns.filter(column=>['action','edit'].includes(column.key)).map(column=><div className="admin-product-card-footer" key={column.key}>{column.render(row)}</div>)}
@@ -57,10 +63,18 @@ export function DataTable<T extends {id:string;name:string;status:string}>({rows
   <div className="admin-pagination"><span>{number(filtered.length)} نتیجه · صفحهٔ {number(current)} از {number(pages)}</span><button aria-label="صفحهٔ قبل" disabled={current===1} onClick={()=>setPage(current-1)}><ChevronRight size={16} /></button><button aria-label="صفحهٔ بعد" disabled={current===pages} onClick={()=>setPage(current+1)}><ChevronLeft size={16} /></button></div>
  </section>;
 }
-export interface FormField { key:string; sectionTitle?:string; fullWidth?:boolean; label:string; type?:'text'|'email'|'number'|'textarea'|'select'|'notes'|'choices'; optionEnglish?:Record<string,string>; options?:string[]; required?:boolean; placeholder?:string; min?:number; max?:number; hint?:string; when?:(values:Record<string,string>)=>boolean }
-export function AdminForm({fields,initial,onSave,validate,disabled=false,mobileColumns=false,fullWidthSubmit=false,saved=false,onFieldChange,beforeSubmit,submit='ذخیرهٔ'}:{fields:FormField[];initial:Record<string,string>;onSave:(values:Record<string,string>)=>void;validate?:(v:Record<string,string>)=>Record<string,string>;disabled?:boolean;mobileColumns?:boolean;fullWidthSubmit?:boolean;saved?:boolean;onFieldChange?:(key:string,value:string)=>void;beforeSubmit?:ReactNode;submit?:string}) {
+export interface FormField { key:string; startsGroup?:boolean; sectionTitle?:string; fullWidth?:boolean; label:string; type?:'text'|'email'|'number'|'textarea'|'select'|'notes'|'choices'; optionEnglish?:Record<string,string>; options?:string[]; required?:boolean; placeholder?:string; min?:number; max?:number; hint?:string; when?:(values:Record<string,string>)=>boolean }
+export function AdminForm({fields,initial,onSave,validate,disabled=false,mobileColumns=false,groupFields=false,fullWidthSubmit=false,saved=false,onFieldChange,beforeSubmit,submit='ذخیرهٔ'}:{fields:FormField[];initial:Record<string,string>;onSave:(values:Record<string,string>)=>void;validate?:(v:Record<string,string>)=>Record<string,string>;disabled?:boolean;mobileColumns?:boolean;groupFields?:boolean;fullWidthSubmit?:boolean;saved?:boolean;onFieldChange?:(key:string,value:string)=>void;beforeSubmit?:ReactNode;submit?:string}) {
  const [values,setValues]=useState(initial),[errors,setErrors]=useState<Record<string,string>>({});const id=useId();const form=useRef<HTMLFormElement>(null);
  const visibleFields=fields.filter(field=>!field.when||field.when(values));
+ const fieldGroups:FormField[][]=[];
+ if(groupFields){
+  for(const field of visibleFields){
+   const group=fieldGroups[fieldGroups.length-1];
+   if(!group||field.startsGroup||field.sectionTitle)fieldGroups.push([field]);
+   else group.push(field);
+  }
+ }
  const visibleErrors=Object.fromEntries(Object.entries(errors).filter(([key])=>visibleFields.some(field=>field.key===key)));
  function updateField(key:string,value:string){onFieldChange?.(key,value);setValues(current=>({...current,[key]:value}));setErrors(current=>{const next={...current};delete next[key];return next;});}
  function save(e:FormEvent){e.preventDefault();if(disabled)return;const next:Record<string,string>={};
@@ -72,18 +86,23 @@ export function AdminForm({fields,initial,onSave,validate,disabled=false,mobileC
   Object.assign(next,validate?.(values));setErrors(next);
   if(Object.keys(next).length){requestAnimationFrame(()=>form.current?.querySelector<HTMLElement>('[aria-invalid=true]')?.focus());return;}onSave(Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.trim()])));
  }
- return <form ref={form} className={mobileColumns?"admin-form admin-form-compact":"admin-form"} noValidate onSubmit={save}>
-  {!!Object.keys(visibleErrors).length&&<p role="alert" className="admin-error">اطلاعات فرم را بررسی کنید؛ {number(Object.keys(visibleErrors).length)} خطا وجود دارد.</p>}
-  {visibleFields.map(f=>{const describedBy=[f.hint?id+f.key+'hint':undefined,errors[f.key]?id+f.key+'error':undefined].filter(Boolean).join(' ')||undefined;return <Fragment key={f.key}>
+ function renderField(f:FormField){
+  const describedBy=[f.hint?id+f.key+'hint':undefined,errors[f.key]?id+f.key+'error':undefined].filter(Boolean).join(' ')||undefined;
+  return <Fragment key={f.key}>
    {f.sectionTitle&&<h3 className="admin-form-section">{f.sectionTitle}</h3>}
    <div className={f.fullWidth?"customer-field admin-form-section":"customer-field"} data-wide={f.type==='notes'||f.type==='choices'?true:undefined}>
    {f.type==='choices'?<UsageChoices label={f.label} value={values[f.key]??''} options={f.options??[]} onChange={v=>updateField(f.key,v)} disabled={disabled}/>:f.type==='notes'?<NotePicker label={f.label} inputId={id+f.key} value={values[f.key]??''} options={f.options??[]} onChange={v=>updateField(f.key,v)} disabled={disabled} invalid={!!errors[f.key]} describedBy={describedBy}/>:f.type==='select'?<LuxurySelect label={f.label} inputId={id+f.key} required={f.required} value={values[f.key]??''} options={[{value:'',label:'انتخاب کنید',disabled:true},...(f.options??[]).map(v=>({value:v,label:v,englishLabel:f.optionEnglish?.[v]}))]} onChange={v=>updateField(f.key,v)} disabled={disabled} invalid={!!errors[f.key]} describedBy={describedBy} />:<><label htmlFor={id+f.key}>{f.label}{f.required?' *':''}</label>{f.type==='textarea'?<textarea id={id+f.key} maxLength={1000} rows={3} value={values[f.key]??''} placeholder={f.placeholder} disabled={disabled} onChange={e=>updateField(f.key,e.target.value)} aria-invalid={!!errors[f.key]} aria-describedby={describedBy} />:<input id={id+f.key} type={f.type??'text'} inputMode={f.type==='number'?'numeric':undefined} maxLength={180} min={f.min} max={f.max} step={f.type==='number'?1:undefined} value={values[f.key]??''} placeholder={f.placeholder} disabled={disabled} onChange={e=>updateField(f.key,e.target.value)} aria-invalid={!!errors[f.key]} aria-describedby={describedBy} required={f.required} />}</>}
    {f.hint&&<p className="admin-field-hint" id={id+f.key+'hint'}>{f.hint}</p>}
    {errors[f.key]&&<p id={id+f.key+'error'} className="admin-error">{errors[f.key]}</p>}
-  </div></Fragment>})}{beforeSubmit}<div className="admin-form-submit" data-full-width={fullWidthSubmit||undefined}><button className="admin-primary" disabled={disabled} type="submit" data-saved={saved||undefined}>{saved?<><Check size={17} aria-hidden="true"/>تغییرات ذخیره شد</>:submit}</button></div>
+  </div></Fragment>;
+ }
+ return <form ref={form} className={mobileColumns?"admin-form admin-form-compact":"admin-form"} noValidate onSubmit={save}>
+  {!!Object.keys(visibleErrors).length&&<p role="alert" className="admin-error">اطلاعات فرم را بررسی کنید؛ {number(Object.keys(visibleErrors).length)} خطا وجود دارد.</p>}
+  {groupFields?fieldGroups.map(group=><div className="admin-form-card" key={group[0].key}>{group.map(renderField)}</div>):visibleFields.map(renderField)}
+  {beforeSubmit}<div className="admin-form-submit" data-full-width={fullWidthSubmit||undefined}><button className="admin-primary" disabled={disabled} type="submit" data-saved={saved||undefined}>{saved?<><Check size={17} aria-hidden="true"/>تغییرات ذخیره شد</>:submit}</button></div>
  </form>;
 }
 export function ConfirmDialog({title,detail,onConfirm,onClose}:{title:string;detail:string;onConfirm:()=>void;onClose:()=>void}) {
  const dialog=useRef<HTMLDialogElement>(null);const id=useId();useEffect(()=>{const previous=document.activeElement as HTMLElement|null;const node=dialog.current;node?.showModal();return()=>{node?.close();previous?.focus({preventScroll:true});};},[]);
- return <dialog className="admin-confirm" ref={dialog} aria-labelledby={id} onKeyDown={containDialogFocus} onCancel={e=>{e.preventDefault();onClose();}}><button className="admin-close" onClick={onClose} aria-label="بستن تأیید"><X size={20}/></button><AlertCircle aria-hidden="true" /><h2 id={id}>{title}</h2><p>{detail}</p><div className="admin-actions"><button autoFocus onClick={onClose}>انصراف</button><button className="admin-primary" onClick={()=>{onConfirm();onClose();}}>تأیید</button></div></dialog>;
+ return <dialog className="admin-confirm" ref={dialog} aria-labelledby={id} onKeyDown={containDialogFocus} onCancel={e=>{e.preventDefault();onClose();}}><button className="admin-close" type="button" onClick={onClose} aria-label="بستن تأیید"><X size={16} aria-hidden="true"/></button><AlertCircle aria-hidden="true" /><h2 id={id}>{title}</h2><p>{detail}</p><div className="admin-actions"><button autoFocus onClick={onClose}>انصراف</button><button className="admin-primary" onClick={()=>{onConfirm();onClose();}}>تأیید</button></div></dialog>;
 }

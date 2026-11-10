@@ -17,6 +17,7 @@ import { products } from './data/products';
 import { isCardStudy } from './data/cardStudyImages';
 import { handleArrowFieldNavigation } from './lib/arrowFieldNavigation';
 import { announcement, articles } from './data/homepage';
+import { AdvancedFilters } from './components/AdvancedFilters';
 import { NoteFilters } from './components/NoteFilters';
 import { ActiveFilters } from './components/ActiveFilters';
 import { consumeHomeReturn, navigateToSection } from './lib/navigation';
@@ -33,13 +34,25 @@ import { HeroBackdrop } from './components/HeroBackdrop';
 import { catalogHref, comparisonHref, parseRoute } from './lib/routes';
 import { addComparison } from './lib/catalog';
 import type { Product, ProductVariant, Filters, ProductCategory } from './types/product';
+import type { AdminState } from './admin/model';
+import { assignVariantCodes } from './lib/variantCodes';
+import { VariantCodesContext } from './components/VariantCode';
 
 const AdminApp = lazy(() => import('./admin/AdminApp').then(module => ({ default:module.AdminApp })));
+const storefrontCodeEntries = products.flatMap(product => product.variants.map(variant => ({
+  id: variant.id, name: product.name, volume: variant.volumeMl, concentration: variant.concentration,
+})));
 
 export default function App() {
   useEffect(() => { document.addEventListener('keydown',handleArrowFieldNavigation); return () => document.removeEventListener('keydown',handleArrowFieldNavigation); }, []);
   const { hash, restoredScroll } = useHashLocation();
   const route = useMemo(() => parseRoute(hash), [hash]);
+  const [sellerSession, setSellerSession] = useState<AdminState>();
+  const variantCodes = useMemo(() => {
+    const entries: { id: string; name: string; volume: number; concentration?: string; manualCode?: string }[] =
+      sellerSession?.products.flatMap(product => product.variants.map(variant => ({ ...variant, name: product.name }))) ?? storefrontCodeEntries;
+    return new Map(assignVariantCodes(entries, entry => entry).map(({ entry, code }) => [entry.id, code]));
+  }, [sellerSession?.products]);
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [comparisonFeedback, setComparisonFeedback] = useState('');
   useEffect(() => {
@@ -117,12 +130,12 @@ export default function App() {
   const [wishlistOnly, setWishlistOnly] = useState(false);
   const results = useMemo(() => filterProducts(products, filters).filter(p => !wishlistOnly || favourites.includes(p.id)), [filters, wishlistOnly, favourites]);
   const set = (patch: Partial<Filters>) => setFilters(f => ({ ...f, ...patch }));
-  const toggleNote = (noteId: string) => {
+  const toggleNote = (noteId: string, scrollToResults = true) => {
     setFilters(current => {
       const selected = current.noteIds ?? [];
       return { ...current, noteIds: selected.includes(noteId) ? selected.filter(id => id !== noteId) : [...selected, noteId] };
     });
-    requestAnimationFrame(() => document.getElementById('home-product-results')?.scrollIntoView({ block: 'start' }));
+    if (scrollToResults) requestAnimationFrame(() => document.getElementById('home-product-results')?.scrollIntoView({ block: 'start' }));
   };
   const reset = () => { setFilters(emptyFilters); setWishlistOnly(false); };
   const selectCat = (c: ProductCategory) => {
@@ -138,8 +151,8 @@ export default function App() {
   const curated = (familyId: string) => { reset(); setFilters({ query: '', familyId }); navigateToSection('products'); };
   const bagCount = bagLines.reduce((sum, line) => sum + line.quantity, 0);
   const article = modal?.startsWith('article-') ? articles[Number(modal.slice(8))] : undefined;
-  if (route.admin) return <Suspense fallback={<main dir="rtl" className="container section" role="status">در حال آماده‌سازی پنل نمایشی…</main>}><AdminApp route={route.admin} /></Suspense>;
-  return <StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag, bagLines, discountCode, setDiscountCode, removeBag: variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId)), changeBag: (product, fromId, toId, quantity) => { const result = changeDemoBagItem(bagLines, product, fromId, toId, quantity); setBagLines(result.lines); return result.message; } }}>
+  if (route.admin) return <Suspense fallback={<main dir="rtl" className="container section" role="status">در حال آماده‌سازی پنل نمایشی…</main>}><AdminApp route={route.admin} session={sellerSession} onSessionChange={setSellerSession} /></Suspense>;
+  return <VariantCodesContext.Provider value={variantCodes}><StoreContext.Provider value={{ favourites, toggleFavourite: id => setFavourites(list => list.includes(id) ? list.filter(value => value !== id) : [...list, id]), comparisonIds, toggleComparison, addToBag, bagLines, discountCode, setDiscountCode, removeBag: variantId => setBagLines(lines => lines.filter(line => line.variantId !== variantId)), changeBag: (product, fromId, toId, quantity) => { const result = changeDemoBagItem(bagLines, product, fromId, toId, quantity); setBagLines(result.lines); return result.message; } }}>
     <a className="skip" href="#main-content" onClick={event => { event.preventDefault(); const main = document.getElementById('main-content'); if (main) { main.tabIndex = -1; main.focus({ preventScroll: true }); main.scrollIntoView({ block: 'start' }); } }}>پرش به محتوای اصلی</a>
     <div className="announcement">{announcement}</div>
     {route.page === 'home' && <HeroBackdrop />}
@@ -160,9 +173,12 @@ export default function App() {
           navigateToSection('products');
         }} />
       </section>
-      <section id="products" className="section product-section"><div className="container"><SectionHeading eyebrow="THE FRAGRANCE SELECTION" title={wishlistOnly ? 'عطرهای مورد علاقهٔ شما' : 'منتخب عطرهای آروما'}><button className="text-link" onClick={reset}>مشاهدهٔ همه <ArrowUpLeft aria-hidden="true" size={17} /></button></SectionHeading>
-        <div className="catalog-toolbar"><div className="chips" role="group" aria-label="نوع مجموعه"><button className="chip catalog-tab" aria-pressed={!filters.bestseller && !filters.featured && !wishlistOnly && !filters.audience && !filters.brandId && !filters.familyId && !filters.noteIds?.length && !filters.query && !filters.niche && !filters.giftSet} onClick={reset}>همهٔ عطرها</button><button className="chip catalog-tab" aria-pressed={!!filters.bestseller} onClick={() => { setWishlistOnly(false); set({ bestseller: filters.bestseller ? undefined : true, featured: undefined }); }}>پرفروش‌ها · نمایشی</button><button className="chip catalog-tab" aria-pressed={!!filters.featured} onClick={() => { setWishlistOnly(false); set({ featured: filters.featured ? undefined : true, bestseller: undefined }); }}>پیشنهاد آروما</button></div></div>
-        <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={toggleNote} />
+      <section id="products" className="section product-section"><div className="container"><SectionHeading eyebrow="THE FRAGRANCE SELECTION" title={wishlistOnly ? 'عطرهای مورد علاقهٔ شما' : 'منتخب عطرهای آروما'}><TextLink href={catalogHref()}>مشاهدهٔ همه</TextLink></SectionHeading>
+        <div className="catalog-toolbar"><div className="chips" role="group" aria-label="نوع مجموعه"><button className="chip catalog-tab" aria-pressed={!wishlistOnly && !Object.values(filters).some(value => Array.isArray(value) ? value.length > 0 : value !== undefined && value !== false && value !== '')} onClick={reset}>همهٔ عطرها</button><button className="chip catalog-tab" aria-pressed={!!filters.bestseller} onClick={() => { setWishlistOnly(false); set({ bestseller: filters.bestseller ? undefined : true, featured: undefined }); }}>پرفروش‌ها · نمایشی</button><button className="chip catalog-tab" aria-pressed={!!filters.featured} onClick={() => { setWishlistOnly(false); set({ featured: filters.featured ? undefined : true, bestseller: undefined }); }}>پیشنهاد آروما</button></div></div>
+        <div className="home-filter-layout">
+          <AdvancedFilters study filters={filters} onChange={set} />
+          <NoteFilters selectedIds={filters.noteIds ?? []} onToggle={id => toggleNote(id, false)} />
+        </div>
         <div id="home-product-results" className="home-product-results">
         <ActiveFilters filters={filters} wishlistOnly={wishlistOnly} count={results.length} onRemoveNote={toggleNote} onRemove={key => set({ [key]: key === 'query' ? '' : undefined })} onReset={reset} />
         {results.length ? <div className="grid">{results.map(p => <ProductCard key={p.id} product={p} onNote={toggleNote} selectedNoteIds={filters.noteIds ?? []} favourite={favourites.includes(p.id)} onFavourite={() => setFavourites(f => f.includes(p.id) ? f.filter(id => id !== p.id) : [...f, p.id])} />)}</div> : <div className="empty"><FlaskConical aria-hidden="true" size={32} /><h3>{wishlistOnly ? 'هنوز عطری انتخاب نکرده‌ای' : 'رایحهٔ مورد نظرت پیدا نشد'}</h3><p>{wishlistOnly ? 'با لمس قلب روی کارت‌ها، مجموعهٔ شخصی‌ات را بساز. انتخاب‌ها در همین مرورگر ذخیره می‌شوند؛ اگر ذخیره‌سازی غیرفعال باشد، فقط تا بازبودن صفحه باقی می‌مانند.' : 'عبارت دیگری امتحان کن یا فیلترها را بردار.'}</p><button className="cta" onClick={reset}>دیدن همهٔ عطرها</button></div>}
@@ -180,5 +196,5 @@ export default function App() {
     {modal && <Dialog title={article?.title ?? ({ account: 'حساب کاربری', cart: 'سبد خرید', samples: 'ست کشف رایحه چیست؟', shipping: 'ارسال و مرجوعی', contact: 'ارتباط با آروما', policies: 'شرایط و حریم خصوصی' }[modal] ?? 'اطلاعات آروما')} onClose={() => setModal(undefined)}>
       {<p>{article?.text ?? ({ account: 'ورود و ثبت‌نام در این مرحله فعال نیست. این پیش‌نمایش حساب واقعی یا احراز هویت ندارد.', cart: 'این نسخه برای آشنایی با طراحی فروشگاه است. افزودن به سبد، سفارش و پرداخت در مرحله‌های بعد ساخته می‌شوند.', samples: 'ست کشف رایحه مجموعه‌ای از نمونه‌های کوچک برای مقایسه و آشنایی است. پیش از خرید یک بطری کامل، می‌توان تغییر رایحه روی پوست را تجربه کرد. این بخش فعلاً معرفی است و موجودی واقعی ندارد.', contact: 'اطلاعات فروشنده، شماره تماس، نشانی و شبکه‌های اجتماعی پس از تأیید مالک فروشگاه درج می‌شوند. در این نسخه کانال ارتباطی فعالی معرفی نشده است.', shipping: 'ارسال و مرجوعی در این نسخه عملیاتی نیست. روش‌ها و هزینه‌های بخش تسویه صرفاً برای تست رابط‌اند؛ شرایط واقعی ارسال و مرجوعی پس از تأیید فروشگاه اعلام می‌شوند.', policies: 'این سایت نسخهٔ نمایشی است و خریدی در آن انجام نمی‌شود. شرایط ارسال، مرجوعی و حریم خصوصی باید پیش از راه‌اندازی فروش واقعی توسط مالک فروشگاه تکمیل شوند. فرم خبرنامه داده‌ای ارسال نمی‌کند.' }[modal])}</p>}<button className="cta" onClick={() => setModal(undefined)}>متوجه شدم</button>
     </Dialog>}
-  </StoreContext.Provider>;
+  </StoreContext.Provider></VariantCodesContext.Provider>;
 }

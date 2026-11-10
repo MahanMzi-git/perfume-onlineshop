@@ -1,5 +1,6 @@
 import {usageFields,splitUsage} from './usageOptions';
-import { sellerConcentrations, validInteger, validateAdminProduct, type AdminProduct, type AdminRecord, type AdminState } from './model';
+import { savedManualVariantCodes, sellerConcentrations, validInteger, validateAdminProduct, type AdminProduct, type AdminRecord, type AdminState } from './model';
+import { manualVariantCodeError } from '../lib/variantCodes';
 
 export const NEW_BRAND_OPTION = 'افزودن برند جدید…';
 export const NEW_FAMILY_OPTION = 'افزودن خانوادهٔ رایحهٔ جدید…';
@@ -13,7 +14,7 @@ export const productVariantFields = [
   { key: 'price', label: 'قیمت (تومان)', min: 1, max: 999999999 },
 ] as const;
 
-export function validateProductDraft(values: Record<string, string>, variantIds: string[] = []): Record<string, string> {
+export function validateProductDraft(values: Record<string, string>, variantIds: string[] = [], existingCodes: string[] = []): Record<string, string> {
   const creatingBrand = values.brand === NEW_BRAND_OPTION;
   const creatingFamily = values.family === NEW_FAMILY_OPTION;
   const name = creatingBrand ? recordName(values.newBrand ?? '') : (values.brand ?? '').trim();
@@ -32,7 +33,12 @@ export function validateProductDraft(values: Record<string, string>, variantIds:
   if(values.audience!==undefined&&!['زنانه','مردانه','یونیسکس'].includes(values.audience))errors.audience='مخاطب عطر را انتخاب کنید.';
   if (!['فعال', 'پیش‌نویس'].includes(values.status ?? '')) errors.status = 'وضعیت انتشار را از فهرست انتخاب کنید.';
   const volumes = new Set<string>();
+  const codes = new Set(existingCodes);
   for (const id of variantIds) {
+    const manualCode = values[id + 'manualCode']?.trim();
+    const codeError = manualVariantCodeError(manualCode, codes);
+    if (codeError) errors[id + 'manualCode'] = codeError;
+    else if (manualCode) codes.add(manualCode);
     for (const { key, label, min, max } of productVariantFields) {
       const field = id + key;
       if (!validInteger(values[field] ?? '', min, max)) errors[field] = `مقدار معتبر برای «${label}» وارد کنید.`;
@@ -56,7 +62,7 @@ export function saveProductDraft(
   existingId?: string,
   variantIds: string[] = [],
 ): AdminState {
-  if (Object.keys(validateProductDraft(values, variantIds)).length) return state;
+  if (Object.keys(validateProductDraft(values, variantIds, savedManualVariantCodes(state.products))).length) return state;
   const existing = existingId === undefined ? undefined : state.products.find(product => product.id === existingId);
   if (existingId !== undefined && !existing) return state;
   const families = state.records.families ?? [];
@@ -74,8 +80,10 @@ export function saveProductDraft(
   if (!existing && (!ids.product || !ids.variant || state.products.some(product => product.id === ids.product))) return state;
   if (!matched && (!ids.brand || brands.some(record => record.id === ids.brand))) return state;
 
+  const createdAt = Date.now();
   const newBrand: AdminRecord | undefined = matched ? undefined : {
     id: ids.brand,
+    createdAt,
     name: requestedName,
     detail: values.newBrandDetail?.trim() || 'برند جدید؛ ثبت هم‌زمان با محصول',
     status: 'فعال',
@@ -83,6 +91,7 @@ export function saveProductDraft(
   };
   const newFamily: AdminRecord | undefined = family ? undefined : {
     id: ids.family!,
+    createdAt,
     name: requestedFamilyName,
     detail: values.newFamilyDetail?.trim() || 'خانوادهٔ رایحهٔ جدید؛ ثبت هم‌زمان با محصول',
     status: 'فعال',
@@ -90,6 +99,7 @@ export function saveProductDraft(
   };
   const product: AdminProduct = {
     id: existing?.id ?? ids.product,
+    createdAt: existing ? existing.createdAt : createdAt,
     name: values.name.trim(),
     brand: matched?.name ?? newBrand!.name,
     family: family?.name ?? newFamily!.name,
@@ -102,11 +112,13 @@ export function saveProductDraft(
     image: existing?.image ?? `${import.meta.env.BASE_URL}images/hero-editorial.svg`,
     variants: existing?.variants ?? (variantIds.length ? variantIds.map(id => ({
       id: ids.variant + '-' + id,
+      createdAt,
       volume: Number(values[id + 'volume']),
       price: Number(values[id + 'price']),
       concentration: values[id + 'concentration'],
+      ...(values[id + 'manualCode']?.trim() ? { manualCode: values[id + 'manualCode'].trim() } : {}),
       stock: 0,
-    })) : [{ id: ids.variant, volume: 50, price: 5000000, stock: 0 }]),
+    })) : [{ id: ids.variant, createdAt, volume: 50, price: 5000000, stock: 0 }]),
   };
   return {
     ...state,

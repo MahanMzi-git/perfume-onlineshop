@@ -99,7 +99,6 @@ export function ProductGalleryPreview({ image, editable }: { image?: string; edi
     </div>
     <div className="admin-image-details">
       <h3 id={id + '-title'}>گالری تصاویر محصول</h3>
-      <p>پیش‌نمایش آزمایشی. تغییرات گالری ذخیره نمی‌شوند.</p>
       <label className="admin-image-action">
         <input type="file" multiple accept={formats.join(',')} disabled={locked || photos.length >= limit}
           aria-describedby={id + '-formats'} onChange={addPhotos}/>

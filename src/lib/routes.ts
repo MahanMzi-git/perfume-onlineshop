@@ -14,6 +14,7 @@ export function parseRoute(hash: string): Route {
   const params = new URLSearchParams(query);
   if (segments[0] === 'seller') {
     const admin = parseAdminPath(segments) ?? { group:segments[0], section:'not-found' } as AdminRoute;
+    if (admin.section === 'inventory' && params.get('stock') === 'low') admin.stockFilter = 'low';
     if (admin.section === 'product-edit' && params.get('preview') === 'gallery') admin.galleryPreview = true;
     return { page:admin.group, params, admin };
   }

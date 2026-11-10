@@ -10,18 +10,20 @@ import { AudienceIcon } from './AudienceIcon';
 import { cardStudyImages, isCardStudy } from '../data/cardStudyImages';
 import { ScentNoteList } from './ScentNoteList';
 import { CardCartControl } from './CardCartControl';
+import { useVariantCodes, VariantCode } from './VariantCode';
 export function ProductCard({ product, onNote, selectedNoteIds, displayVariant, favourite: fav, onFavourite }: { product: Product; displayVariant?: ProductVariant; onNote: (id: string) => void; selectedNoteIds: string[]; favourite: boolean; onFavourite: () => void }) {
 
   const store = useStore();
-  const detailHref = '#/product/' + product.slug + (displayVariant ? '?variant=' + displayVariant.id : '');
+  const codes = useVariantCodes();
   const compared = store.comparisonIds.includes(product.id);
   const brand = brands.find((b) => b.id === product.brandId);
   const photoPreview = isCardStudy;
   const studyImage = photoPreview ? cardStudyImages[product.id] : undefined;
   const variant = displayVariant ?? product.variants.find(item => item.price === product.price && item.concentration === product.concentration) ?? product.variants[0];
+  const detailHref = '#/product/' + product.slug + (variant && variant !== product.variants[0] ? '?variant=' + variant.id : '');
   const information = <>
     <p className="brand card-brand-row" dir="ltr"><span>{brand?.name}</span><AudienceIcon audience={product.targetAudience} /></p>
-    <h3 dir="ltr"><a className="card-detail-link" href={detailHref}>{product.name}</a> <small>{displayVariant?.concentration ?? product.concentration}</small></h3>
+    <h3 dir="ltr"><a className="card-detail-link" href={detailHref}>{product.name}</a> <small>{displayVariant?.concentration ?? product.concentration}{variant && <> · <VariantCode code={codes.get(variant.id)}/></>}</small></h3>
     <ScentNoteList noteIds={product.scentNoteIds} onSelect={onNote} selectedNoteIds={selectedNoteIds} />
   </>;
   return (

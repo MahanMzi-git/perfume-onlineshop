@@ -1,3 +1,4 @@
+import { useVariantCodes, VariantCode } from '../components/VariantCode';
 import { useEffect, useState } from 'react';
 import { Star, Heart, Flower2, Sun, Leaf, Snowflake, Coffee, BriefcaseBusiness, Moon, Sparkles } from 'lucide-react';
 import { products } from '../data/products';
@@ -20,6 +21,7 @@ import type { Product } from '../types/product';
 
 const validIds = new Set(products.map(p => p.id));
 export function ProductDetailPage({ product, params }: { product: Product; params: URLSearchParams }) {
+  const codes = useVariantCodes();
   const store = useStore();
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [feedback, setFeedback] = useState('');
@@ -57,6 +59,7 @@ export function ProductDetailPage({ product, params }: { product: Product; param
           <LuxurySelect label="حجم (میلی‌لیتر)" value={String(variant.volumeMl)} options={volumes.map(volume => ({ value: String(volume), label: new Intl.NumberFormat('fa-IR').format(volume) }))} onChange={value => { const volume = Number(value); const next = product.variants.find(v => v.volumeMl === volume && v.concentration === variant.concentration) ?? product.variants.find(v => v.volumeMl === volume)!; chooseVariant(next.id); }} />
           <LuxurySelect label="غلظت" value={variant.concentration} options={concentrations.map(value => ({ value, label: value }))} onChange={value => { const next = product.variants.find(v => v.concentration === value && v.volumeMl === variant.volumeMl) ?? product.variants.find(v => v.concentration === value)!; chooseVariant(next.id); }} />
         </div>
+        <p className="fine-print">کد نسخه: <VariantCode code={codes.get(variant.id)} /></p>
         <div className="detail-price" aria-live="polite"><strong>{priceText(variant.price)}</strong>{variant.compareAtPrice && variant.compareAtPrice > variant.price && <><del>{priceText(variant.compareAtPrice)}</del><span className="badge">تخفیف نمایشی</span></>}<p>{variant.stock > 0 ? 'موجودی: ' + new Intl.NumberFormat('fa-IR').format(variant.stock) : 'این حجم و غلظت ناموجود است.'}</p></div>
         <div className="detail-actions">
           <button className="step-action step-primary" disabled={variant.stock === 0} onClick={() => setFeedback(store.addToBag(product, variant))}>افزودن به سبد نمایشی</button>

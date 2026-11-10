@@ -2,6 +2,6 @@
 import { products } from './products';
 import type { FulfillmentStage } from '../components/OrderProgress';
 export const demoOrders = [
-  { id: 'DEMO-1001', date: '۱۴۰۵/۰۱/۱۲', stage: 'packing' as FulfillmentStage, status: 'در حال بسته‌بندی · نمایشی', productId: products[0].id, volume: '۵۰ میلی‌لیتر', quantity: 1, total: 4800000, cancellable: true },
-  { id: 'DEMO-1002', date: '۱۴۰۵/۰۱/۰۳', stage: 'delivered' as FulfillmentStage, status: 'تحویل‌شده · نمایشی', productId: products[4].id, volume: '۵۰ میلی‌لیتر', quantity: 1, total: 5400000, cancellable: false },
+  { id: 'DEMO-1001', date: '۱۴۰۵/۰۱/۱۲', stage: 'packing' as FulfillmentStage, status: 'در حال بسته‌بندی · نمایشی', productId: products[0].id, variantId: products[0].variants.find(v => v.volumeMl === 50 && v.concentration === products[0].concentration)?.id, volume: '۵۰ میلی‌لیتر', quantity: 1, total: 4800000, cancellable: true },
+  { id: 'DEMO-1002', date: '۱۴۰۵/۰۱/۰۳', stage: 'delivered' as FulfillmentStage, status: 'تحویل‌شده · نمایشی', productId: products[4].id, variantId: products[4].variants.find(v => v.volumeMl === 50 && v.concentration === products[4].concentration)?.id, volume: '۵۰ میلی‌لیتر', quantity: 1, total: 5400000, cancellable: false },
 ];
