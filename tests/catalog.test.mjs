@@ -18,7 +18,8 @@ function load(relativePath) {
   if (cache.has(filename)) return cache.get(filename).exports;
   const module = { exports: {} };
   cache.set(filename, module);
-  const { outputText } = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
+  const source = fs.readFileSync(filename, 'utf8').replaceAll('import.meta.env', JSON.stringify({ BASE_URL: '/perfume-onlineshop/' }));
+  const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
   });
   vm.runInNewContext(outputText, {

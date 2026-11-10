@@ -14,16 +14,18 @@ import ts from 'typescript';
 const require = createRequire(import.meta.url);
 const root = path.resolve('src');
 const cache = new Map();
-function load(filename) {
+function load(filename, react = React) {
   filename = path.resolve(filename);
   assert.ok(filename.startsWith(root + path.sep));
   if (cache.has(filename)) return cache.get(filename).exports;
   const module = { exports: {} }; cache.set(filename, module);
-  const { outputText } = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
+  const source = fs.readFileSync(filename, 'utf8').replaceAll('import.meta.env', JSON.stringify({ BASE_URL: '/perfume-onlineshop/' }));
+  const { outputText } = ts.transpileModule(source, {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true },
   });
   vm.runInNewContext(outputText, { module, exports: module.exports, URLSearchParams, console,
     require: specifier => {
+      if (specifier === 'react') return react;
       if (!specifier.startsWith('.')) return require(specifier);
       const base = path.resolve(path.dirname(filename), specifier);
       const resolved = ['.ts', '.tsx'].map(ext => base + ext).find(file => fs.existsSync(file));
@@ -38,7 +40,11 @@ const { CustomerPage, accountTabs } = load(path.join(root, 'pages/CustomerPages.
 const { CartPage, CheckoutPage } = load(path.join(root, 'pages/ShoppingPages.tsx'));
 const { products } = load(path.join(root, 'data/products.ts'));
 const { CatalogPage } = load(path.join(root, 'pages/CatalogPage.tsx'));
-const { ComparisonPage } = load(path.join(root, 'pages/ComparisonPage.tsx'));
+const { ComparisonPage } = load(path.join(root, 'pages/ComparisonPage.tsx'), {
+  ...React,
+  // Static rendering cannot click the scent tab, so start that component on it.
+  useState(initial) { return React.useState(initial === 'purchase' ? 'scent' : initial); },
+});
 const noop = () => {};
 test('Catalog pagination fills the approved five-column row and keeps all products reachable',()=>{
  const first=render(CatalogPage,{params:new URLSearchParams()}),second=render(CatalogPage,{params:new URLSearchParams('page=2')});
@@ -126,7 +132,7 @@ test('All real-product previews have consistent sample ratings and a gated revie
   for (const product of products) {
     assert.ok(product.reviews.length >= 2);
     const html = render(ProductDetailPage,{product,params:new URLSearchParams()});
-    assert.ok(html.includes('رأی نمایشی'));
+    assert.ok(html.includes('امتیاز نمایشی'));
     assert.ok(html.includes('دیدگاه مخصوص خریداران'));
     assert.ok(!html.includes('ذخیرهٔ دیدگاه نمایشی'));
     assert.ok(html.includes('compare-symbol'));
