@@ -4,9 +4,10 @@ import { CompareIcon } from './CompareIcon';
 import { X } from 'lucide-react';
 import { products } from '../data/products';
 import { cardStudyImages } from '../data/cardStudyImages';
-export function ComparisonBar() {
+export function ComparisonBar({ page }: { page: string }) {
  const { comparisonIds, toggleComparison } = useStore();
- if (!comparisonIds.length || (typeof location !== 'undefined' && location.hash.startsWith('#/compare'))) return null;
+ const productDiscoveryPages = ['home', 'collection', 'brands', 'brand', 'catalog', 'product', 'families', 'family', 'notes', 'note'];
+ if (!comparisonIds.length || !productDiscoveryPages.includes(page) || (typeof location !== 'undefined' && location.hash.startsWith('#/compare'))) return null;
  const selected = comparisonIds.flatMap(id => { const product = products.find(item => item.id === id); return product ? [product] : []; });
  return <>
    <aside className="comparison-dock-study" aria-label="عطرهای انتخاب‌شده برای مقایسه">

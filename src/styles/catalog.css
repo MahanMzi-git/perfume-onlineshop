@@ -5,6 +5,9 @@
 }
 .discovery-navigation a { padding-block:5px; text-underline-offset:6px; }
 .discovery-navigation a:hover, .discovery-navigation [aria-current] { text-decoration:underline; color:var(--accent-text); }
+.discovery-navigation .discovery-comparison-shortcut { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-width:44px; min-height:44px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; text-decoration:none; }
+.discovery-comparison-shortcut .compare-symbol { display:inline-flex; position:relative; color:var(--accent-text); }
+.discovery-comparison-shortcut b { display:inline-grid; place-items:center; min-width:20px; min-height:20px; padding-inline:4px; border-radius:999px; background:var(--accent-text); color:white; font-size:.7rem; font-weight:600; }
 .comparison-feedback { font-size:.8125rem; color:var(--accent-text); }
 .comparison-feedback:empty { @apply tw:hidden; }
 .comparison-feedback:not(:empty) { padding-block:8px; }
