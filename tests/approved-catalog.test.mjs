@@ -5,6 +5,8 @@ import vm from 'node:vm';
 import { test } from 'node:test';
 import ts from 'typescript';
 
+const baseUrl = '/perfume-onlineshop/';
+
 function catalogContext(search) {
   const root=path.resolve('src'), cache=new Map();
   const load=relative=>{
@@ -12,7 +14,8 @@ function catalogContext(search) {
     assert.ok(filename.startsWith(root+path.sep));
     if(cache.has(filename)) return cache.get(filename).exports;
     const module={exports:{}};cache.set(filename,module);
-    const {outputText}=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}});
+    const source = fs.readFileSync(filename, 'utf8').replaceAll('import.meta.env', JSON.stringify({ BASE_URL: baseUrl }));
+    const {outputText}=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}});
     vm.runInNewContext(outputText,{module,exports:module.exports,URLSearchParams,
       ...(search===undefined ? {} : {window:{location:{search}}}),
       require:specifier=>{assert.ok(specifier.startsWith('.'));return load(path.relative(root,path.resolve(path.dirname(filename),specifier+'.ts')));},
@@ -39,7 +42,8 @@ test('Approved catalog has local photos, valid brands and notes, and consistent 
     assert.ok(brands.some(b=>b.id===p.brandId));
     assert.ok(p.scentNoteIds.length>=2&&p.scentNoteIds.length<=4);
     assert.ok(p.scentNoteIds.every(id=>scentNotes.some(n=>n.id===id)));
-    assert.ok(fs.existsSync(path.join('public',p.image)));
+    assert.ok(p.image.startsWith(baseUrl), `Unexpected image URL: ${p.image}`);
+    assert.ok(fs.existsSync(path.join('public', p.image.slice(baseUrl.length))), `Missing image: ${p.image}`);
     assert.equal(p.gallery[0].src,p.image);
     assert.equal(p.availability,'demo');assert.ok(p.reviews.length >= 2);assert.ok(p.reviews.every(review => Number.isInteger(review.score) && review.score >= 1 && review.score <= 5 && review.id.includes('-sample-')));
     assert.equal(p.variants[0].price,p.price);
