@@ -10,6 +10,7 @@ import { demoRating, priceText, numberText } from '../lib/catalog';
 import { comparisonHref } from '../lib/routes';
 import type { Product } from '../types/product';
 import { isCardStudy } from '../data/cardStudyImages';
+import { useVariantCodes, VariantCode } from '../components/VariantCode';
 import { useState, type ReactNode } from 'react';
 import { ArrowLeftRight, Plus } from 'lucide-react';
 
@@ -22,6 +23,7 @@ type ComparisonSection = (typeof comparisonSections)[number]['id'];
 
 export function ComparisonPage({ ids }: { ids: string[] }) {
   const store = useStore();
+  const codes = useVariantCodes();
   const [section, setSection] = useState<ComparisonSection>('purchase');
   const [picking, setPicking] = useState<Product | 'add'>();
   const selected = ids.map(id => products.find(p => p.id === id)).filter((p): p is Product => !!p);
@@ -35,7 +37,8 @@ export function ComparisonPage({ ids }: { ids: string[] }) {
     { section: 'purchase', title: 'قیمت نسخهٔ پایه (نمایشی)', value: p => priceText(p.variants[0].price) },
     { section: 'purchase', title: 'حجم پایه', value: p => numberText(p.variants[0].volumeMl) + ' میلی‌لیتر' },
     { section: 'purchase', title: 'غلظت پایه', value: p => p.variants[0].concentration },
-    { section: 'versions', title: 'نسخه‌های دیگر', value: p => p.variants.length > 1 ? p.variants.slice(1).map(v => <div key={v.id}>{numberText(v.volumeMl)} میلی‌لیتر · {v.concentration} · {priceText(v.price)}</div>) : 'تعریف نشده' },
+    { section: 'versions', title: 'کد نسخهٔ پایه', value: p => <VariantCode code={codes.get(p.variants[0].id)} /> },
+    { section: 'versions', title: 'نسخه‌های دیگر', value: p => p.variants.length > 1 ? p.variants.slice(1).map(v => <div key={v.id}>{numberText(v.volumeMl)} میلی‌لیتر · {v.concentration} · <VariantCode code={codes.get(v.id)} /> · {priceText(v.price)}</div>) : 'تعریف نشده' },
     { section: 'purchase', title: 'موجودی نسخهٔ پایه (نمایشی)', value: p => p.variants[0].stock > 0 ? 'موجود' : 'ناموجود' },
     { section: 'scent', title: 'مخاطب', value: p => audienceLabels[p.targetAudience] },
     { section: 'scent', title: 'طبع / شیرینی', value: p => temperatureLabels[p.temperature] + ' / ' + sweetnessLabels[p.sweetness] },

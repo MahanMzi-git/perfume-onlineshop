@@ -11,7 +11,8 @@ function load(relative) {
   assert.ok(filename.startsWith(root + path.sep));
   if (cache.has(filename)) return cache.get(filename).exports;
   const module = { exports: {} }; cache.set(filename, module);
-  const { outputText } = ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
+  const source = fs.readFileSync(filename, 'utf8').replaceAll('import.meta.env', JSON.stringify({ BASE_URL: '/perfume-onlineshop/' }));
+  const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } });
   vm.runInNewContext(outputText, { module, exports: module.exports, require: value => {
     assert.ok(value.startsWith('.'));
     return load(path.relative(root, path.resolve(path.dirname(filename), value + '.ts')));
@@ -22,6 +23,18 @@ const { createAdminState } = load('admin/model.ts');
 const { NEW_BRAND_OPTION, NEW_FAMILY_OPTION, validateProductDraft, saveProductDraft } = load('admin/productSave.ts');
 const ids = { product: 'QA-PRODUCT', brand: 'QA-BRAND', variant: 'QA-VARIANT' };
 const draft = state => ({ name: 'عطر آزمایشی تازه', brand: NEW_BRAND_OPTION, newBrand: '  Maison   QA  ', newBrandDetail: ' توضیح ساختگی ', family: state.records.families[0].name, notes: 'یاس، مشک', status: 'پیش‌نویس' });
+
+test('Creating a product saves its manual variant code and rejects duplicate manual codes in the draft', () => {
+  const state = createAdminState();
+  const values = { ...draft(state), firstvolume: '50', firstprice: '1000', firstconcentration: 'EDP', firstmanualCode: 'Test05P',
+    secondvolume: '100', secondprice: '2000', secondconcentration: 'EDT', secondmanualCode: 'test05p' };
+  assert.ok(validateProductDraft(values, ['first', 'second']).secondmanualCode);
+  assert.equal(saveProductDraft(state, values, ids, undefined, ['first', 'second']), state);
+  const saved = saveProductDraft(state, { ...values, secondmanualCode: '' }, ids, undefined, ['first', 'second']);
+  const product = saved.products.find(item => item.id === ids.product);
+  assert.equal(product.variants[0].manualCode, 'Test05P');
+  assert.equal(product.variants[1].manualCode, undefined);
+});
 
 test('Product and new brand save atomically without changing the source state', () => {
   const state = createAdminState(), snapshot = JSON.stringify(state);

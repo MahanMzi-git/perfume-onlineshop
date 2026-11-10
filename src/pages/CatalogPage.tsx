@@ -47,20 +47,25 @@ export function CatalogPage({ params, collection, baseHref = '#/catalog' }: { pa
     requestAnimationFrame(() => document.getElementById('catalog-results')?.scrollIntoView({ block: 'start' }));
   }
   return <section className="step2-page container section" aria-labelledby="catalog-title" data-men-filters={collection?.slug === 'men' ? 'petrol' : undefined} data-women-filters={collection?.slug === 'women' ? 'pastel' : undefined} data-gift-palette={warmGiftPalette ? 'warm' : undefined}>
-    {collection?.slug === 'gifts' && <figure className="gift-collection-hero"><img src={`${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-1536.webp`} srcSet={`${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-768.webp 768w, ${import.meta.env.BASE_URL}images/gifts/perfume-gift-sets-1536.webp 1536w`} sizes="(max-width:700px) calc(100vw - 32px), (max-width:1164px) calc(100vw - 64px), 1100px" width={1536} height={1024} loading="eager" fetchPriority="high" alt="پک‌های هدیهٔ عطر در اندازه‌های مختلف با جعبه‌های کرمی، مشکی و طلایی، روبان ساتن و ست عطرهای کوچک" /></figure>}
+    {collection?.slug === 'gifts' && <figure className="audience-collection-hero"><img src={`${import.meta.env.BASE_URL}images/gifts/gifts-sets-1536.webp`} srcSet={`${import.meta.env.BASE_URL}images/gifts/gifts-sets-768.webp 768w, ${import.meta.env.BASE_URL}images/gifts/gifts-sets-1536.webp 1536w`} sizes="(max-width:1312px) calc(100vw - 32px), 1280px" width={1536} height={512} loading="eager" fetchPriority="high" alt="پک‌های هدیهٔ عطر در اندازه‌های مختلف با جعبه‌های کرمی، مشکی و طلایی، روبان ساتن و ست عطرهای کوچک" /></figure>}
     {collection?.slug === 'women' && (
       <figure className="audience-collection-hero">
-        <img src={`${import.meta.env.BASE_URL}images/female-section.png`} width={2172} height={724} fetchPriority="high" alt="شیشه‌های عطر زنانه کنار گل رز و گل‌های سفید" />
+        <img src={`${import.meta.env.BASE_URL}images/female-section.webp`} width={2172} height={724} fetchPriority="high" alt="شیشه‌های عطر زنانه کنار گل رز و گل‌های سفید" />
       </figure>
     )}
     {collection?.slug === 'men' && (
       <figure className="audience-collection-hero">
-        <img src={`${import.meta.env.BASE_URL}images/male-section.png`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای مردانه" />
+        <img src={`${import.meta.env.BASE_URL}images/male-section.webp`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای مردانه" />
       </figure>
     )}
     {collection?.slug === 'niche' && (
       <figure className="audience-collection-hero">
-        <img src={`${import.meta.env.BASE_URL}images/niche.png`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای نیش" />
+        <img src={`${import.meta.env.BASE_URL}images/niche.webp`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای نیش" />
+      </figure>
+    )}
+    {collection?.slug === 'unisex' && (
+      <figure className="audience-collection-hero">
+        <img src={`${import.meta.env.BASE_URL}images/unisex.webp`} width={2172} height={724} fetchPriority="high" alt="بنر مجموعهٔ عطرهای یونیسکس" />
       </figure>
     )}
     <nav className="breadcrumbs" aria-label="مسیر صفحه"><a href="#home">خانه</a><span>/</span><a href="#/catalog">کاتالوگ</a>{collection && <><span>/</span><span>{collection.title}</span></>}</nav>
