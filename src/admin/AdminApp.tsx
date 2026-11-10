@@ -8,6 +8,7 @@ import { LuxurySelect } from '../components/LuxurySelect';
 import { ScrollRail } from '../components/ScrollRail';
 import { AdminBadge, AdminForm, ConfirmDialog, DataTable, InlineEditor, Panel, type FormField } from './AdminUI';
 import { type AdminProduct, sellerConcentrations, advanceOrder, canAccess, canEdit, createAdminState, money, number, orderSteps, roles, sellerPages, updateVariant, type AdminGroup, type AdminRecord, type AdminRole, type AdminRoute, type AdminState } from './model';
+import { ProductGalleryPreview } from './ProductGalleryPreview';
 import {usageFields} from './UsageChoices';
 import { familyEnglish } from './fragranceLabels';
 import { NEW_BRAND_OPTION, NEW_FAMILY_OPTION, productVariantFields, saveProductDraft, validateProductDraft } from './productSave';
@@ -99,7 +100,7 @@ function SellerPage({route,workspace:w}:{route:AdminRoute;workspace:Workspace}) 
  const {state}=w;
  switch(route.section){
   case 'products':return <><div className="admin-actions"><a className="admin-primary" href={link('seller','product-new')}>افزودن محصول</a><a href={link('seller','variants')}>حجم‌ها و قیمت</a></div><DataTable label="محصولات" rows={state.products} renderCard={product=><SellerProductCard product={product}/> } /></>;
-  case 'product-new':case 'product-edit':return <ProductEditor key={route.id??'new'} id={route.id} workspace={w}/>;
+  case 'product-new':case 'product-edit':return <ProductEditor key={route.id??'new'} id={route.id} workspace={w} galleryPreview={route.galleryPreview}/>;
   case 'inventory':case 'variants':return <VariantEditor inventory={route.section==='inventory'} workspace={w}/>;
   case 'orders':return <DataTable label="سفارش‌ها" rows={state.orders.map(o=>({...o,name:o.id}))} columns={[{key:'id',label:'سفارش',render:o=><a href={link('seller','orders/'+o.id)}>{o.id}</a>},{key:'customer',label:'مشتری',render:o=>o.customer},{key:'total',label:'جمع',render:o=>money(o.total)},statusColumn,{key:'action',label:'عملیات',render:o=><a href={link('seller','orders/'+o.id)}>جزئیات و مراحل</a>}]} />;
   case 'order-detail':return <OrderDetail id={route.id} workspace={w}/>;
@@ -134,7 +135,7 @@ function SellerProductCard({product}:{product:AdminProduct}) {
  </article>;
 }
 
-function ProductEditor({id,workspace:w}:{id?:string;workspace:Workspace}) {
+function ProductEditor({id,workspace:w,galleryPreview}:{id?:string;workspace:Workspace;galleryPreview?:boolean}) {
  const existing=id?w.state.products.find(p=>p.id===id):undefined;
  const [saved,setSaved]=useState(false);
  const [image,setImage]=useState(existing?.image??''),[file,setFile]=useState<File>(),[error,setError]=useState(''),[formVersion,setFormVersion]=useState(0);
@@ -169,7 +170,7 @@ function ProductEditor({id,workspace:w}:{id?:string;workspace:Workspace}) {
   ]),
  ];
  return <Panel title={existing?'ویرایش اطلاعات محصول':'ساخت محصول'}>{existing&&<div className="admin-actions"><a href={link('seller','products')}>فهرست محصولات</a><a href={link('seller','variants')}>مدیریت حجم و قیمت</a></div>}
-  <div className="admin-image-picker">
+  {galleryPreview?<ProductGalleryPreview image={existing?.image} editable={w.editable}/>:<div className="admin-image-picker">
    <div className="admin-image-preview">
     {image?<img src={image} alt="پیش‌نمایش تصویر محصول" width={96} height={96} onError={()=>{setImage('');setError('تصویر قابل خواندن نیست؛ فایل دیگری انتخاب کنید.');}}/>:<ImagePlus size={26} aria-hidden="true"/>}
    </div>
@@ -183,7 +184,7 @@ function ProductEditor({id,workspace:w}:{id?:string;workspace:Workspace}) {
     <p id="admin-image-formats"><bdi dir="ltr">PNG · JPEG · WebP</bdi>، تا ۲ مگابایت</p>
    </div>
    {error&&<p role="alert" className="admin-error">{error}</p>}
-  </div>
+  </div>}
   <AdminForm mobileColumns fullWidthSubmit={!existing} saved={saved} onFieldChange={()=>setSaved(false)} submit={existing?"ذخیره":"ذخیره محصول جدید"} key={formVersion} fields={fields} initial={existing?{name:existing.name,brand:existing.brand,family:existing.family,seasons:existing.seasons?.join('، ')??'',occasions:existing.occasions?.join('، ')??'',dayTimes:existing.dayTimes?.join('، ')??'',notes:existing.notes,audience:existing.audience??'یونیسکس',status:existing.status}:{name:'',brand:'',family:'',notes:'',audience:'',status:'پیش‌نویس'}} disabled={!w.editable} validate={v=>validateProductDraft(v,draftVariantIds)} beforeSubmit={!existing&&<div className="admin-actions admin-form-section">
    <button type="button" disabled={!w.editable} onClick={()=>{const id=crypto.randomUUID();setVariantIds(current=>[...current,id]);}}>افزودن حجم و قیمت دیگر</button>
    {variantIds.length>1&&<button type="button" disabled={!w.editable} onClick={()=>setVariantIds(current=>current.slice(0,-1))}>حذف آخرین نسخه</button>}
