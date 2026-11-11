@@ -34,6 +34,45 @@ Query both endpoints on HTTP port 8001. Liveness should return 200 and readiness
 
 The development server is for local use. Automated backend tests use disposable in-memory SQLite. Verify the catalog migration and API separately against PostgreSQL.
 
+## Seller sign-in
+
+Apply migrations in the development database with `& $python backend/manage.py migrate`.
+For local HTTP on a loopback-only development host, set
+`$env:DJANGO_INSECURE_LOCAL_HTTP = '1'` before starting Django. Start Vite as
+documented below and open `/perfume-onlineshop/#/seller/overview` on the Vite origin.
+
+Provision a development staff account with Django's user tools and grant
+`catalog.view_product` for read access. Add `catalog.change_product` for the seller
+role. The server checks the specific permission declared by each management view.
+Set passwords locally using Django's interactive password tooling. New
+passwords require at least eight characters, including a letter, a digit,
+and a symbol. This sign-in
+does not connect the existing demonstration product forms to database writes.
+
+| Method and path | Behavior |
+| --- | --- |
+| `GET /api/v1/seller/session/` | Returns session identity, role, expiry and a masked CSRF token |
+| `POST /api/v1/seller/login/` | Takes JSON with `username` and `password` and returns fresh session data |
+| `POST /api/v1/seller/logout/` | Invalidates the server session and returns 204 |
+
+Send the masked token in `X-CSRFToken` for unsafe methods, including sign-in and
+sign-out. Sign-in starts an eight-hour session and rotates its identifier and
+CSRF token. The tenth failure for a username within 15 minutes starts a
+10-minute lockout. The 50-failure source limit lasts until the end of its
+15-minute window. A 429 response includes `Retry-After`, `lockedUntil`, and
+`serverTime`. A signed HttpOnly cookie lets the session endpoint restore the
+account countdown in the same browser. The database enforces the lockout
+independently of the cookie. Schedule Django's
+`clearsessions` and removal of expired `SellerLoginAttempt` rows as database
+maintenance before production use.
+
+Serve React and the API behind one HTTPS origin in production. Keep secure cookies
+enabled. Only set `DJANGO_TRUST_HTTPS_PROXY=1` when Django is reachable solely
+through a trusted proxy that overwrites `X-Forwarded-Proto`. If configuring
+`SELLER_TRUSTED_PROXIES`, list exact proxy peer IPs and have that proxy overwrite
+`X-Real-IP` with the verified client address. Otherwise source limits use the
+immediate peer address.
+
 ## Product detail API preview
 
 The public read endpoint is `GET /api/v1/products/<slug>/`. It returns a published
