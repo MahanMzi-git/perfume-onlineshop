@@ -15,6 +15,7 @@ import { manualVariantCodeError } from '../lib/variantCodes';
 import { VariantCode } from '../components/VariantCode';
 import { ProductGalleryPreview } from './ProductGalleryPreview';
 import { savedManualVariantCodes, type AdminVariant } from './model';
+import { SellerSession } from './SellerSession';
 
 interface Workspace { state:AdminState; codes:Map<string,string>; editable:boolean; mutate:(label:string,fn:(s:AdminState)=>AdminState)=>void; confirm:(title:string,detail:string,action:()=>void)=>void }
 const link=(group:AdminGroup,section:string)=>`#/${group}/${section}`;
@@ -38,8 +39,18 @@ const sellerPageIcons = {
  reports:ChartNoAxesColumn, settings:Settings,
 };
 
-export function AdminApp({route,session,onSessionChange}:{route:AdminRoute;session?:AdminState;onSessionChange:(state:AdminState)=>void}) {
- const [state,setState]=useState(()=>session??createAdminState()),[role,setRole]=useState<AdminRole>('visitor'),[notice,setNotice]=useState('');
+interface AdminAppProps {
+ route: AdminRoute;
+ session?: AdminState;
+ onSessionChange: (state: AdminState) => void;
+}
+
+export function AdminApp(props: AdminAppProps) {
+ return <SellerSession>{(role, logout) => <SellerWorkspace {...props} role={role} logout={logout} />}</SellerSession>;
+}
+
+function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppProps & {role:AdminRole; logout:()=>Promise<void>}) {
+ const [state,setState]=useState(()=>session??createAdminState()),[notice,setNotice]=useState('');
  useEffect(()=>onSessionChange(state),[state,onSessionChange]);
  const codes=useMemo(()=>new Map(codedVariants(state.products).map(({variant,code})=>[variant.id,code])),[state.products]);
  const [libraryReady,setLibraryReady]=useState(false);
@@ -93,7 +104,7 @@ export function AdminApp({route,session,onSessionChange}:{route:AdminRoute;sessi
    <a className="admin-nav-home" href={link(route.group,'overview')} aria-current={route.section==='overview'?'page':undefined} onClick={()=>{if(menu)closeMenu();}}><LayoutDashboard size={17} aria-hidden="true"/>نمای کلی</a>
    <div className="admin-nav-scroll"><nav ref={menuList} id="admin-page-links" aria-label="دیگر صفحات فروشنده">{pages.filter(([id])=>id!=='overview').map(([id,label])=>{const Icon=sellerPageIcons[id];return <a key={id} href={link(route.group,id)} onClick={()=>{if(menu)closeMenu();}} aria-current={route.section===id||(id==='products'&&route.section==='product-edit')||(id==='orders'&&route.section==='order-detail')?'page':undefined}><Icon size={17} aria-hidden="true"/>{label}</a>;})}</nav><ScrollRail viewportRef={menuList} controlsId="admin-page-links" label="پیمایش صفحات پنل"/></div>
   </aside><main id="admin-main" className="admin-main" tabIndex={-1}>
-   <div className="admin-access-tools"><LuxurySelect label="نقش کاربری" value={role} options={Object.entries(roles).map(([value,label])=>({value,label}))} onChange={v=>{setRole(v as AdminRole);setConfirmation(undefined);}}/><LuxurySelect label="وضعیت نمایش" value={view} options={[{value:'normal',label:'نمایش عادی'},{value:'loading',label:'در حال بارگذاری'},{value:'empty',label:'دادهٔ خالی'},{value:'error',label:'خطای'}]} onChange={setView}/></div>
+   <div className="admin-access-tools"><div className="admin-actions"><AdminBadge>{roles[role]}</AdminBadge><button type="button" onClick={() => void logout()}>خروج از حساب</button></div><LuxurySelect label="وضعیت نمایش" value={view} options={[{value:'normal',label:'نمایش عادی'},{value:'loading',label:'در حال بارگذاری'},{value:'empty',label:'دادهٔ خالی'},{value:'error',label:'خطای'}]} onChange={setView}/></div>
    <div className="admin-heading">
     <div>
      <p>فروشنده / {title}</p>
@@ -103,7 +114,7 @@ export function AdminApp({route,session,onSessionChange}:{route:AdminRoute;sessi
     <div className="admin-actions">{allowed&&route.section==='product-new'&&<a href={link('seller','products')}>فهرست محصولات</a>}<AdminBadge>{editable?'امکان ویرایش':allowed?'فقط خواندن':'بدون دسترسی'}</AdminBadge></div>
    </div>
    <p className="admin-notification" role="status" aria-live="polite">{notice}</p>
-   {!allowed?<Panel title="دسترسی این نقش به این محیط تعریف نشده"><div className="admin-empty"><ShieldCheck size={32}/><p>از فهرست بالا نقش «فروشنده» را انتخاب کنید.</p></div></Panel>:view==='normal'?content:view==='loading'?<Panel title="دریافت اطلاعات"><p role="status" aria-busy="true">در حال بارگذاری…</p><div className="admin-skeleton" aria-hidden="true"/><button onClick={()=>setView('normal')}>بازگشت به صفحه</button></Panel>:<Panel title={view==='error'?'دریافت داده ناموفق بود':'هنوز داده‌ای برای نمایش نیست'}><div className="admin-empty"><AlertCircle/><p>{view==='error'?'در بارگذاری اطلاعات مشکلی پیش آمد.':'موردی برای نمایش وجود ندارد.'}</p><button onClick={()=>setView('normal')}>{view==='error'?'تلاش دوباره':'بازگشت به نمایش عادی'}</button></div></Panel>}
+   {!allowed?<Panel title="دسترسی این نقش به این محیط تعریف نشده"><div className="admin-empty"><ShieldCheck size={32}/><p>دسترسی حساب را با مدیر فروشگاه بررسی کنید.</p></div></Panel>:view==='normal'?content:view==='loading'?<Panel title="دریافت اطلاعات"><p role="status" aria-busy="true">در حال بارگذاری…</p><div className="admin-skeleton" aria-hidden="true"/><button onClick={()=>setView('normal')}>بازگشت به صفحه</button></Panel>:<Panel title={view==='error'?'دریافت داده ناموفق بود':'هنوز داده‌ای برای نمایش نیست'}><div className="admin-empty"><AlertCircle/><p>{view==='error'?'در بارگذاری اطلاعات مشکلی پیش آمد.':'موردی برای نمایش وجود ندارد.'}</p><button onClick={()=>setView('normal')}>{view==='error'?'تلاش دوباره':'بازگشت به نمایش عادی'}</button></div></Panel>}
   </main></div>
   {confirmation&&<ConfirmDialog title={confirmation.title} detail={confirmation.detail} onConfirm={confirmation.action} onClose={()=>setConfirmation(undefined)}/>}
  </div>;

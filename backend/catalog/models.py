@@ -1,6 +1,12 @@
 from django.db import models
 
 
+class SellerLoginAttempt(models.Model):
+    key = models.CharField(max_length=64, primary_key=True)
+    failures = models.PositiveSmallIntegerField(default=0)
+    expires_at = models.DateTimeField(db_index=True)
+
+
 class Product(models.Model):
     slug = models.SlugField(max_length=180, unique=True)
     name = models.CharField(max_length=180)
