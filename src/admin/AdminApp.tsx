@@ -16,6 +16,7 @@ import { VariantCode } from '../components/VariantCode';
 import { ProductGalleryPreview } from './ProductGalleryPreview';
 import { savedManualVariantCodes, type AdminVariant } from './model';
 import { SellerSession } from './SellerSession';
+import { SellerDraftEditor, SellerDrafts } from './SellerDrafts';
 
 interface Workspace { state:AdminState; codes:Map<string,string>; editable:boolean; mutate:(label:string,fn:(s:AdminState)=>AdminState)=>void; confirm:(title:string,detail:string,action:()=>void)=>void }
 const link=(group:AdminGroup,section:string)=>`#/${group}/${section}`;
@@ -84,7 +85,7 @@ function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppPro
  useEffect(()=>{if(menu)menuClose.current?.focus();},[menu]);
  const [confirmation,setConfirmation]=useState<{title:string;detail:string;action:()=>void}>();
  const pages=sellerPages;
- const title=pages.find(([id])=>id===route.section)?.[1]??(route.section==='product-edit'?'ویرایش محصول':'جزئیات سفارش');
+ const title=route.section==='product-new'?'ساخت پیش‌نویس':pages.find(([id])=>id===route.section)?.[1]??(route.section==='product-edit'?'ویرایش محصول':'جزئیات سفارش');
  const allowed=canAccess(role,route.group),editable=canEdit(role,route.group);
  useEffect(()=>{setView('normal');setMenu(false);setConfirmation(undefined);setNotice('');document.title=title+' | آروما · پنل فروشنده';},[route.group,route.section,route.id,title]);
  const mutate:Workspace['mutate']=(label,fn)=>{
@@ -95,7 +96,7 @@ function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppPro
  let content:ReactNode;
  if(route.section==='overview')content=<Overview workspace={workspace}/>;
  else if((route.section==='families'||route.section==='notes')&&!libraryReady)content=<p role="status">در حال بارگذاری کتابخانهٔ رایحه…</p>;
- else content=<SellerPage key={route.section+route.id} route={route} workspace={workspace}/>;
+ else content=<SellerPage key={route.section+route.id} route={route} workspace={workspace} previewState={view} onRetryPreview={()=>setView('normal')}/>;
  return <div className={'admin-app admin-'+route.group} data-field-style="capsule-sage" dir="rtl">
   <a className="skip" href="#admin-main" onClick={event=>{event.preventDefault();document.getElementById('admin-main')?.focus({preventScroll:true});}}>پرش به محتوای پنل</a>
   <header className="admin-topbar"><button ref={menuToggle} className="admin-nav-toggle" aria-label="فهرست صفحات پنل" aria-expanded={menu} aria-controls="admin-sidebar" onClick={()=>setMenu(v=>!v)}><Menu size={20}/></button><a className="admin-wordmark" href={link(route.group,'overview')} dir="ltr">AROMA <span>STORE OPERATIONS</span></a><a className="admin-store-link" href="#home">بازگشت به فروشگاه <ArrowUpLeft size={16}/></a></header>
@@ -114,7 +115,7 @@ function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppPro
     <div className="admin-actions">{allowed&&route.section==='product-new'&&<a href={link('seller','products')}>فهرست محصولات</a>}<AdminBadge>{editable?'امکان ویرایش':allowed?'فقط خواندن':'بدون دسترسی'}</AdminBadge></div>
    </div>
    <p className="admin-notification" role="status" aria-live="polite">{notice}</p>
-   {!allowed?<Panel title="دسترسی این نقش به این محیط تعریف نشده"><div className="admin-empty"><ShieldCheck size={32}/><p>دسترسی حساب را با مدیر فروشگاه بررسی کنید.</p></div></Panel>:view==='normal'?content:view==='loading'?<Panel title="دریافت اطلاعات"><p role="status" aria-busy="true">در حال بارگذاری…</p><div className="admin-skeleton" aria-hidden="true"/><button onClick={()=>setView('normal')}>بازگشت به صفحه</button></Panel>:<Panel title={view==='error'?'دریافت داده ناموفق بود':'هنوز داده‌ای برای نمایش نیست'}><div className="admin-empty"><AlertCircle/><p>{view==='error'?'در بارگذاری اطلاعات مشکلی پیش آمد.':'موردی برای نمایش وجود ندارد.'}</p><button onClick={()=>setView('normal')}>{view==='error'?'تلاش دوباره':'بازگشت به نمایش عادی'}</button></div></Panel>}
+   {!allowed?<Panel title="دسترسی این نقش به این محیط تعریف نشده"><div className="admin-empty"><ShieldCheck size={32}/><p>دسترسی حساب را با مدیر فروشگاه بررسی کنید.</p></div></Panel>:route.section==='products'?content:view==='normal'?content:view==='loading'?<Panel title="دریافت اطلاعات"><p role="status" aria-busy="true">در حال بارگذاری…</p><div className="admin-skeleton" aria-hidden="true"/><button onClick={()=>setView('normal')}>بازگشت به صفحه</button></Panel>:<Panel title={view==='error'?'دریافت داده ناموفق بود':'هنوز داده‌ای برای نمایش نیست'}><div className="admin-empty"><AlertCircle/><p>{view==='error'?'در بارگذاری اطلاعات مشکلی پیش آمد.':'موردی برای نمایش وجود ندارد.'}</p><button onClick={()=>setView('normal')}>{view==='error'?'تلاش دوباره':'بازگشت به نمایش عادی'}</button></div></Panel>}
   </main></div>
   {confirmation&&<ConfirmDialog title={confirmation.title} detail={confirmation.detail} onConfirm={confirmation.action} onClose={()=>setConfirmation(undefined)}/>}
  </div>;
@@ -134,11 +135,14 @@ function Overview({workspace:{state}}:{workspace:Workspace}) {
  <Panel title="مسیر سریع"><p>محصول، حجم‌ها و قیمت‌های را مدیریت کنید.</p><div className="admin-actions"><a className="admin-primary" href={link('seller','product-new')}>افزودن محصول</a><a href={link('seller','reports')}>گزارش فروش</a></div></Panel></div></>;
 }
 
-function SellerPage({route,workspace:w}:{route:AdminRoute;workspace:Workspace}) {
+function SellerPage({route,workspace:w,previewState,onRetryPreview}:{route:AdminRoute;workspace:Workspace;previewState:string;onRetryPreview:()=>void}) {
  const {state}=w;
  switch(route.section){
-  case 'products':return <><div className="admin-actions"><a className="admin-primary" href={link('seller','product-new')}>افزودن محصول</a><a href={link('seller','variants')}>حجم‌ها و قیمت</a></div><DataTable label="محصولات" rows={state.products.map(product=>({...product,searchCodes:product.variants.map(v=>w.codes.get(v.id)).join(' ')}))} renderCard={product=><SellerProductCard product={product} codes={w.codes}/> } /></>;
-  case 'product-new':case 'product-edit':return <ProductEditor key={route.id??'new'} id={route.id} workspace={w} galleryPreview={route.galleryPreview}/>;
+  case 'products':return <><SellerDrafts previewState={previewState} onRetryPreview={onRetryPreview}/><details className="admin-existing-products"><summary>محصولات ثبت‌شده <span>{number(state.products.length)}</span></summary><div className="admin-existing-products-content"><p>فهرست محصولات موجود و ابزار مدیریت نسخه‌ها و قیمت‌ها.</p><div className="admin-actions"><a href={link('seller','variants')}>مدیریت حجم و قیمت</a></div><DataTable label="محصولات ثبت‌شده" rows={state.products.map(product=>({...product,searchCodes:product.variants.map(v=>w.codes.get(v.id)).join(' ')}))} renderCard={product=><SellerProductCard product={product} codes={w.codes}/>}/></div></details></>;
+  case 'product-new':return <SellerDraftEditor editable={w.editable} mockSaveError={route.mockSaveError}/>;
+  case 'product-edit':return state.products.some(product=>product.id===route.id)
+   ? <ProductEditor key={route.id} id={route.id} workspace={w} galleryPreview={route.galleryPreview}/>
+   : <SellerDraftEditor key={route.id} id={route.id} editable={w.editable} mockSaveError={route.mockSaveError}/>;
   case 'inventory':case 'variants':return <VariantEditor inventory={route.section==='inventory'} stockFilter={route.stockFilter} workspace={w}/>;
   case 'orders':return <DataTable label="سفارش‌ها" rows={state.orders.map(o=>({...o,name:o.id,code:w.codes.get(o.variantId??'')}))} columns={[{key:'id',label:'سفارش',render:o=><a href={link('seller','orders/'+o.id)}>{o.id}</a>},{key:'customer',label:'مشتری',render:o=>o.customer},{key:'total',label:'جمع',render:o=>money(o.total)},statusColumn,{key:'action',label:'عملیات',render:o=><a href={link('seller','orders/'+o.id)}>جزئیات و مراحل</a>}]} />;
   case 'order-detail':return <OrderDetail id={route.id} workspace={w}/>;

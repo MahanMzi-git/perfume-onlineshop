@@ -16,6 +16,7 @@ export function parseRoute(hash: string): Route {
     const admin = parseAdminPath(segments) ?? { group:segments[0], section:'not-found' } as AdminRoute;
     if (admin.section === 'inventory' && params.get('stock') === 'low') admin.stockFilter = 'low';
     if (admin.section === 'product-edit' && params.get('preview') === 'gallery') admin.galleryPreview = true;
+    if (['product-new', 'product-edit'].includes(admin.section) && params.get('mock') === 'save-error') admin.mockSaveError = true;
     return { page:admin.group, params, admin };
   }
   if (segments.length === 2 && ['collections', 'brands'].includes(segments[0])) return { page: segments[0] === 'collections' ? 'collection' : 'brand', slug: segments[1], params };
