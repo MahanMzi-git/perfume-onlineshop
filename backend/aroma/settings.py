@@ -6,7 +6,8 @@ ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split("
 
 ROOT_URLCONF = "aroma.urls"
 WSGI_APPLICATION = "aroma.wsgi.application"
-INSTALLED_APPS = ["rest_framework"]
+INSTALLED_APPS = ["rest_framework", "catalog"]
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",

@@ -84,6 +84,16 @@
 .detail-price strong { font-size:1.25rem; @apply tw:font-medium; }
 .detail-price del { font-size:.8125rem; @apply tw:text-aroma-muted; }
 .detail-price p { flex-basis:100%; font-size:.8125rem; }
+.api-variant-picker { min-inline-size:0; max-inline-size:32rem; margin-block-start:1.5rem; padding:0; border:0; }
+.api-variant-picker legend { margin-block-end:.5rem; padding:0; font-weight:600; }
+.api-variant-options { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr)); gap:.625rem; }
+.api-variant-option { display:flex; align-items:center; gap:.625rem; min-block-size:4rem; padding:.75rem; border:1px solid var(--line); border-radius:.625rem; background:var(--bg); cursor:pointer; }
+.api-variant-option:has(input:checked) { border-color:var(--copper); background:var(--cream); }
+.api-variant-option:has(input:focus-visible) { outline:2px solid var(--copper); outline-offset:2px; }
+.api-variant-option input { flex:none; inline-size:1rem; block-size:1rem; margin:0; accent-color:var(--copper); }
+.api-variant-option-price { display:block; }
+.api-variant-option bdi,.api-variant-option-price,.api-variant-total span { color:var(--muted); font-size:.875rem; }
+.api-variant-total { max-inline-size:32rem; justify-content:space-between; }
 .detail-actions { @apply tw:flex tw:gap-[8px]; @apply tw:flex-wrap; }
 .local-feedback { font-size:.8125rem; margin-top:12px; @apply tw:min-h-[24px]; }
 .profile-facts { @apply tw:grid; grid-template-columns:repeat(3,minmax(0,1fr)); @apply tw:gap-[14px]; padding-block:22px; margin:0; }
