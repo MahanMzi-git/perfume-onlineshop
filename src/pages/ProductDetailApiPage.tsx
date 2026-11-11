@@ -83,13 +83,23 @@ export function ProductDetailApiContent({ state }: { state: State }) {
     <span className="badge">پیش‌نمایش کاتالوگ</span>
     <h1>{product.name}</h1>
     {variant ? <>
-      <label htmlFor="api-product-variant">نسخهٔ محصول</label>
-      <select id="api-product-variant" value={variant.id} onChange={event => setVariantId(event.target.value)}>
-        {product.variants.map(item => <option key={item.id} value={item.id}>
-          {number.format(item.volume_ml)} میلی‌لیتر · {item.concentration} · {item.sku}
-        </option>)}
-      </select>
-      <div className="detail-price" aria-live="polite"><strong>{priceText(variant.price)}</strong></div>
+      <fieldset className="api-variant-picker">
+        <legend>نسخهٔ محصول</legend>
+        <div className="api-variant-options">
+          {product.variants.map(item => <label className="api-variant-option" key={item.id}>
+            <input type="radio" name="api-product-variant" value={item.id} checked={item.id === variant.id}
+              onChange={() => setVariantId(item.id)} />
+            <span>
+              <strong>{number.format(item.volume_ml)} میلی‌لیتر</strong> <bdi>{item.concentration}</bdi>
+              <span className="api-variant-option-price">{priceText(item.price)}</span>
+            </span>
+          </label>)}
+        </div>
+      </fieldset>
+      <div className="detail-price api-variant-total" aria-live="polite" aria-atomic="true">
+        <strong>{priceText(variant.price)}</strong>
+        <span>کد نسخه <bdi>{variant.sku}</bdi></span>
+      </div>
     </> : <p role="status">نسخه‌ای برای نمایش وجود ندارد.</p>}
   </section>;
 }
