@@ -138,3 +138,12 @@ test('All real-product previews have consistent sample ratings and a gated revie
     assert.ok(html.includes('compare-symbol'));
   }
 });
+
+const { ProductDetailApiContent } = load(path.join(root, 'pages/ProductDetailApiPage.tsx'));
+test('API product detail renders loading, missing, failure and empty variant states', () => {
+  const view = state => renderToStaticMarkup(React.createElement(ProductDetailApiContent, {state}));
+  assert.match(view({kind: 'loading'}), /در حال دریافت/);
+  assert.match(view({kind: 'missing'}), /محصول پیدا نشد/);
+  assert.match(view({kind: 'error'}), /role="alert"/);
+  assert.match(view({kind: 'ready', product: {name: 'API Perfume', variants: []}}), /نسخه‌ای برای نمایش/);
+});

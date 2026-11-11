@@ -4,6 +4,7 @@ import { collections } from '../data/collections';
 import { brands } from '../data/brands';
 import { CatalogPage } from '../pages/CatalogPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
+import { ProductDetailApiPage } from '../pages/ProductDetailApiPage';
 import { LibraryNotFound, LibraryPage } from '../pages/LibraryPage';
 import { ComparisonPage } from '../pages/ComparisonPage';
 import { productBySlug } from '../data/products';
@@ -28,6 +29,9 @@ export function CommercePages({ route, comparisonIds }: { route: Route; comparis
     case 'account': return <CustomerPage key={route.slug + (route.params.get('orderId') ?? '')} section={route.slug} orderId={route.params.get('orderId') ?? undefined} />;
     case 'catalog': return <CatalogPage params={route.params} />;
     case 'product': {
+      if (import.meta.env.DEV && route.slug && route.slug === import.meta.env.VITE_PRODUCT_DETAIL_API_SLUG) {
+        return <ProductDetailApiPage key={route.slug} slug={route.slug} />;
+      }
       const product = productBySlug(route.slug);
       return product ? <ProductDetailPage key={product.id} product={product} params={route.params} /> : <LibraryNotFound />;
     }
