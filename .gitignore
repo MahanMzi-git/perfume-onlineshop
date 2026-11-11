@@ -29,3 +29,8 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Python local environment and bytecode
+.venv/
+__pycache__/
+*.pyc
