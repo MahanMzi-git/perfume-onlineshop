@@ -8,7 +8,10 @@ import { useStore } from './StoreContext';
 import type { Product } from '../types/product';
 
 const shelfHeights = [29.1, 48.7, 67.8, 86.9];
-const slotsPerCabinet = 16;
+const slotsPerShelf = 6;
+const shelfLeft = 12;
+const shelfWidth = 76;
+const slotsPerCabinet = slotsPerShelf * shelfHeights.length;
 const formatNumber = new Intl.NumberFormat('fa-IR');
 
 export interface WardrobePerfume {
@@ -35,8 +38,8 @@ function PerfumeSlot({ perfume, selected, onPick }: {
 }) {
   const slot = perfume.position % slotsPerCabinet;
   const position: CSSProperties = {
-    left: `${21.5 + (slot % 4) * 19}%`,
-    top: `${shelfHeights[Math.floor(slot / 4)]}%`,
+    left: `${shelfLeft + (slot % slotsPerShelf + 0.5) * shelfWidth / slotsPerShelf}%`,
+    top: `${shelfHeights[Math.floor(slot / slotsPerShelf)]}%`,
   };
   return <li className="wardrobe-slot" style={position}>
     <button type="button" className="wardrobe-artwork" data-lifted={selected}

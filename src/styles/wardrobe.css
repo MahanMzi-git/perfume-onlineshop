@@ -25,7 +25,7 @@
 
 .wardrobe-slot {
   position:absolute;
-  width:17%;
+  width:11.8%;
   height:16.5%;
   transform:translate(-50%, -100%);
 }
@@ -73,7 +73,7 @@
   box-shadow:0 1px 2px #2d140d90;
   color:#2f2019;
   font-family:var(--font-serif);
-  font-size:clamp(8px, 2.5cqw, 16px);
+  font-size:clamp(8px, 1.9cqw, 13px);
   font-weight:700;
   line-height:1.05;
   text-align:center;

@@ -1,6 +1,6 @@
 # Wardrobe catalog integration
 
-The current app uses its frontend demo catalog. Three reference bottles without catalog entries are explicitly preview samples; they have session-only cabinet state. Production should call buildWardrobe with published catalog entries and omit the demo-sample flag.
+The current app uses its frontend demo catalog. Reference bottles without catalog entries are explicitly preview samples; they have session-only cabinet state. Production should call buildWardrobe with published catalog entries and omit the demo-sample flag.
 
 The backend needs a customer-facing published perfume feed with a stable product ID, metadata for the details panel, and image URLs. Product drafts and the current product-detail endpoint do not provide this feed. A published product can be rendered from its original image while its cabinet image is pending or unavailable.
 
