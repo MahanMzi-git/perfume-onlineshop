@@ -186,7 +186,17 @@ export default function App() {
       </div></section>
       <FragranceDiscovery familyId={filters.familyId} onSelect={familyId => { setWishlistOnly(false); set({ familyId }); navigateToSection('products'); }} />
       <section id="discovery-sets" className="section container"><div className="editorial-panel"><div className="sample-art" aria-hidden="true"><span /><span /><span /><span /><p>THE DISCOVERY EDIT</p></div><div className="editorial-copy"><p className="eyebrow">SMALL BOTTLES. NEW WORLDS.</p><h2>پیش از انتخاب،<br />کشف کن.</h2><p>گاهی یک نمونهٔ کوچک، شروع یک علاقهٔ بزرگ است. با مفهوم ست‌های آشنایی و تجربهٔ عطر روی پوست بیشتر آشنا شو.</p><button className="text-link" onClick={() => setModal('samples')}>دربارهٔ ست‌های کشف رایحه <ArrowUpLeft aria-hidden="true" size={18} /></button><small>معرفی مفهومی؛ نمونه‌ای برای فروش عرضه نشده است.</small></div></div></section>
-      <section className="section container"><SectionHeading eyebrow="A SCENT FOR EVERY MOMENT" title="برای حال‌وهوای این روزها" /><div className="collection-grid"><button className="collection collection-fresh" onClick={() => curated('f-citrus')}><Leaf aria-hidden="true" /><span className="eyebrow">FRESH & BRIGHT</span><h3>یک شروعِ روشن</h3><p>نگاهی به عطرهای مرکباتی</p><ArrowUpLeft aria-hidden="true" /></button><button className="collection collection-warm" onClick={() => curated('f-woody')}><FlaskConical aria-hidden="true" /><span className="eyebrow">DEEP & QUIET</span><h3>آرامشِ یک عصر</h3><p>کشف جهان رایحه‌های چوبی</p><ArrowUpLeft aria-hidden="true" /></button></div></section>
+      <section className="section container mood-filters">
+        <h2>برای حال‌وهوای این روزها</h2>
+        <div className="collection-grid">
+          <button className="collection collection-fresh" onClick={() => curated('f-citrus')}>
+            <Leaf aria-hidden="true" /> عطرهای مرکباتی
+          </button>
+          <button className="collection collection-warm" onClick={() => curated('f-woody')}>
+            <FlaskConical aria-hidden="true" /> عطرهای چوبی
+          </button>
+        </div>
+      </section>
       <section id="gifts" className="gift-banner container"><Gift aria-hidden="true" size={38} /><div><p className="eyebrow">A THOUGHTFUL GIFT</p><h2>یک رایحه، به یادِ یک نفر.</h2><p>مجموعه‌های هدیهٔ نمایشی را ببین و برای انتخاب الهام بگیر.</p></div><button className="cta" onClick={() => selectCatId('gifts')}>ایده‌های هدیه <ArrowUpLeft aria-hidden="true" size={18} /></button></section>
       <JournalPreview />
       <BrandBenefits />
