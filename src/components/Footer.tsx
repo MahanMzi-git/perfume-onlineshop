@@ -15,6 +15,18 @@ export function Footer({ onInfo }: { onInfo: (id: string) => void }) {
           </a>
         </div>
 
+        <a className="aroma-footer-journal" href="#/journal">
+          <img
+            src={import.meta.env.BASE_URL + 'images/journal/how-to-read-notes.png'}
+            alt=""
+            width={1412}
+            height={790}
+            loading="lazy"
+            decoding="async"
+          />
+          <span>مجلهٔ آروما <ArrowUpLeft size={18} aria-hidden="true" /></span>
+        </a>
+
         <nav className="aroma-footer-nav" aria-label="فروشگاه و راهنما">
           <div>
             <h2>کشف عطرها</h2>
@@ -31,7 +43,6 @@ export function Footer({ onInfo }: { onInfo: (id: string) => void }) {
             <h2>راهنما و پشتیبانی</h2>
             <ul>
               <li><a href="#/families">راهنمای رایحه‌ها</a></li>
-              <li><a href="#/journal">مجلهٔ آروما</a></li>
               <li><a href="#/about">دربارهٔ ما</a></li>
               <li><button type="button" onClick={() => onInfo('shipping')}>ارسال و مرجوعی</button></li>
               <li><button type="button" onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li>
