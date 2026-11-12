@@ -1,10 +1,11 @@
 import { useVariantCodes, VariantCode } from '../components/VariantCode';
 import { useState } from 'react';
-import { Heart, UserRound, MapPin, Package, FlaskConical, Clock, SlidersHorizontal, MessageSquare, Bell, LifeBuoy } from 'lucide-react';
+import { Heart, UserRound, MapPin, Package, FlaskConical, Clock, SlidersHorizontal, MessageSquare, Bell, LifeBuoy, ChevronDown } from 'lucide-react';
 import { ProductReviewForm } from '../components/ProductReviewForm';
 import { OrderTracking } from '../components/OrderProgress';
 import { useCustomer } from '../components/CustomerContext';
 import { useStore } from '../components/StoreContext';
+import { AdaptiveDisclosure } from '../components/AdaptiveDisclosure';
 import { CustomerForm } from '../components/CustomerForm';
 import { Dialog } from '../components/SharedUI';
 import { ProductGrid } from '../components/ProductGrid';
@@ -30,13 +31,7 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
   const recentIds = loadProductIds('aroma-recently-viewed', new Set(products.map(product => product.id)));
   const recent = recentIds.map(id => products.find(product => product.id === id)!).filter(Boolean);
   function togglePreference(id: string) { setCustomer(value => ({ ...value, preferences: value.preferences.includes(id) ? value.preferences.filter(item => item !== id) : [...value.preferences, id] })); }
-  return <section className="section container step2-page shopping-page account-page">
-    <header className="account-heading">
-      <h1>{title}</h1>
-      <p>حساب آزمایشی است. از اطلاعات نمونه استفاده کنید؛ خرید و ارسال واقعی انجام نمی‌شود.</p>
-    </header>
-
-    <div className="account-layout">
+  const accountNavigation = (
       <nav className="account-navigation" aria-label="بخش‌های حساب">
         {accountTabs.map(({ id, label, icon: Icon }) => (
           <a key={id} href={'#/account/' + id} aria-current={section === id ? 'page' : undefined}>
@@ -45,6 +40,22 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
           </a>
         ))}
       </nav>
+  );
+  return <section className="section container step2-page shopping-page account-page">
+    <header className="account-heading">
+      <h1>{title}</h1>
+      <p>حساب آزمایشی است. از اطلاعات نمونه استفاده کنید؛ خرید و ارسال واقعی انجام نمی‌شود.</p>
+    </header>
+
+    <div className={section === 'profile' ? 'account-layout account-profile-layout' : 'account-layout'}>
+      {section === 'profile' ? (
+        <AdaptiveDisclosure className="account-profile-menu" summary={<>
+          <span>بخش‌های حساب</span>
+          <ChevronDown size={18} aria-hidden="true" />
+        </>}>
+          {accountNavigation}
+        </AdaptiveDisclosure>
+      ) : accountNavigation}
 
       <div className="account-content">
         <p role="status" className="customer-status">{message}</p>
@@ -71,7 +82,7 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
         </>}
         {section === 'profile' && <div className="customer-panel account-profile-panel">
           <h2>اطلاعات تماس</h2>
-          <p>اطلاعات این فرم فقط تا وقتی صفحه باز است در همین نشست می‌ماند.</p>
+          <p>نام و راه‌های تماس خود را وارد کنید. تغییرات فقط در این نشست ذخیره می‌شوند.</p>
           <CustomerForm fields={contactFields} initial={customer.profile} submit="ذخیرهٔ پروفایل" onSave={profile => {
             setCustomer(value => ({ ...value, profile }));
             setMessage('پروفایل در همین نشست ذخیره شد.');

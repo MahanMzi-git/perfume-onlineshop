@@ -141,3 +141,59 @@
   .account-overview { grid-template-columns:minmax(0,1fr); }
   .account-overview img { height:clamp(112px, 33vw, 184px); }
 }
+
+/* Profile: the form is the primary task; navigation expands on demand. */
+.account-profile-menu > summary {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  min-height:44px;
+  padding:.5rem .85rem;
+  cursor:pointer;
+  list-style:none;
+  font-weight:600;
+}
+.account-profile-menu > summary::-webkit-details-marker { display:none; }
+.account-profile-menu[open] > summary svg { transform:rotate(180deg); }
+.account-profile-menu {
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface);
+}
+.account-profile-menu .account-navigation { border:0; background:transparent; }
+.account-profile-layout .account-profile-panel {
+  margin:0;
+  border-radius:16px;
+  padding:clamp(.9rem, 3vw, 2rem);
+  background:var(--surface);
+}
+.account-profile-panel h2 { margin-bottom:.25rem; }
+.account-profile-panel > p { margin:0; }
+.account-profile-panel .customer-form {
+  max-width:none;
+  gap:clamp(.75rem, 2vw, 1.25rem);
+}
+.account-profile-panel .customer-form input {
+  min-height:46px;
+  border-radius:10px;
+  font-size:1rem;
+}
+.account-profile-panel .customer-form > [role=alert] { grid-column:1 / -1; }
+.account-profile-panel .customer-form > button { justify-self:stretch; }
+.account-profile-menu summary:focus-visible,
+.account-profile-panel :is(input, button):focus-visible {
+  outline:2px solid var(--copper);
+  outline-offset:3px;
+}
+
+@media (min-width:560px) {
+  .account-profile-panel .customer-form { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .account-profile-panel .customer-form > button { grid-column:1 / -1; justify-self:start; }
+}
+@media (min-width:768px) {
+  .account-profile-layout { grid-template-columns:minmax(10rem, 13rem) minmax(0, 1fr); }
+  .account-profile-menu > summary { display:none; }
+  .account-profile-menu .account-navigation { grid-template-columns:1fr; }
+}
