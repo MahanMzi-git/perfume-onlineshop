@@ -325,3 +325,20 @@
 @media (max-width:360px) {
   .account-recent .grid { grid-template-columns:minmax(0,1fr); }
 }
+
+/* Cabinet motion follows browsing and selection. */
+.cabinet-grid .choice-list label {
+  padding-inline:.45rem;
+  border-radius:8px;
+}
+.cabinet-grid .choice-list label:has(input:checked) {
+  background:#e6ecdf;
+  color:#35452d;
+}
+@media (prefers-reduced-motion:no-preference) {
+  .cabinet-grid .choice-list label { transition:background-color 160ms ease-out, color 160ms ease-out; }
+}
+@media (prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine) {
+  .cabinet-grid .cabinet-image { transition:transform 220ms ease-out; }
+  .cabinet-grid a:hover .cabinet-image { transform:translateY(-3px); }
+}
