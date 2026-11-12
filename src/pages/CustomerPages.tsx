@@ -56,10 +56,10 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
               <a className="step-action step-primary" href="#/account/profile">ویرایش پروفایل</a>
             </div>
             <img
-              src={import.meta.env.BASE_URL + 'images/journal/why-to-test-before-purchase.png'}
+              src={import.meta.env.BASE_URL + 'images/account/profile.webp'}
               alt=""
-              width={1774}
-              height={887}
+              width={2172}
+              height={724}
               decoding="async"
             />
           </div>

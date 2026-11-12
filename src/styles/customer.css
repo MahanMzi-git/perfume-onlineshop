@@ -106,7 +106,7 @@
 .account-overview-copy { align-self:center; padding:clamp(1rem, 3vw, 2rem); }
 .account-overview-copy h2 { font-size:clamp(1.15rem, 1rem + .55vw, 1.55rem); margin-bottom:.4rem; }
 .account-overview-copy p { margin:0 0 .9rem; color:var(--muted); }
-.account-overview img { width:100%; height:100%; min-height:0; object-fit:cover; }
+.account-overview img { width:100%; height:100%; min-height:0; object-fit:cover; object-position:62% center; }
 .account-page .account-shortcuts { margin-top:.75rem; }
 .account-page .account-shortcuts a {
   display:flex;
@@ -134,5 +134,5 @@
   .account-page .account-navigation a { gap:.3rem; padding-inline:.3rem; font-size:.75rem; }
   .account-page .account-navigation a svg { width:.9rem; height:.9rem; }
   .account-overview { grid-template-columns:minmax(0,1fr); }
-  .account-overview img { height:clamp(68px, 18vw, 104px); object-position:center 56%; }
+  .account-overview img { height:clamp(68px, 18vw, 104px); }
 }
