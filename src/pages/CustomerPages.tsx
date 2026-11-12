@@ -1,5 +1,5 @@
 import { useVariantCodes, VariantCode } from '../components/VariantCode';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Heart, UserRound, MapPin, Package, FlaskConical, Clock, SlidersHorizontal, MessageSquare, Bell, LifeBuoy, ChevronDown } from 'lucide-react';
 import { ProductReviewForm } from '../components/ProductReviewForm';
 import { OrderTracking } from '../components/OrderProgress';
@@ -31,6 +31,14 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
   const recentIds = loadProductIds('aroma-recently-viewed', new Set(products.map(product => product.id)));
   const recent = recentIds.map(id => products.find(product => product.id === id)!).filter(Boolean);
   function togglePreference(id: string) { setCustomer(value => ({ ...value, preferences: value.preferences.includes(id) ? value.preferences.filter(item => item !== id) : [...value.preferences, id] })); }
+  const focusedLayout = ['profile', 'addresses', 'orders', 'wishlist'].includes(section);
+  const addressHeading = useRef<HTMLHeadingElement>(null);
+
+  function editAddress(id: string) {
+    setEditingAddress(id);
+    addressHeading.current?.focus();
+  }
+
   const accountNavigation = (
       <nav className="account-navigation" aria-label="بخش‌های حساب">
         {accountTabs.map(({ id, label, icon: Icon }) => (
@@ -47,8 +55,8 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
       <p>حساب آزمایشی است. از اطلاعات نمونه استفاده کنید؛ خرید و ارسال واقعی انجام نمی‌شود.</p>
     </header>
 
-    <div className={section === 'profile' ? 'account-layout account-profile-layout' : 'account-layout'}>
-      {section === 'profile' ? (
+    <div className={focusedLayout ? 'account-layout account-profile-layout' : 'account-layout'}>
+      {focusedLayout ? (
         <AdaptiveDisclosure className="account-profile-menu" summary={<>
           <span>بخش‌های حساب</span>
           <ChevronDown size={18} aria-hidden="true" />
@@ -88,10 +96,89 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
             setMessage('پروفایل در همین نشست ذخیره شد.');
           }} />
         </div>}
-    {section === 'addresses' && <><div className="address-list">{customer.addresses.length === 0 && <p className="empty">هنوز نشانی نمایشی اضافه نکرده‌اید.</p>}{customer.addresses.map(item => <article className="customer-panel" key={item.id}><h2>{item.values.city}</h2><p>{item.values.province} · {item.values.address}</p><p>کد پستی: <bdi>{item.values.postal}</bdi></p><div className="customer-actions"><button className="step-action" onClick={() => setEditingAddress(item.id)}>ویرایش</button><button className="step-action" onClick={() => setConfirm({ type: 'address', id: item.id })}>حذف</button></div></article>)}</div><div className="customer-panel"><h2>{selectedAddress ? 'ویرایش نشانی' : 'افزودن نشانی آزمایشی'}</h2><CustomerForm key={editingAddress ?? 'new-' + addressFormVersion} fields={addressFields} initial={selectedAddress?.values} onSave={values => { setCustomer(customer => ({ ...customer, addresses: selectedAddress ? customer.addresses.map(item => item.id === selectedAddress.id ? { ...item, values } : item) : [...customer.addresses, { id: crypto.randomUUID(), values }] })); setEditingAddress(undefined); setAddressFormVersion(value => value + 1); setMessage('نشانی فقط در این نشست ذخیره شد.'); }} />{selectedAddress && <button className="text-link" onClick={() => setEditingAddress(undefined)}>انصراف از ویرایش</button>}</div></>}
-    {section === 'orders' && !orderId && <>{!customer.showDemoOrders ? <div className="empty"><Package aria-hidden="true" size={28} /><h2>سفارش واقعی ندارید</h2><p>برای بررسی طراحی، دو سفارش کاملاً ساختگی را نمایش دهید.</p><button className="step-action" onClick={() => setCustomer(value => ({ ...value, showDemoOrders: true }))}>نمایش داده‌های نمونه</button></div> : <><button className="text-link" onClick={() => setCustomer(value => ({ ...value, showDemoOrders: false }))}>پنهان کردن سفارش‌های نمونه</button>{demoOrders.map(item => <article className="customer-panel" key={item.id}><h2><a href={'#/account/orders/' + item.id}>{item.id}</a></h2><p>{item.date} · {customer.cancelled.includes(item.id) ? 'درخواست لغو · نمایشی' : item.status}</p><strong>{priceText(item.total)}</strong><a className="text-link" href={'#/account/orders/' + item.id}>مشاهدهٔ جزئیات</a></article>)}</> }</>}
+        {section === 'addresses' && <div className="account-addresses">
+          <section className="customer-panel account-profile-panel account-address-editor">
+            <h2 ref={addressHeading} tabIndex={-1}>{selectedAddress ? 'ویرایش نشانی' : 'افزودن نشانی آزمایشی'}</h2>
+            <p>استان و شهر را انتخاب کنید، سپس نشانی و کد پستی نمونه را وارد کنید.</p>
+            <CustomerForm
+              key={editingAddress ?? 'new-' + addressFormVersion}
+              fields={addressFields}
+              initial={selectedAddress?.values}
+              submit="ذخیرهٔ نشانی"
+              onSave={values => {
+                const entry = { id: selectedAddress?.id ?? crypto.randomUUID(), values };
+                setCustomer(current => ({
+                  ...current,
+                  addresses: selectedAddress
+                    ? current.addresses.map(item => item.id === entry.id ? entry : item)
+                    : [...current.addresses, entry],
+                }));
+                setEditingAddress(undefined);
+                setAddressFormVersion(value => value + 1);
+                setMessage('نشانی فقط در این نشست ذخیره شد.');
+              }}
+            />
+            {selectedAddress && <button type="button" className="text-link" onClick={() => setEditingAddress(undefined)}>انصراف از ویرایش</button>}
+          </section>
+          {customer.addresses.length > 0 && <section className="account-saved-addresses">
+            <h2>نشانی‌های ذخیره‌شده</h2>
+            <div className="address-list">
+              {customer.addresses.map(item => <article className="customer-panel" key={item.id}>
+                <h3>{item.values.city}، {item.values.province}</h3>
+                <p>{item.values.address}</p>
+                <p>کد پستی: <bdi>{item.values.postal}</bdi></p>
+                <div className="customer-actions">
+                  <button type="button" className="step-action" onClick={() => editAddress(item.id)}>ویرایش</button>
+                  <button type="button" className="step-action" onClick={() => setConfirm({ type: 'address', id: item.id })}>حذف</button>
+                </div>
+              </article>)}
+            </div>
+          </section>}
+        </div>}
+
+        {section === 'orders' && !orderId && (
+          customer.showDemoOrders ? <section className="account-order-list">
+            <div className="account-list-heading">
+              <h2>سفارش‌های نمونه</h2>
+              <button type="button" className="step-action" onClick={() => setCustomer(value => ({ ...value, showDemoOrders: false }))}>پنهان کردن نمونه‌ها</button>
+            </div>
+            {demoOrders.map(item => <article className="customer-panel account-order-card" key={item.id}>
+              <div>
+                <h3><bdi>{item.id}</bdi></h3>
+                <p>{products.find(product => product.id === item.productId)?.name} · {item.volume}</p>
+                <p>{item.date} · {customer.cancelled.includes(item.id) ? 'درخواست لغو · نمایشی' : item.status}</p>
+              </div>
+              <div className="account-order-actions">
+                <strong>{priceText(item.total)}</strong>
+                <a className="step-action" href={'#/account/orders/' + item.id}>مشاهدهٔ جزئیات</a>
+              </div>
+            </article>)}
+          </section> : <div className="customer-panel account-empty-state">
+            <Package aria-hidden="true" size={26} />
+            <div>
+              <h2>هنوز سفارشی ندارید</h2>
+              <p>با دو سفارش نمونه، جزئیات و مراحل پیگیری را ببینید.</p>
+              <button type="button" className="step-action step-primary" onClick={() => setCustomer(value => ({ ...value, showDemoOrders: true }))}>نمایش سفارش‌های نمونه</button>
+            </div>
+          </div>
+        )}
     {orderId && (order ? <article className="customer-panel"><p className="badge">دادهٔ کاملاً ساختگی؛ به تسویه‌حساب متصل نیست</p><h2>{order.id}</h2><p>{order.date} · {customer.cancelled.includes(order.id) ? 'درخواست لغو · نمایشی' : order.status}</p><p>{products.find(product => product.id === order.productId)?.name} · {order.volume} × {order.quantity} · <VariantCode code={codes.get(order.variantId ?? "")} /></p><p>مبلغ نمونه: {priceText(order.total)}</p><OrderTracking stage={order.stage} cancellationRequested={customer.cancelled.includes(order.id)} /><p>نشانی نمونه: شهر آزمایشی، خیابان نمونه. اطلاعات مشتری واقعی وجود ندارد.</p>{order.cancellable && !customer.cancelled.includes(order.id) && <button className="step-action" onClick={() => setConfirm({ type: 'order', id: order.id })}>درخواست لغو نمایشی</button>}<a className="text-link" href="#/account/orders">فهرست سفارش‌ها</a></article> : <EmptyShopping title="سفارش نمایشی پیدا نشد" />)}
-    {section === 'wishlist' && <><p>این فهرست در همین مرورگر نگه‌داری می‌شود.</p>{favourites.length ? <ProductGrid list={favourites} /> : <EmptyShopping title="هنوز عطری به علاقه‌مندی‌ها اضافه نکرده‌اید" />}</>}
+        {section === 'wishlist' && (
+          favourites.length > 0 ? <section className="account-wishlist">
+            <div className="account-list-heading">
+              <h2>{new Intl.NumberFormat('fa-IR').format(favourites.length)} عطر ذخیره‌شده</h2>
+              <a className="step-action" href="#/catalog">دیدن همهٔ عطرها</a>
+            </div>
+            <ProductGrid list={favourites} />
+          </section> : <div className="customer-panel account-empty-state">
+            <Heart aria-hidden="true" size={26} />
+            <div>
+              <h2>عطرهای دلخواهتان را اینجا نگه دارید</h2>
+              <p>قلب روی کارت هر عطر را بزنید تا در همین مرورگر ذخیره شود.</p>
+              <a className="step-action step-primary" href="#/catalog">دیدن همهٔ عطرها</a>
+            </div>
+          </div>
+        )}
     {section === 'recent' && (recent.length ? <ProductGrid list={recent} /> : <EmptyShopping title="هنوز صفحهٔ عطری را ندیده‌اید" />)}
     {section === 'cabinet' && <><p>وضعیت‌های این کمد فقط در نشست آزمایشی شما می‌مانند.</p><div className="cabinet-grid">{products.map(product => { const entry = customer.cabinet[product.id] ?? {}; const update = (patch: typeof entry) => setCustomer(value => ({ ...value, cabinet: { ...value.cabinet, [product.id]: { ...value.cabinet[product.id], ...patch } } })); return <article className="customer-panel" key={product.id}><a href={'#/product/' + product.slug}><img className="cabinet-image" src={product.image} alt={product.name} width={80} height={100} loading="lazy" /><h2>{product.name}</h2></a><div className="choice-list"><label><input type="checkbox" checked={!!entry.owned} onChange={event => update({ owned: event.target.checked })} />دارم</label><label><input type="checkbox" checked={!!entry.tested} onChange={event => update({ tested: event.target.checked })} />امتحان کرده‌ام</label></div><LuxurySelect label="نظر شخصی" value={entry.opinion ?? ''} options={[{ value: '', label: 'بدون نظر' }, { value: 'liked', label: 'دوست دارم' }, { value: 'disliked', label: 'نمی‌پسندم' }]} onChange={value => update({ opinion: (value || undefined) as typeof entry.opinion })} /></article>; })}</div></>}
     {section === 'preferences' && <div className="customer-panel"><h2>خانواده‌های مورد علاقه</h2><fieldset className="choice-list"><legend>چند رایحه انتخاب کنید</legend>{fragranceFamilies.map(family => <label key={family.id}><input type="checkbox" checked={customer.preferences.includes(family.id)} onChange={() => togglePreference(family.id)} />{family.name}</label>)}</fieldset><p role="status">{customer.preferences.length} انتخاب در حافظهٔ این نشست نگه‌داری می‌شود.</p></div>}

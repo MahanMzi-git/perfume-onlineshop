@@ -197,3 +197,45 @@
   .account-profile-menu > summary { display:none; }
   .account-profile-menu .account-navigation { grid-template-columns:1fr; }
 }
+
+.account-addresses,
+.account-order-list { display:grid; gap:1rem; }
+.account-address-editor h2 { scroll-margin-top:calc(var(--header-height, 80px) + 1rem); }
+.account-address-editor .customer-field:has(textarea) { grid-column:1 / -1; }
+.account-address-editor .customer-form :is(textarea, .luxury-select-trigger) { font-size:1rem; }
+.account-saved-addresses .customer-panel,
+.account-order-card.customer-panel { margin:0; }
+.account-saved-addresses .customer-actions { margin-bottom:0; }
+.account-list-heading,
+.account-order-card {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem 1rem;
+}
+.account-list-heading { margin-bottom:.75rem; }
+.account-order-list .account-list-heading { margin:0; }
+.account-list-heading h2,
+.account-order-card p { margin:0; }
+.account-order-actions { display:grid; gap:.4rem; }
+.account-order-card p { color:var(--muted); }
+.account-empty-state {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:.75rem;
+  padding:clamp(1rem, 3vw, 1.75rem);
+  border-radius:16px;
+  background:var(--surface);
+}
+.account-empty-state > svg { color:var(--copper); }
+.account-empty-state h2 { margin-bottom:.3rem; }
+.account-empty-state p { margin:0 0 .75rem; color:var(--muted); }
+.account-profile-layout :is(.account-list-heading, .account-order-card, .account-saved-addresses) .step-action { min-height:44px; }
+
+@media (max-width:480px) {
+  .account-order-actions { width:100%; grid-template-columns:minmax(0,1fr) auto; align-items:center; }
+}
+@media (max-width:360px) {
+  .account-wishlist .grid { grid-template-columns:minmax(0,1fr); }
+}
