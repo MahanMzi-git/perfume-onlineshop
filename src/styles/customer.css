@@ -239,3 +239,89 @@
 @media (max-width:360px) {
   .account-wishlist .grid { grid-template-columns:minmax(0,1fr); }
 }
+
+.account-order-ticket.customer-panel {
+  display:grid;
+  gap:0;
+  padding:0;
+  border-radius:16px;
+  background:var(--surface);
+}
+.account-order-ticket > :is(header, .account-order-product, .account-order-actions) {
+  padding:.7rem clamp(.7rem, 2vw, 1.15rem);
+}
+.account-order-ticket > header {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:.35rem .75rem;
+  border-bottom:1px solid var(--line);
+  font-size:.8125rem;
+}
+.account-order-status {
+  padding:.2rem .55rem;
+  border-radius:999px;
+  background:#f0e8d9;
+  color:#5c451e;
+}
+.account-order-status[data-stage=delivered] { background:#e3eadc; color:#35452d; }
+.account-order-status[data-stage=cancelled] { background:#f4e5e7; color:#703447; }
+.account-order-product { display:flex; align-items:center; gap:.75rem; min-width:0; }
+.account-order-product img { flex:none; border-radius:8px; object-fit:cover; background:var(--cream); }
+.account-order-product h3 { margin:0 0 .2rem; }
+.account-order-ticket .account-order-actions {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:.5rem;
+  border-top:1px dashed var(--line);
+}
+.account-order-detail { border-radius:16px; }
+.account-choice-grid,
+.account-notification-list {
+  min-width:0;
+  padding:0;
+  border:0;
+  margin:.9rem 0;
+  display:grid;
+  gap:.5rem;
+}
+.account-choice-grid { grid-template-columns:repeat(auto-fit, minmax(min(100%, 8rem), 1fr)); }
+.account-choice-grid legend,
+.account-notification-list legend { margin-bottom:.5rem; font-size:.8125rem; }
+.account-profile-panel :is(.account-scent-choice, .account-notification-list label) {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:.5rem;
+  min-height:48px;
+  padding:.45rem .55rem;
+  border:1px solid var(--line);
+  border-radius:10px;
+  cursor:pointer;
+}
+.account-profile-panel :is(.account-scent-choice, .account-notification-list label):has(input:checked) {
+  background:#edf1e8;
+  border-color:#819071;
+}
+.account-profile-panel :is(.account-choice-grid, .account-notification-list) input {
+  width:18px;
+  min-height:0;
+  height:18px;
+  padding:0;
+  margin:0;
+  accent-color:#53654b;
+}
+.account-scent-choice img { width:32px; height:32px; object-fit:cover; border-radius:50%; }
+.account-notification-list svg { color:var(--copper); }
+.account-notification-list small { display:block; color:var(--muted); }
+.account-support .customer-form > * { grid-column:1 / -1; }
+.account-drafts article p { white-space:pre-wrap; }
+.account-reviews .review-composer { max-width:none; margin:0; padding:0; border:0; }
+.account-reviews .review-stars > div { flex-wrap:wrap; max-width:100%; }
+.account-reviews .customer-form > * { grid-column:1 / -1; }
+@media (max-width:360px) {
+  .account-recent .grid { grid-template-columns:minmax(0,1fr); }
+}
