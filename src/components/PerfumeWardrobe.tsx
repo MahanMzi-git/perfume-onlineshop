@@ -1,48 +1,60 @@
-import { useRef, useState, type CSSProperties } from 'react';
-import { Heart, X } from 'lucide-react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
 import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
 import { noteById } from '../data/scentNotes';
 import { useCustomer, type CabinetEntry } from './CustomerContext';
 import { useStore } from './StoreContext';
-import type { Product } from '../types/product';
+import type { WardrobePerfume } from '../data/wardrobePerfumes';
+import { getBottleScale, getShelfPosition, getWardrobePage } from '../lib/wardrobeLayout';
 
-const shelfHeights = [29.1, 48.7, 67.8, 86.9];
-const slotsPerShelf = 6;
-const shelfLeft = 12;
-const shelfWidth = 76;
-const slotsPerCabinet = slotsPerShelf * shelfHeights.length;
 const formatNumber = new Intl.NumberFormat('fa-IR');
 
-export interface WardrobePerfume {
-  position: number;
-  id: string;
-  name: string;
-  image: string;
-  fallback?: string;
-  product?: Product;
-}
-
 function Bottle({ perfume, className }: { perfume: WardrobePerfume; className: string }) {
-  return <img className={className} src={perfume.image} alt="" onError={event => {
-    if (perfume.fallback && event.currentTarget.getAttribute('src') !== perfume.fallback) {
-      event.currentTarget.src = perfume.fallback;
-    }
-  }} />;
+  const [failedImage, setFailedImage] = useState<string>();
+  const [intrinsic, setIntrinsic] = useState<{ image: string; ratio: number }>();
+  const failed = failedImage === perfume.image;
+  const crop = failed ? undefined : perfume.crop;
+  const image = (failed ? perfume.fallback : perfume.image) ?? perfume.image;
+  let ratio = intrinsic?.image === image ? intrinsic.ratio : 0.7;
+  let imageStyle: CSSProperties | undefined;
+  if (crop) {
+    const [left, top, right, bottom] = crop.bounds;
+    const [width, height] = crop.canvas;
+    const cropWidth = right - left;
+    const cropHeight = bottom - top;
+    ratio = cropWidth / cropHeight;
+    imageStyle = {
+      width: `${width / cropWidth * 100}%`,
+      height: `${height / cropHeight * 100}%`,
+      left: `${-left / cropWidth * 100}%`,
+      top: `${-top / cropHeight * 100}%`,
+    };
+  }
+  return <span className={className} data-cropped={!!crop} style={{ '--bottle-ratio': ratio } as CSSProperties}>
+    <img src={image} alt="" style={imageStyle} onLoad={event => {
+      const { naturalWidth, naturalHeight } = event.currentTarget;
+      if (!crop && naturalHeight) setIntrinsic({ image, ratio: naturalWidth / naturalHeight });
+    }}
+      onError={() => { if (!failed && perfume.fallback && perfume.fallback !== perfume.image) setFailedImage(perfume.image); }} />
+  </span>;
 }
 
-function PerfumeSlot({ perfume, selected, onPick }: {
+function PerfumeSlot({ perfume, index, pageSize, selected, onPick }: {
   perfume: WardrobePerfume;
+  index: number;
+  pageSize: number;
   selected: boolean;
   onPick: (perfume: WardrobePerfume, trigger: HTMLButtonElement) => void;
 }) {
-  const slot = perfume.position % slotsPerCabinet;
-  const position: CSSProperties = {
-    left: `${shelfLeft + (slot % slotsPerShelf + 0.5) * shelfWidth / slotsPerShelf}%`,
-    top: `${shelfHeights[Math.floor(slot / slotsPerShelf)]}%`,
-  };
+  const { left, top } = getShelfPosition(index, pageSize);
+  const position = {
+    left: `${left}%`,
+    top: `${top}%`,
+    '--bottle-scale': getBottleScale(perfume.volumeMl),
+  } as CSSProperties;
   return <li className="wardrobe-slot" style={position}>
-    <button type="button" className="wardrobe-artwork" data-lifted={selected}
+    <button type="button" className="wardrobe-artwork" aria-haspopup="dialog" data-lifted={selected}
       onClick={event => onPick(perfume, event.currentTarget)}>
       <Bottle perfume={perfume} className="wardrobe-bottle" />
       <bdi className="wardrobe-label">{perfume.name}</bdi>
@@ -55,7 +67,7 @@ function PerfumeDetails({ perfume }: { perfume: WardrobePerfume }) {
   const store = useStore();
   const entry = customer.cabinet[perfume.id] ?? {};
   const product = perfume.product;
-  const favourite = product ? store.favourites.includes(perfume.id) : !!entry.favourite;
+  const favourite = store.favourites.includes(perfume.id);
   function update(patch: CabinetEntry) {
     setCustomer(current => ({
       ...current,
@@ -65,21 +77,19 @@ function PerfumeDetails({ perfume }: { perfume: WardrobePerfume }) {
 
   return <div className="wardrobe-details">
     <h2 id="wardrobe-selection-title"><bdi>{perfume.name}</bdi></h2>
-    {product && <>
-      <p>{[
-        brands.find(brand => brand.id === product.brandId)?.name,
-        product.concentration,
-        { women: 'زنانه', men: 'مردانه', unisex: 'یونیسکس' }[product.targetAudience],
-      ].filter(Boolean).join(' · ')}</p>
-      <p>{fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id)).map(family => family.name).join('، ')}</p>
-      <dl className="wardrobe-notes">
-        {([{ key: 'top', label: 'آغازین' }, { key: 'middle', label: 'میانی' }, { key: 'base', label: 'پایه' }] as const).map(({ key, label }) => {
-          const names = product.notePyramid[key].map(id => noteById(id)?.name).filter(Boolean);
-          return names.length > 0 && <div key={key}><dt>{label}</dt><dd>{names.join('، ')}</dd></div>;
-        })}
-      </dl>
-      {product.description && <p>{product.description}</p>}
-    </>}
+    <p>{[
+      brands.find(brand => brand.id === product.brandId)?.name,
+      product.concentration,
+      { women: 'زنانه', men: 'مردانه', unisex: 'یونیسکس' }[product.targetAudience],
+    ].filter(Boolean).join(' · ')}</p>
+    <p>{fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id)).map(family => family.name).join('، ')}</p>
+    <dl className="wardrobe-notes">
+      {([{ key: 'top', label: 'آغازین' }, { key: 'middle', label: 'میانی' }, { key: 'base', label: 'پایه' }] as const).map(({ key, label }) => {
+        const names = product.notePyramid[key].map(id => noteById(id)?.name).filter(Boolean);
+        return names.length > 0 && <div key={key}><dt>{label}</dt><dd>{names.join('، ')}</dd></div>;
+      })}
+    </dl>
+    {product.description && <p>{product.description}</p>}
     <fieldset>
       <legend>تجربهٔ من</legend>
       <button type="button" aria-pressed={entry.experience === 'used'}
@@ -93,14 +103,14 @@ function PerfumeDetails({ perfume }: { perfume: WardrobePerfume }) {
       <button type="button" aria-pressed={entry.opinion === 'disliked'} onClick={() => update({ opinion: 'disliked' })}>دوستش ندارم</button>
     </fieldset>
     <button type="button" className="wardrobe-favourite" aria-pressed={favourite}
-      onClick={() => product ? store.toggleFavourite(product.id) : update({ favourite: !favourite })}>
+      onClick={() => store.toggleFavourite(product.id)}>
       <Heart size={18} fill={favourite ? 'currentColor' : 'none'} aria-hidden="true" /> علاقه‌مندی
     </button>
-    <p className="wardrobe-session-note">{product ? "تجربه و نظر تا پایان این نشست نگه‌داری می‌شوند." : "این عطر نمونه است و انتخاب‌هایش فقط در همین نشست می‌مانند."}</p>
+    <p className="wardrobe-session-note">تجربه و نظر تا پایان این نشست نگه‌داری می‌شوند.</p>
   </div>;
 }
 
-function bottleMotion(image: HTMLImageElement, shelf: DOMRect, returning: boolean) {
+function bottleMotion(image: HTMLElement, shelf: DOMRect, returning: boolean) {
   const foreground = image.getBoundingClientRect();
   if (!foreground.width || !foreground.height || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const fromShelf = {
@@ -116,27 +126,41 @@ function bottleMotion(image: HTMLImageElement, shelf: DOMRect, returning: boolea
 
 export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfume[] }) {
   const [requestedPage, setPage] = useState(0);
-  const [selection, setSelection] = useState<WardrobePerfume>();
+  const [direction, setDirection] = useState<'next' | 'previous'>();
+  const [picked, setPicked] = useState<{ id: string; page: number }>();
   const dialog = useRef<HTMLDialogElement>(null);
   const source = useRef<HTMLButtonElement>();
   const motion = useRef<Animation>();
   const busy = useRef(false);
-  const pageCount = perfumes.reduce((count, perfume) =>
-    Math.max(count, Math.floor(perfume.position / slotsPerCabinet) + 1), 1);
-  const page = Math.min(requestedPage, pageCount - 1);
-  const start = page * slotsPerCabinet;
-  const visible = perfumes.filter(perfume => perfume.position >= start && perfume.position < start + slotsPerCabinet);
+  const { page, pageCount, perfumes: visible } = getWardrobePage(perfumes, requestedPage);
+  const selection = picked?.page === page ? visible.find(perfume => perfume.id === picked.id) : undefined;
+
+  useLayoutEffect(() => {
+    if (requestedPage !== page) setPage(page);
+    if (picked && !selection) {
+      motion.current?.cancel();
+      dialog.current?.close();
+      setPicked(undefined);
+    }
+  }, [page, picked, requestedPage, selection]);
+
+  function turnPage(next: number) {
+    if (next < 0 || next >= pageCount || busy.current || dialog.current?.open) return;
+    setPicked(undefined);
+    setDirection(next > page ? 'next' : 'previous');
+    setPage(next);
+  }
 
   function pick(perfume: WardrobePerfume, trigger: HTMLButtonElement) {
     if (busy.current || dialog.current?.open) return;
     source.current = trigger;
-    setSelection(perfume);
+    setPicked({ id: perfume.id, page });
   }
 
   function startSelection(panel: HTMLDivElement | null) {
     const modal = dialog.current;
-    const origin = source.current?.querySelector('img');
-    const image = panel?.querySelector('img');
+    const origin = source.current?.querySelector<HTMLElement>('.wardrobe-bottle');
+    const image = panel?.querySelector<HTMLElement>('.wardrobe-foreground');
     if (!modal || modal.open || !origin || !image) return;
     const shelf = origin.getBoundingClientRect();
     modal.showModal();
@@ -147,18 +171,21 @@ export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfu
     const modal = dialog.current;
     if (!modal?.open || busy.current) return;
     busy.current = true;
-    const image = modal.querySelector<HTMLImageElement>('.wardrobe-foreground');
-    const origin = source.current?.querySelector('img');
+    const image = modal.querySelector<HTMLElement>('.wardrobe-foreground');
+    const origin = source.current?.querySelector<HTMLElement>('.wardrobe-bottle');
     if (motion.current?.playState === 'running') motion.current.finish();
     motion.current?.cancel();
     modal.scrollTop = 0;
     modal.dataset.closing = 'true';
     try {
-      if (image && origin) await bottleMotion(image, origin.getBoundingClientRect(), true)?.finished;
+      if (image && origin?.isConnected) {
+        motion.current = bottleMotion(image, origin.getBoundingClientRect(), true);
+        await motion.current?.finished.catch(() => undefined);
+      }
     } finally {
       modal.close();
       delete modal.dataset.closing;
-      setSelection(undefined);
+      setPicked(undefined);
       source.current?.focus({ preventScroll: true });
       busy.current = false;
     }
@@ -168,16 +195,21 @@ export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfu
     <div className="wardrobe-scene">
       <img className="wardrobe-background" src={import.meta.env.BASE_URL + 'images/wardrobe/empty-cabinet.png'}
         alt="" width={1024} height={1536} />
-      <ul className="wardrobe-perfumes" aria-label="عطرهای روی طبقه‌ها">
-        {visible.map(perfume => <PerfumeSlot key={perfume.position} perfume={perfume}
-          selected={selection?.position === perfume.position} onPick={pick} />)}
+      <ul key={page} className="wardrobe-perfumes" data-turn={direction} aria-label="عطرهای روی طبقه‌ها">
+        {visible.map((perfume, index) => <PerfumeSlot key={perfume.id} perfume={perfume}
+          index={index} pageSize={visible.length} selected={selection?.id === perfume.id} onPick={pick} />)}
       </ul>
     </div>
-    {pageCount > 1 && <div className="wardrobe-pagination">
-      <button className="step-action" type="button" disabled={page === 0} onClick={() => setPage(page - 1)}>صفحهٔ قبل</button>
-      <span role="status">{formatNumber.format(page + 1)} از {formatNumber.format(pageCount)}</span>
-      <button className="step-action" type="button" disabled={page === pageCount - 1} onClick={() => setPage(page + 1)}>صفحهٔ بعد</button>
-    </div>}
+    {pageCount === 0 && <p className="wardrobe-empty">هنوز عطری در کمد نیست.</p>}
+    {pageCount > 1 && <nav className="wardrobe-pagination" aria-label="صفحه‌بندی کمد عطر">
+      <button type="button" disabled={page === 0} onClick={() => turnPage(page - 1)}>
+        <ChevronRight size={18} aria-hidden="true" /> قبلی
+      </button>
+      <span role="status" aria-atomic="true">صفحهٔ {formatNumber.format(page + 1)} از {formatNumber.format(pageCount)}</span>
+      <button type="button" disabled={page === pageCount - 1} onClick={() => turnPage(page + 1)}>
+        بعدی <ChevronLeft size={18} aria-hidden="true" />
+      </button>
+    </nav>}
     <dialog ref={dialog} className="wardrobe-focus" aria-labelledby="wardrobe-selection-title"
       onCancel={event => { event.preventDefault(); void closeSelection(); }}
       onClick={event => { if (event.target === event.currentTarget) void closeSelection(); }}>

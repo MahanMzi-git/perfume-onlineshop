@@ -1,72 +1,54 @@
-import type { WardrobePerfume } from '../components/PerfumeWardrobe';
 import type { Product } from '../types/product';
 import { products } from './products';
 
-interface WardrobeArtwork {
-  file: string;
-  name: string;
-  slug?: string;
-  orbitImage?: string;
+export interface BottleCrop {
+  canvas: readonly [width: number, height: number];
+  bounds: readonly [left: number, top: number, right: number, bottom: number];
 }
 
-const artwork: readonly WardrobeArtwork[] = [
-  { file: 'ysl', name: 'Libre', slug: 'libre' },
-  { file: 'black-opium', name: 'Black Opium' },
-  { file: 'coco-chanel', name: 'Coco Mademoiselle', slug: 'coco-mademoiselle' },
-  { file: 'creed-aventus', name: 'Aventus', slug: 'aventus', orbitImage: 'creed' },
-  { file: 'miss-dior', name: 'Miss Dior', slug: 'miss-dior' },
-  { file: 'gucci', name: 'Gucci Bloom', slug: 'bloom' },
-  { file: 'tigerlily-victor', name: 'Flowerbomb Tiger Lily' },
-  { file: 'blue-de-chanel', name: 'Bleu de Chanel', slug: 'bleu-de-chanel' },
-  { file: 'suavage-dior', name: 'Sauvage', slug: 'sauvage' },
-  { file: 'tom-ford', name: 'Fucking Fabulous' },
-  { file: 'la-bomba', name: 'La Bomba', orbitImage: 'bomba' },
-  { file: 'morreale', name: 'Le Monde Sur Mesure', orbitImage: 'central' },
-  { file: 'dunecry', name: 'Dunecry', orbitImage: 'dune' },
-  { file: 'angels-share', name: 'Angels’ Share', orbitImage: 'kilian' },
-  { file: 'baccarat-rouge-540', name: 'Baccarat Rouge 540', orbitImage: 'baccarat' },
-];
+export interface WardrobePerfume {
+  id: string;
+  name: string;
+  image: string;
+  fallback?: string;
+  crop?: BottleCrop;
+  volumeMl?: number;
+  product: Product;
+}
 
 const imageRoot = import.meta.env.BASE_URL + 'images/';
-function artworkImage({ file, orbitImage }: WardrobeArtwork) {
-  return orbitImage
-    ? imageRoot + 'orbit-photos/' + orbitImage + '.webp'
-    : imageRoot + 'wardrobe/cutouts/' + file + '.png';
-}
+const catalogArtwork: Record<string, { file: string; crop?: BottleCrop }> = {
+  libre: { file: 'wardrobe/cutouts/ysl.png', crop: { canvas: [1254, 1254], bounds: [381, 59, 862, 1188] } },
+  'coco-mademoiselle': { file: 'wardrobe/cutouts/coco-chanel.png', crop: { canvas: [1199, 1312], bounds: [230, 68, 952, 1264] } },
+  aventus: { file: 'orbit-photos/creed.webp', crop: { canvas: [269, 480], bounds: [0, 0, 269, 480] } },
+  'miss-dior': { file: 'wardrobe/cutouts/miss-dior.png', crop: { canvas: [1315, 1197], bounds: [236, 135, 1079, 1058] } },
+  bloom: { file: 'wardrobe/cutouts/gucci.png', crop: { canvas: [1204, 1306], bounds: [274, 127, 930, 1269] } },
+  'bleu-de-chanel': { file: 'wardrobe/cutouts/blue-de-chanel.png', crop: { canvas: [1086, 1448], bounds: [66, 4, 1028, 1335] } },
+  sauvage: { file: 'wardrobe/cutouts/suavage-dior.png', crop: { canvas: [1087, 1446], bounds: [297, 176, 791, 1267] } },
+};
 
-// The input is the published perfume feed once the backend supplies one.
-export function buildWardrobe(publishedProducts: readonly Product[], includeSamples = false): WardrobePerfume[] {
-  const shelves: WardrobePerfume[] = [];
-  const usedIds = new Set<string>();
-  let nextPosition = artwork.length;
-  publishedProducts.filter(product => product.productType === 'perfume').forEach(product => {
-    if (usedIds.has(product.id)) return;
-    usedIds.add(product.id);
-    const position = artwork.findIndex(entry => entry.slug === product.slug);
-    const entry = artwork[position];
-    shelves.push({
+// Pass the current published catalog snapshot here when the public feed is available.
+export function buildWardrobe(publishedProducts: readonly Product[]): WardrobePerfume[] {
+  const seen = new Set<string>();
+  const perfumes: WardrobePerfume[] = [];
+  for (const product of publishedProducts) {
+    if (product.productType !== 'perfume' || seen.has(product.id)) continue;
+    seen.add(product.id);
+    const dedicatedImage = product.cabinetImage || product.transparentImage;
+    const artwork = catalogArtwork[product.slug];
+    perfumes.push({
       id: product.id,
-      position: position < 0 ? nextPosition++ : position,
       name: product.name,
+      image: dedicatedImage || (artwork ? imageRoot + artwork.file : product.image),
+      fallback: product.image,
+      crop: dedicatedImage ? undefined : artwork?.crop,
+      volumeMl: product.cabinetVolumeMl,
       product,
-      image: product.cabinetImage ?? product.transparentImage ?? (entry ? artworkImage(entry) : product.image),
-      fallback: entry ? imageRoot + 'wardrobe/' + entry.file + '.png' : product.image,
     });
-  });
-  if (includeSamples) artwork.forEach((entry, position) => {
-    if (entry.slug) return;
-    const { file, name, orbitImage } = entry;
-    shelves.push({
-      id: 'sample:' + file, position, name,
-      image: artworkImage(entry),
-      fallback: orbitImage ? undefined : imageRoot + 'wardrobe/' + file + '.png',
-    });
-  });
-  return shelves.sort((a, b) => a.position - b.position);
+  }
+  return perfumes;
 }
 
+// This local display choice only applies to the current preview catalog.
 const omittedFromPreview = new Set(['jasmin-des-anges', 'chloe']);
-export const wardrobePerfumes = buildWardrobe(
-  products.filter(product => !omittedFromPreview.has(product.slug)),
-  true,
-);
+export const wardrobePerfumes = buildWardrobe(products.filter(product => !omittedFromPreview.has(product.slug)));

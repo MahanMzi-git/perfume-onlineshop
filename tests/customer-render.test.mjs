@@ -68,7 +68,7 @@ function render(Component, props = {}, bagLines = [], favourites = []) {
 test('All account pages render without authentication or browser storage, including empty and populated wishlist', () => {
   for (const tab of accountTabs) {
     const html = render(CustomerPage, { section: tab.id });
-    assert.ok(html.includes('نسخهٔ نمایشی بدون ورود'), tab.id);
+    assert.ok(html.includes('حساب آزمایشی است'), tab.id);
     assert.ok(html.includes('<h1>'), tab.id);
     assert.ok(!html.includes('type="password"'), tab.id);
   }
@@ -146,4 +146,69 @@ test('API product detail renders loading, missing, failure and empty variant sta
   assert.match(view({kind: 'missing'}), /محصول پیدا نشد/);
   assert.match(view({kind: 'error'}), /role="alert"/);
   assert.match(view({kind: 'ready', product: {name: 'API Perfume', variants: []}}), /نسخه‌ای برای نمایش/);
+});
+
+const { PerfumeWardrobe } = load(path.join(root, 'components/PerfumeWardrobe.tsx'));
+const { buildWardrobe } = load(path.join(root, 'data/wardrobePerfumes.ts'));
+const { getWardrobePage, getShelfPosition, getBottleScale } = load(path.join(root, 'lib/wardrobeLayout.ts'));
+
+function wardrobeCatalog(count) {
+  return Array.from({ length: count }, (_, index) => ({
+    ...products[0], id: String(index + 1), slug: 'fixture-' + (index + 1), name: 'Fixture ' + (index + 1),
+  }));
+}
+
+test('Wardrobe pagination renders up to sixteen products and centers incomplete shelves', () => {
+  for (const count of [1, 4, 5, 16, 17, 32]) {
+    const perfumes = buildWardrobe(wardrobeCatalog(count));
+    const { pageCount } = getWardrobePage(perfumes, 0);
+    assert.equal(pageCount, Math.ceil(count / 16));
+    const html = render(PerfumeWardrobe, { perfumes });
+    assert.equal((html.match(/class="wardrobe-slot"/g) ?? []).length, Math.min(16, count));
+    assert.equal(html.includes('class="wardrobe-pagination"'), count > 16);
+    if (count > 16) assert.match(html, /<button type="button" disabled=""><svg/);
+
+    const orderedIds = [];
+    for (let page = 0; page < pageCount; page++) {
+      const visible = getWardrobePage(perfumes, page).perfumes;
+      orderedIds.push(...visible.map(perfume => perfume.id));
+      const rows = new Map();
+      visible.forEach((_, index) => {
+        const { left, top } = getShelfPosition(index, visible.length);
+        rows.set(top, [...(rows.get(top) ?? []), left]);
+      });
+      assert.ok(rows.size <= 4);
+      for (const columns of rows.values()) {
+        assert.ok(columns.length <= 4);
+        assert.equal(columns[0] + columns.at(-1), 100);
+      }
+    }
+    assert.deepEqual(orderedIds, wardrobeCatalog(count).map(product => product.id));
+  }
+});
+
+test('Removing and adding published perfumes updates the last page without stale entries', () => {
+  const initial = wardrobeCatalog(18);
+  const withoutOne = initial.filter(product => product.id !== '17');
+  assert.equal(getWardrobePage(buildWardrobe(withoutOne), 1).perfumes[0].id, '18');
+  const withoutSecondPage = withoutOne.filter(product => product.id !== '18');
+  assert.equal(getWardrobePage(buildWardrobe(withoutSecondPage), 1).page, 0);
+  assert.equal(getWardrobePage(buildWardrobe([...withoutSecondPage, initial.at(-1)]), 1).pageCount, 2);
+  const duplicate = [...initial, initial[0], { ...initial[0], id: 'gift', productType: 'gift-set' }];
+  assert.equal(buildWardrobe(duplicate).length, initial.length);
+});
+
+test('Bottle sizing defaults to one scale and responds to the volume supplied by the catalog', () => {
+  const [base] = wardrobeCatalog(1);
+  const [unknown, small, large] = buildWardrobe([
+    base,
+    { ...base, id: 'small', cabinetVolumeMl: 50 },
+    { ...base, id: 'large', cabinetVolumeMl: 100 },
+  ]);
+  assert.equal(getBottleScale(unknown.volumeMl), 1);
+  assert.ok(getBottleScale(small.volumeMl) < getBottleScale(large.volumeMl));
+  assert.equal(getBottleScale(large.volumeMl), 1);
+  assert.equal(getBottleScale(Infinity), 1);
+  assert.equal(getBottleScale(1), getBottleScale(0.01));
+  assert.equal(getBottleScale(1000), getBottleScale(10000));
 });

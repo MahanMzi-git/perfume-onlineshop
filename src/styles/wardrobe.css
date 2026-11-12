@@ -25,7 +25,7 @@
 
 .wardrobe-slot {
   position:absolute;
-  width:11.8%;
+  width:17%;
   height:16.5%;
   transform:translate(-50%, -100%);
 }
@@ -51,16 +51,27 @@
   filter:blur(2px);
 }
 
-.wardrobe-bottle {
+.wardrobe-bottle,
+.wardrobe-foreground {
   position:relative;
   display:block;
-  max-width:94%;
-  width:auto;
+  aspect-ratio:var(--bottle-ratio);
+}
+.wardrobe-bottle {
+  width:min(94%, calc(15.6cqw * var(--bottle-ratio) * var(--bottle-scale, 1)));
+}
+:is(.wardrobe-bottle, .wardrobe-foreground) > img {
+  display:block;
+  width:100%;
   height:100%;
-  min-height:0;
-  max-height:100%;
   object-fit:contain;
-  object-position:bottom;
+  object-position:center bottom;
+}
+:is(.wardrobe-bottle, .wardrobe-foreground)[data-cropped=true] { overflow:hidden; }
+:is(.wardrobe-bottle, .wardrobe-foreground)[data-cropped=true] > img {
+  position:absolute;
+  max-width:none;
+  max-height:none;
 }
 
 .wardrobe-label {
@@ -80,19 +91,36 @@
   overflow-wrap:anywhere;
 }
 
-.wardrobe-slot a:focus-visible {
-  outline:2px solid #fff1bd;
-  outline-offset:3px;
-}
-
 .wardrobe-pagination {
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
   align-items:center;
-  gap:.5rem;
+  gap:clamp(.25rem, 2vw, .85rem);
+  padding:.35rem;
   margin-top:.75rem;
+  border:1px solid #d7cabb;
+  border-radius:12px;
+  background:#f3ebdd;
+  color:#483123;
 }
+.wardrobe-pagination button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.25rem;
+  min-width:0;
+  min-height:44px;
+  padding:.25rem;
+  border-radius:8px;
+  background:#4a3025;
+  color:#fff4e5;
+  font-size:.875rem;
+}
+.wardrobe-pagination button:not(:disabled):hover { background:#633c2b; }
+.wardrobe-pagination button:disabled { background:#e3d6c5; color:#65594e; cursor:default; }
+.wardrobe-pagination button:focus-visible { outline:2px solid #77502b; outline-offset:2px; }
+.wardrobe-pagination [role=status] { font-size:.8125rem; text-align:center; }
+.wardrobe-empty { margin-block:.6rem 0; text-align:center; }
 
 .wardrobe-slot .wardrobe-artwork {
   width:100%;
@@ -124,11 +152,7 @@
 }
 .wardrobe-focus-inner { position:relative; width:min(calc(100% - 24px), 32rem); margin:clamp(.75rem, 4dvh, 2rem) auto; padding:.5rem .4rem; }
 .wardrobe-foreground {
-  display:block;
-  height:clamp(100px, 30dvh, 240px);
-  width:auto;
-  max-width:65%;
-  object-fit:contain;
+  width:min(65%, calc(clamp(100px, 30dvh, 240px) * var(--bottle-ratio)));
   margin-inline:auto;
   transform-origin:top left;
 }
@@ -175,3 +199,13 @@
 }
 @keyframes wardrobe-dim { from { opacity:0; } to { opacity:1; } }
 @keyframes wardrobe-detail-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+@media (prefers-reduced-motion:no-preference) {
+  .wardrobe-perfumes[data-turn] { animation:wardrobe-page-in 280ms cubic-bezier(.22,.8,.25,1); }
+  .wardrobe-perfumes[data-turn=next] { --wardrobe-page-edge:0 0 0 12%; }
+  .wardrobe-perfumes[data-turn=previous] { --wardrobe-page-edge:0 12% 0 0; }
+}
+@keyframes wardrobe-page-in {
+  from { clip-path:inset(var(--wardrobe-page-edge)); opacity:.25; }
+  to { clip-path:inset(0); opacity:1; }
+}
