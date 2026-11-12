@@ -9,7 +9,7 @@ import { AdaptiveDisclosure } from '../components/AdaptiveDisclosure';
 import { CustomerForm } from '../components/CustomerForm';
 import { Dialog } from '../components/SharedUI';
 import { ProductGrid } from '../components/ProductGrid';
-import { LuxurySelect } from '../components/LuxurySelect';
+import { PerfumeWardrobe } from '../components/PerfumeWardrobe';
 import { products } from '../data/products';
 import { familyImageUrl } from '../data/fragranceImages';
 import { fragranceFamilies } from '../data/fragranceFamilies';
@@ -32,7 +32,7 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
   const recentIds = loadProductIds('aroma-recently-viewed', new Set(products.map(product => product.id)));
   const recent = recentIds.map(id => products.find(product => product.id === id)!).filter(Boolean);
   function togglePreference(id: string) { setCustomer(value => ({ ...value, preferences: value.preferences.includes(id) ? value.preferences.filter(item => item !== id) : [...value.preferences, id] })); }
-  const focusedLayout = ['profile', 'addresses', 'orders', 'wishlist', 'recent', 'preferences', 'reviews', 'support', 'notifications'].includes(section);
+  const focusedLayout = ['profile', 'addresses', 'orders', 'wishlist', 'cabinet', 'recent', 'preferences', 'reviews', 'support', 'notifications'].includes(section);
   const addressHeading = useRef<HTMLHeadingElement>(null);
 
   function editAddress(id: string) {
@@ -203,7 +203,14 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
             <a className="step-action step-primary" href="#/catalog">کشف عطرها</a>
           </div>
         </div>)}
-    {section === 'cabinet' && <><p>وضعیت‌های این کمد فقط در نشست آزمایشی شما می‌مانند.</p><div className="cabinet-grid">{products.map(product => { const entry = customer.cabinet[product.id] ?? {}; const update = (patch: typeof entry) => setCustomer(value => ({ ...value, cabinet: { ...value.cabinet, [product.id]: { ...value.cabinet[product.id], ...patch } } })); return <article className="customer-panel" key={product.id}><a href={'#/product/' + product.slug}><img className="cabinet-image" src={product.image} alt={product.name} width={80} height={100} loading="lazy" /><h2>{product.name}</h2></a><div className="choice-list"><label><input type="checkbox" checked={!!entry.owned} onChange={event => update({ owned: event.target.checked })} />دارم</label><label><input type="checkbox" checked={!!entry.tested} onChange={event => update({ tested: event.target.checked })} />امتحان کرده‌ام</label></div><LuxurySelect label="نظر شخصی" value={entry.opinion ?? ''} options={[{ value: '', label: 'بدون نظر' }, { value: 'liked', label: 'دوست دارم' }, { value: 'disliked', label: 'نمی‌پسندم' }]} onChange={value => update({ opinion: (value || undefined) as typeof entry.opinion })} /></article>; })}</div></>}
+        {section === 'cabinet' && <PerfumeWardrobe perfumes={products
+          .filter(product => product.productType === 'perfume')
+          .map((product, position) => ({
+            position,
+            name: product.name,
+            image: product.image,
+            href: '#/product/' + product.slug,
+          }))} />}
         {section === 'preferences' && <section className="customer-panel account-profile-panel">
           <h2>خانواده‌های بویایی دلخواه</h2>
           <p>رایحه‌هایی را که بیشتر دوست دارید انتخاب کنید.</p>

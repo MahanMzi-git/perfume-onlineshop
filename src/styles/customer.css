@@ -42,8 +42,7 @@
 .account-content { @apply tw:min-w-0; }
 .account-shortcuts { @apply tw:grid; grid-template-columns:repeat(3,minmax(0,1fr)); @apply tw:gap-[12px]; }
 .account-shortcuts a { @apply tw:grid tw:justify-items-start tw:gap-[12px]; padding:16px; border:1px solid var(--line); font-size:.85rem; }
-.cabinet-grid,.address-list { @apply tw:grid; grid-template-columns:repeat(2,minmax(0,1fr)); @apply tw:gap-[16px]; }
-.cabinet-image { @apply tw:object-contain tw:block; margin-bottom:10px; }
+.address-list { @apply tw:grid; grid-template-columns:repeat(2,minmax(0,1fr)); @apply tw:gap-[16px]; }
 .customer-status:empty { @apply tw:hidden; }
 .shopping-page .text-link { margin-inline-end:12px; margin-block:8px; }
 .shopping-page :is(p,h2,h3,dd,a) { overflow-wrap:anywhere; }
@@ -75,7 +74,7 @@
   .account-layout { grid-template-columns:1fr; @apply tw:gap-[18px]; }
 
 }
-@media(max-width:480px) { .customer-panel { padding:14px; } .cart-row { grid-template-columns:64px minmax(0,1fr); @apply tw:gap-[10px]; } .cart-row img { @apply tw:w-[64px] tw:h-[90px]; } .cart-controls { grid-template-columns:1fr; } .account-shortcuts,.cabinet-grid,.address-list { grid-template-columns:1fr; } }
+@media(max-width:480px) { .customer-panel { padding:14px; } .cart-row { grid-template-columns:64px minmax(0,1fr); @apply tw:gap-[10px]; } .cart-row img { @apply tw:w-[64px] tw:h-[90px]; } .cart-controls { grid-template-columns:1fr; } .account-shortcuts,.address-list { grid-template-columns:1fr; } }
 
 .account-page .account-heading { margin-bottom:clamp(1rem, 3vw, 1.75rem); }
 .account-page .account-heading h1 { margin:0 0 .25rem; }
@@ -324,21 +323,4 @@
 .account-reviews .customer-form > * { grid-column:1 / -1; }
 @media (max-width:360px) {
   .account-recent .grid { grid-template-columns:minmax(0,1fr); }
-}
-
-/* Cabinet motion follows browsing and selection. */
-.cabinet-grid .choice-list label {
-  padding-inline:.45rem;
-  border-radius:8px;
-}
-.cabinet-grid .choice-list label:has(input:checked) {
-  background:#e6ecdf;
-  color:#35452d;
-}
-@media (prefers-reduced-motion:no-preference) {
-  .cabinet-grid .choice-list label { transition:background-color 160ms ease-out, color 160ms ease-out; }
-}
-@media (prefers-reduced-motion:no-preference) and (hover:hover) and (pointer:fine) {
-  .cabinet-grid .cabinet-image { transition:transform 220ms ease-out; }
-  .cabinet-grid a:hover .cabinet-image { transform:translateY(-3px); }
 }

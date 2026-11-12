@@ -1,0 +1,95 @@
+.perfume-wardrobe {
+  width:min(100%, 38rem);
+  margin-inline:auto;
+}
+
+.wardrobe-scene {
+  position:relative;
+  aspect-ratio:2 / 3;
+  container-type:inline-size;
+}
+
+.wardrobe-background {
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.wardrobe-perfumes {
+  position:absolute;
+  inset:0;
+  padding:0;
+  margin:0;
+  list-style:none;
+}
+
+.wardrobe-slot {
+  position:absolute;
+  width:17%;
+  height:16.5%;
+  transform:translate(-50%, -100%);
+}
+
+.wardrobe-slot a {
+  position:relative;
+  display:grid;
+  height:100%;
+  grid-template-rows:minmax(0, 1fr);
+  align-items:end;
+  justify-items:center;
+  padding-bottom:2%;
+}
+
+.wardrobe-slot a::before {
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:86%;
+  height:4%;
+  border-radius:50%;
+  background:rgb(20 8 3 / 65%);
+  filter:blur(2px);
+}
+
+.wardrobe-bottle {
+  position:relative;
+  display:block;
+  max-width:94%;
+  width:auto;
+  height:100%;
+  min-height:0;
+  max-height:100%;
+  object-fit:contain;
+  object-position:bottom;
+}
+
+.wardrobe-label {
+  position:absolute;
+  top:calc(100% + .65cqw);
+  inset-inline:0;
+  padding:.2cqw .35cqw;
+  background:linear-gradient(165deg,#f4e5c5,#dbc39a);
+  border-radius:1px 3px 1px 2px;
+  box-shadow:0 1px 2px #2d140d90;
+  color:#2f2019;
+  font-family:var(--font-serif);
+  font-size:clamp(8px, 2.5cqw, 16px);
+  font-weight:700;
+  line-height:1.05;
+  text-align:center;
+  overflow-wrap:anywhere;
+}
+
+.wardrobe-slot a:focus-visible {
+  outline:2px solid #fff1bd;
+  outline-offset:3px;
+}
+
+.wardrobe-pagination {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:.5rem;
+  margin-top:.75rem;
+}

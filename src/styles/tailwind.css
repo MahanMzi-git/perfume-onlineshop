@@ -8,6 +8,7 @@
 /* Preserve the pre-migration CSS evaluation order (App styles, then main). */
 @import "./catalog.css" layer(components);
 @import "./customer.css" layer(components);
+@import "./wardrobe.css" layer(components);
 @import "./tokens.css" layer(components);
 @import "./global.css" layer(components);
 @import "./luxury-select.css" layer(components);
