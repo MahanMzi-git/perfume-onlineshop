@@ -455,17 +455,16 @@ input[type=checkbox]{
   padding:0;
   font-size:.8rem}
 .family-icon{
-  @apply tw:w-[90px] tw:h-[90px] tw:grid tw:place-items-center;
+  @apply tw:w-[90px] tw:h-[90px];
+  object-fit:cover;
   border:1px solid #CFC7B9;
   @apply tw:rounded-[50%];
   background:#F7F4EE}
-.family-icon svg{
-  transition:color .18s ease}
 .family-grid button:hover .family-icon,.family-grid button[aria-pressed=true] .family-icon{
-  background:#E1D7C6;
   border-color:#80683D}
-.family-grid button:hover .family-icon svg,.family-grid button[aria-pressed=true] .family-icon svg{
-  color:#A66A50}
+.family-grid button[aria-pressed=true] .family-icon{
+  outline:2px solid #80683D;
+  outline-offset:2px}
 .editorial-panel{
   @apply tw:grid;
   grid-template-columns:1fr 1fr;
@@ -581,33 +580,82 @@ input[type=checkbox]{
   @apply tw:gap-[25px]}
 .journal-card{
   @apply tw:text-start;
-  background:transparent;
-  border:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  background:#FFFEFB;
+  border:1px solid #DCD4C7;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgb(55 43 30 / 8%);
+  overflow:hidden;
   padding:0}
+.journal-copy{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:18px 20px 22px}
+.journal-copy .eyebrow { color:#716653; }
+.journal-flip {
+  position:relative;
+  min-inline-size:0;
+  perspective:1200px;
+}
+.journal-front,.journal-back {
+  backface-visibility:hidden;
+  transition:transform .36s ease;
+}
+.journal-back {
+  position:absolute;
+  inset:0;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  justify-content:safe center;
+  gap:12px;
+  overflow-y:auto;
+  padding:clamp(16px,3vw,28px);
+  background:#F0ECE4;
+  border:1px solid #DCD4C7;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgb(55 43 30 / 8%);
+  transform:rotateY(-180deg);
+}
+.journal-back p { margin:0; line-height:1.9; }
+.journal-front[aria-hidden=true],.journal-back[aria-hidden=true] { pointer-events:none; }
+.journal-flip[data-flipped=true] .journal-front { transform:rotateY(180deg); }
+.journal-flip[data-flipped=true] .journal-back { transform:rotateY(0); }
+.journal-back .journal-link { align-self:flex-start; margin:0; }
+@media (prefers-reduced-motion:reduce) {
+  .journal-front,.journal-back { transition:none; }
+}
 .journal-art{
-  @apply tw:h-[180px];
+  aspect-ratio:4 / 3;
+  flex:none;
   background:#E9E2D5;
   @apply tw:flex tw:items-center tw:justify-center tw:relative;
-  margin-bottom:20px}
-.journal-art svg{
-  stroke-width:.9;
-  color:#776448}
-.journal-art span{
-  @apply tw:absolute;
-  bottom:15px;
-  inset-inline-end:20px;
-  font:35px var(--font-serif);
-  color:#76674F}
+  margin-bottom:0;
+  overflow:hidden}
+.journal-art img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .3s ease}
 .journal-art-1{
   background:#E0E4DD}
 .journal-art-2{
   background:#EADDD3}
-.journal-card h3{
+.journal-title{
   font-size:1rem;
-  margin-bottom:10px}
-.journal-card:hover h3{
-  text-decoration:underline;
-  text-underline-offset:5px}
+  font-weight:700;
+  margin-bottom:0}
+@media (hover:hover) and (pointer:fine) {
+  .journal-card:hover .journal-art img { transform:scale(1.04); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .journal-art img { transition:none; }
+  .journal-card:hover .journal-art img { transform:none; }
+}
 .benefits-section{
   border-block:1px solid var(--line);
   padding-block:35px}
@@ -794,8 +842,6 @@ dialog::backdrop{
   @apply tw:flex-wrap}
 .gift-banner .cta{
   margin-inline-start:65px}
-.journal-art{
-  @apply tw:h-[145px]}
 .foot-grid{
   grid-template-columns:1fr 1fr;
   @apply tw:gap-[35px]}
@@ -907,8 +953,6 @@ dialog::backdrop{
 .family-grid button{
   font-size:.7rem;
   @apply tw:gap-[10px]}
-.family-icon svg{
-  @apply tw:w-[29px] tw:h-[29px]}
 .section-intro{
   font-size:.78rem;
   line-height:2}
@@ -941,9 +985,7 @@ dialog::backdrop{
 .journal-grid{
   grid-template-columns:1fr;
   @apply tw:gap-[30px]}
-.journal-art{
-  @apply tw:h-[170px]}
-.journal-card h3{
+.journal-title{
   font-size:1.1rem}
 .benefits{
   grid-template-columns:1fr;
@@ -1049,7 +1091,7 @@ button.note, .note { font-size:var(--text-caption); @apply tw:min-h-[32px]; padd
 .collection { padding-inline-end:120px; }
 .collection h3 { line-height:1.8; }
 .collection > svg:first-child { @apply tw:w-[48px] tw:h-[48px]; }
-.journal-card h3 { line-height:1.9; }
+.journal-title { line-height:1.9; }
 .benefits h3, .footer h2 { font-size:var(--text-body); }
 .newsletter form { @apply tw:min-w-0; }
 .newsletter label { @apply tw:block; margin-bottom:8px; font-size:var(--text-small); }
@@ -1065,7 +1107,8 @@ button.note, .note { font-size:var(--text-caption); @apply tw:min-h-[32px]; padd
   .editorial-panel { grid-template-columns:1fr; }
   .sample-art { @apply tw:min-h-[300px]; }
   .journal-grid { grid-template-columns:1fr; }
-  .journal-art { @apply tw:h-[190px]; }
+  .journal-art { aspect-ratio:16 / 9; }
+  .journal-copy { padding-block:14px 17px; }
   .collection-grid { grid-template-columns:1fr; }
 }
 @media (max-width:600px) {
@@ -1177,13 +1220,12 @@ button.note-filter-option { @apply tw:inline-flex tw:items-center tw:gap-[6px] t
   button:hover .note-icon, button:hover p, button:hover .eyebrow,
   button:hover .journal-art span { @apply tw:text-inherit; }
   .brand-list button:hover { text-decoration:none; }
-  .journal-card:hover { background:transparent; @apply tw:text-aroma-text; }
-  .journal-card:hover .text-link { color:var(--accent-text); }
+  .journal-card:hover { background:#FFFEFB; box-shadow:0 8px 24px rgb(55 43 30 / 8%); @apply tw:text-aroma-text; }
   .family-grid button:not(:disabled):hover { background:transparent; box-shadow:none; }
 }
 .card:focus-within { border-color:var(--accent-text); }
 @media (prefers-reduced-motion:reduce) {
-  .card,.family-icon svg { transition:none; }
+  .card { transition:none; }
   .card:hover { transform:none; }
 }
 @media (hover:hover) and (pointer:fine) {

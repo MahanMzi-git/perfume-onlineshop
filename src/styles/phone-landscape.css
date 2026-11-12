@@ -22,7 +22,6 @@
   .tile > .category-caption { font-size:11px; padding:4px 6px; min-height:32px; }
   .family-grid { grid-template-columns:repeat(8,minmax(0,1fr)); gap:12px 6px; }
   .family-icon { width:52px; height:52px; }
-  .family-icon svg { width:25px; height:25px; }
   .family-grid button { font-size:11px; gap:8px; }
   .brand-list { gap:10px; }
   .brand-list button { font-size:1.1rem; }
