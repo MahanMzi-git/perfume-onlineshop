@@ -19,6 +19,7 @@ export interface Product {
   id: string; slug: string; name: string; brandId: string; image: string; price: number; currency: 'تومان';
   targetAudience: Audience; fragranceFamilyIds: string[]; scentNoteIds: string[]; concentration: Concentration;
   isNiche: boolean; isFeatured: boolean; isBestseller: boolean; isGiftSet?: boolean;
+  cabinetImage?: string; transparentImage?: string;
   availability: 'demo'; authenticityStatus?: 'verified';
   variants: ProductVariant[];
   gallery: { src: string; alt: string; view: 'bottle' | 'detail' }[];

@@ -93,3 +93,85 @@
   gap:.5rem;
   margin-top:.75rem;
 }
+
+.wardrobe-slot .wardrobe-artwork {
+  width:100%;
+  min-height:0;
+  padding:0 0 2%;
+  border:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+.wardrobe-artwork[data-lifted=true] .wardrobe-bottle { visibility:hidden; }
+.wardrobe-focus {
+  inset:0;
+  margin:0;
+  width:100%;
+  height:100%;
+  max-width:none;
+  max-height:none;
+  padding:0;
+  border:0;
+  overflow:auto;
+  overscroll-behavior:contain;
+  background:transparent;
+  color:#fff4e5;
+}
+.wardrobe-focus::backdrop {
+  background:rgb(22 12 9 / 72%);
+  backdrop-filter:blur(5px);
+}
+.wardrobe-focus-inner { position:relative; width:min(calc(100% - 24px), 32rem); margin:clamp(.75rem, 4dvh, 2rem) auto; padding:.5rem .4rem; }
+.wardrobe-foreground {
+  display:block;
+  height:clamp(100px, 30dvh, 240px);
+  width:auto;
+  max-width:65%;
+  object-fit:contain;
+  margin-inline:auto;
+  transform-origin:top left;
+}
+.wardrobe-close {
+  position:absolute;
+  inset-inline-end:.45rem;
+  inset-block-start:.5rem;
+  z-index:1;
+}
+.wardrobe-details {
+  padding:clamp(.8rem, 3vw, 1.5rem);
+  background:#32231d;
+  border:1px solid #8f7357;
+  border-radius:16px;
+  margin-block-start:.65rem;
+}
+.wardrobe-details h2 { font:700 clamp(1.35rem, 5vw, 2rem)/1.15 var(--font-serif); margin:0; }
+.wardrobe-details p { margin:.4rem 0; color:#efddc9; font-size:.875rem; }
+.wardrobe-details fieldset { display:flex; flex-wrap:wrap; gap:.4rem; border:0; padding:0; margin:.65rem 0; }
+.wardrobe-details legend { margin-bottom:.35rem; }
+.wardrobe-focus :is(.wardrobe-close, .wardrobe-details button) {
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  min-height:44px;
+  padding:.3rem .65rem;
+  border:1px solid #a78d70;
+  border-radius:9px;
+  background:#392920;
+  color:#fff4e5;
+}
+.wardrobe-details button[aria-pressed=true] { background:#e9cea6; color:#32231d; }
+.wardrobe-notes { display:grid; gap:.25rem; }
+.wardrobe-notes div { display:grid; grid-template-columns:4rem minmax(0,1fr); gap:.4rem; }
+.wardrobe-notes dd { margin:0; }
+.wardrobe-focus[data-closing=true] .wardrobe-details { visibility:hidden; }
+.wardrobe-slot button:focus-visible,
+.wardrobe-focus button:focus-visible { outline:2px solid #f9d494; outline-offset:2px; }
+
+@media (prefers-reduced-motion:no-preference) {
+  .wardrobe-focus[open]::backdrop { animation:wardrobe-dim 420ms ease-out; }
+  .wardrobe-focus[open] .wardrobe-details { animation:wardrobe-detail-in 280ms 190ms both; }
+  .wardrobe-details button { transition:background-color 160ms, color 160ms; }
+}
+@keyframes wardrobe-dim { from { opacity:0; } to { opacity:1; } }
+@keyframes wardrobe-detail-in { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
