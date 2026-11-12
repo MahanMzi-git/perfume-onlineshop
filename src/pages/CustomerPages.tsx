@@ -10,6 +10,7 @@ import { CustomerForm } from '../components/CustomerForm';
 import { Dialog } from '../components/SharedUI';
 import { ProductGrid } from '../components/ProductGrid';
 import { PerfumeWardrobe } from '../components/PerfumeWardrobe';
+import { wardrobePerfumes } from '../data/wardrobePerfumes';
 import { products } from '../data/products';
 import { familyImageUrl } from '../data/fragranceImages';
 import { fragranceFamilies } from '../data/fragranceFamilies';
@@ -203,14 +204,7 @@ export function CustomerPage({ section = 'overview', orderId }: { section?: stri
             <a className="step-action step-primary" href="#/catalog">کشف عطرها</a>
           </div>
         </div>)}
-        {section === 'cabinet' && <PerfumeWardrobe perfumes={products
-          .filter(product => product.productType === 'perfume')
-          .map((product, position) => ({
-            position,
-            name: product.name,
-            image: product.image,
-            href: '#/product/' + product.slug,
-          }))} />}
+        {section === 'cabinet' && <PerfumeWardrobe perfumes={wardrobePerfumes} />}
         {section === 'preferences' && <section className="customer-panel account-profile-panel">
           <h2>خانواده‌های بویایی دلخواه</h2>
           <p>رایحه‌هایی را که بیشتر دوست دارید انتخاب کنید.</p>

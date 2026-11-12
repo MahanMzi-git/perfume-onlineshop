@@ -9,7 +9,7 @@ export interface WardrobePerfume {
   position: number;
   name: string;
   image: string;
-  href: string;
+  href?: string;
 }
 
 function PerfumeSlot({ perfume }: { perfume: WardrobePerfume }) {
@@ -19,12 +19,13 @@ function PerfumeSlot({ perfume }: { perfume: WardrobePerfume }) {
     top: `${shelfHeights[Math.floor(slot / slotsPerShelf)]}%`,
   };
 
+  const Artwork = perfume.href ? 'a' : 'div';
   return (
     <li className="wardrobe-slot" style={position}>
-      <a href={perfume.href}>
+      <Artwork className="wardrobe-artwork" href={perfume.href}>
         <img className="wardrobe-bottle" src={perfume.image} alt="" decoding="async" />
         <bdi className="wardrobe-label">{perfume.name}</bdi>
-      </a>
+      </Artwork>
     </li>
   );
 }

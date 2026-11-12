@@ -30,7 +30,7 @@
   transform:translate(-50%, -100%);
 }
 
-.wardrobe-slot a {
+.wardrobe-artwork {
   position:relative;
   display:grid;
   height:100%;
@@ -40,7 +40,7 @@
   padding-bottom:2%;
 }
 
-.wardrobe-slot a::before {
+.wardrobe-artwork::before {
   content:"";
   position:absolute;
   bottom:0;
