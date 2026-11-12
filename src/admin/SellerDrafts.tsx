@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { AlertCircle, ArrowUpLeft, Check, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
 import { AdminBadge, Panel } from './AdminUI';
-import { createMockSellerDraftApi, sellerDraftApi, type SellerProductDraft } from './sellerDraftApi';
+import { sellerDraftApi, type SellerProductDraft } from './sellerDraftApi';
 
 const listHref = '#/seller/products';
 const createHref = '#/seller/product-new';
@@ -9,24 +9,24 @@ const editHref = (id: string) => '#/seller/products/' + encodeURIComponent(id);
 const date = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' });
 const localizedNumber = new Intl.NumberFormat('fa-IR');
 
-function DraftEmptyState({ onCreate, preview = false }: { onCreate?: () => void; preview?: boolean }) {
+function DraftEmptyState({ canCreate, preview = false }: { canCreate?: boolean; preview?: boolean }) {
   return <div className="admin-draft-empty">
     <span className="admin-draft-empty-icon"><Package size={22} aria-hidden="true" /></span>
     <h3>{preview ? 'نمایش فهرست خالی' : 'هنوز پیش‌نویسی نساخته‌ای'}</h3>
-    <p>{preview ? 'با بازگشت به نمایش عادی، پیش‌نویس‌های نمونه را می‌بینی.' : 'نام اولیهٔ محصول را ثبت کن؛ جزئیات دیگر بعداً به این پیش‌نویس اضافه می‌شوند.'}</p>
-    {onCreate && <a className="admin-primary" href={createHref}><FilePlus2 size={16} aria-hidden="true" />ساخت پیش‌نویس</a>}
+    <p>{preview ? 'با بازگشت به نمایش عادی، فهرست پیش‌نویس‌ها را می‌بینی.' : 'نام اولیهٔ محصول را ثبت کن؛ جزئیات دیگر بعداً به این پیش‌نویس اضافه می‌شوند.'}</p>
+    {canCreate && <a className="admin-primary" href={createHref}><FilePlus2 size={16} aria-hidden="true" />ساخت پیش‌نویس</a>}
   </div>;
 }
 
 function DraftLoadError({ onRetry }: { onRetry: () => void }) {
   return <div className="admin-draft-state admin-draft-error" role="alert">
     <AlertCircle size={21} aria-hidden="true" />
-    <div><strong>فهرست پیش‌نویس‌ها دریافت نشد</strong><p>اتصال آزمایشی را بررسی کن و دوباره تلاش کن.</p></div>
+    <div><strong>فهرست پیش‌نویس‌ها دریافت نشد</strong><p>دوباره تلاش کن.</p></div>
     <button type="button" onClick={onRetry}><RefreshCw size={15} aria-hidden="true" />تلاش دوباره</button>
   </div>;
 }
 
-export function SellerDrafts({ previewState = 'normal', onRetryPreview }: { previewState?: string; onRetryPreview: () => void }) {
+export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPreview }: { canCreate: boolean; previewState?: string; onRetryPreview: () => void }) {
   const [drafts, setDrafts] = useState<SellerProductDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -35,35 +35,34 @@ export function SellerDrafts({ previewState = 'normal', onRetryPreview }: { prev
     setLoading(true);
     setError('');
     try { setDrafts(await sellerDraftApi.list()); }
-    catch { setError('خواندن فهرست پیش‌نویس‌ها با Mock ناموفق بود.'); }
+    catch { setError('خواندن فهرست پیش‌نویس‌ها ناموفق بود.'); }
     finally { setLoading(false); }
   }, []);
   useEffect(() => { if (previewState === 'normal') void load(); }, [load, previewState, reloadKey]);
 
   return <Panel title="پیش‌نویس‌های محصول">
-    <div className="admin-drafts-intro"><p>محصول‌های ناتمام اینجا می‌مانند؛ برای ادامه، هر پیش‌نویس را باز کن.</p><a className="admin-primary" href={createHref}><FilePlus2 size={16} aria-hidden="true" />پیش‌نویس جدید</a></div>
+    <div className="admin-drafts-intro"><p>محصول‌های ناتمام اینجا می‌مانند؛ برای ادامه، هر پیش‌نویس را باز کن.</p>{canCreate && <a className="admin-primary" href={createHref}><FilePlus2 size={16} aria-hidden="true" />پیش‌نویس جدید</a>}</div>
     {previewState === 'loading' ? <div className="admin-draft-skeleton" role="status" aria-label="در حال دریافت پیش‌نویس‌ها"><span/><span/><span/></div>
       : previewState === 'empty' ? <DraftEmptyState preview />
       : previewState === 'error' ? <DraftLoadError onRetry={onRetryPreview} />
       : loading ? <div className="admin-draft-skeleton" role="status" aria-label="در حال دریافت پیش‌نویس‌ها"><span/><span/><span/></div>
       : error ? <DraftLoadError onRetry={() => setReloadKey(key => key + 1)} />
-      : drafts.length === 0 ? <DraftEmptyState onCreate={() => undefined} />
+      : drafts.length === 0 ? <DraftEmptyState canCreate={canCreate} />
       : <>
         <ul className="admin-draft-list" aria-label="فهرست پیش‌نویس‌ها">{drafts.map(draft => <li key={draft.id}>
           <article className="admin-draft-row">
             <span className="admin-draft-mark"><Package size={19} aria-hidden="true" /></span>
             <div className="admin-draft-copy"><h3><a href={editHref(draft.id)}>{draft.name}</a></h3><p><span dir="ltr">{draft.id}</span><span><Clock3 size={13} aria-hidden="true" />آخرین تغییر {date.format(draft.updatedAt)}</span></p></div>
             <AdminBadge>پیش‌نویس</AdminBadge>
-            <a className="admin-draft-open" href={editHref(draft.id)}>ادامهٔ ویرایش <ArrowUpLeft size={15} aria-hidden="true" /></a>
+            <a className="admin-draft-open" href={editHref(draft.id)}>باز کردن پیش‌نویس <ArrowUpLeft size={15} aria-hidden="true" /></a>
           </article>
         </li>)}</ul>
-        <p className="admin-draft-count"><span>{localizedNumber.format(drafts.length)} پیش‌نویس</span><span>ذخیرهٔ آزمایشی در همین مرورگر</span></p>
+        <p className="admin-draft-count"><span>{localizedNumber.format(drafts.length)} پیش‌نویس</span></p>
       </>}
   </Panel>;
 }
 
-export function SellerDraftEditor({ id, editable, mockSaveError = false }: { id?: string; editable: boolean; mockSaveError?: boolean }) {
-  const api = useMemo(() => mockSaveError ? createMockSellerDraftApi({ failWrites: true }) : sellerDraftApi, [mockSaveError]);
+export function SellerDraftEditor({ id, editable, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; csrfToken: string; mockSaveError?: boolean }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(!!id);
   const [loadError, setLoadError] = useState('');
@@ -90,12 +89,13 @@ export function SellerDraftEditor({ id, editable, mockSaveError = false }: { id?
     if (!editable || saving) return;
     const normalized = name.trim();
     if (!normalized) { setNameError('نام محصول را وارد کن.'); return; }
-    if (normalized.length > 180) { setNameError('نام محصول نمی‌تواند بیشتر از ۱۸۰ نویسه باشد.'); return; }
+    if (Array.from(normalized).length > 180) { setNameError('نام محصول نمی‌تواند بیشتر از ۱۸۰ نویسه باشد.'); return; }
     setNameError('');
     setSaveError('');
     setSaving(true);
     try {
-      const result = id ? await api.update(id, normalized) : await api.create(normalized);
+      if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
+      const result = await sellerDraftApi.save(normalized, csrfToken, id);
       setName(result.name);
       setSaved(true);
       if (!id) location.hash = editHref(result.id);
@@ -113,7 +113,7 @@ export function SellerDraftEditor({ id, editable, mockSaveError = false }: { id?
     {saved && <p className="admin-draft-saved" role="status"><Check size={16} aria-hidden="true" />نام پیش‌نویس ذخیره شد.</p>}
     <form className="admin-draft-form" onSubmit={submit} noValidate>
       <div className="admin-draft-field">
-        <div className="admin-draft-label-row"><label htmlFor="draft-product-name">نام محصول <span aria-hidden="true">*</span></label><small>{localizedNumber.format(name.trim().length)} / ۱۸۰</small></div>
+        <div className="admin-draft-label-row"><label htmlFor="draft-product-name">نام محصول <span aria-hidden="true">*</span></label><small>{localizedNumber.format(Array.from(name.trim()).length)} / ۱۸۰</small></div>
         <input id="draft-product-name" value={name} onChange={event => { setName(event.currentTarget.value); setNameError(''); setSaveError(''); setSaved(false); }} disabled={!editable || saving} aria-invalid={!!nameError} aria-describedby={nameError ? 'draft-name-error' : 'draft-name-hint'} placeholder="مثلاً عطر چوبی جدید" />
         {nameError ? <p id="draft-name-error" className="admin-error">{nameError}</p> : <p id="draft-name-hint" className="admin-field-hint">نام پس از حذف فاصله‌های ابتدا و انتها ذخیره می‌شود.</p>}
       </div>

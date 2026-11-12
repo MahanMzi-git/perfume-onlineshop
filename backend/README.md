@@ -42,12 +42,13 @@ For local HTTP on a loopback-only development host, set
 documented below and open `/perfume-onlineshop/#/seller/overview` on the Vite origin.
 
 Provision a development staff account with Django's user tools and grant
-`catalog.view_product` for read access. Add `catalog.change_product` for the seller
-role. The server checks the specific permission declared by each management view.
+`catalog.view_product` for read access. Grant `catalog.add_product` to create
+drafts and `catalog.change_product` to edit them. The server checks the
+specific permission for each operation.
 Set passwords locally using Django's interactive password tooling. New
 passwords require at least eight characters, including a letter, a digit,
-and a symbol. This sign-in
-does not connect the existing demonstration product forms to database writes.
+and a symbol. The seller draft form saves product names in PostgreSQL. The
+existing demonstration forms for other product details remain separate.
 
 | Method and path | Behavior |
 | --- | --- |

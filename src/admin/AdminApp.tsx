@@ -15,10 +15,10 @@ import { manualVariantCodeError } from '../lib/variantCodes';
 import { VariantCode } from '../components/VariantCode';
 import { ProductGalleryPreview } from './ProductGalleryPreview';
 import { savedManualVariantCodes, type AdminVariant } from './model';
-import { SellerSession } from './SellerSession';
+import { SellerSession, type DraftAccess } from './SellerSession';
 import { SellerDraftEditor, SellerDrafts } from './SellerDrafts';
 
-interface Workspace { state:AdminState; codes:Map<string,string>; editable:boolean; mutate:(label:string,fn:(s:AdminState)=>AdminState)=>void; confirm:(title:string,detail:string,action:()=>void)=>void }
+interface Workspace { state:AdminState; codes:Map<string,string>; editable:boolean; draftAccess:DraftAccess; mutate:(label:string,fn:(s:AdminState)=>AdminState)=>void; confirm:(title:string,detail:string,action:()=>void)=>void }
 const link=(group:AdminGroup,section:string)=>`#/${group}/${section}`;
 const lowStockStatus='موجودی کم';
 const lowStockLink=link('seller','inventory')+'?stock=low';
@@ -47,10 +47,10 @@ interface AdminAppProps {
 }
 
 export function AdminApp(props: AdminAppProps) {
- return <SellerSession>{(role, logout) => <SellerWorkspace {...props} role={role} logout={logout} />}</SellerSession>;
+ return <SellerSession>{(role, logout, draftAccess) => <SellerWorkspace {...props} role={role} logout={logout} draftAccess={draftAccess} />}</SellerSession>;
 }
 
-function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppProps & {role:AdminRole; logout:()=>Promise<void>}) {
+function SellerWorkspace({route,session,onSessionChange,role,logout,draftAccess}:AdminAppProps & {role:AdminRole; logout:()=>Promise<void>; draftAccess:DraftAccess}) {
  const [state,setState]=useState(()=>session??createAdminState()),[notice,setNotice]=useState('');
  useEffect(()=>onSessionChange(state),[state,onSessionChange]);
  const codes=useMemo(()=>new Map(codedVariants(state.products).map(({variant,code})=>[variant.id,code])),[state.products]);
@@ -92,7 +92,7 @@ function SellerWorkspace({route,session,onSessionChange,role,logout}:AdminAppPro
   if(!canEdit(role,route.group)){setNotice('این نقش اجازهٔ ویرایش ندارد.');return;}
   setState(fn);setNotice(label+' ثبت شد.');
  };
- const workspace:Workspace={state,codes,editable,mutate,confirm:(title,detail,action)=>setConfirmation({title,detail,action})};
+ const workspace:Workspace={state,codes,editable,draftAccess,mutate,confirm:(title,detail,action)=>setConfirmation({title,detail,action})};
  let content:ReactNode;
  if(route.section==='overview')content=<Overview workspace={workspace}/>;
  else if((route.section==='families'||route.section==='notes')&&!libraryReady)content=<p role="status">در حال بارگذاری کتابخانهٔ رایحه…</p>;
@@ -138,11 +138,11 @@ function Overview({workspace:{state}}:{workspace:Workspace}) {
 function SellerPage({route,workspace:w,previewState,onRetryPreview}:{route:AdminRoute;workspace:Workspace;previewState:string;onRetryPreview:()=>void}) {
  const {state}=w;
  switch(route.section){
-  case 'products':return <><SellerDrafts previewState={previewState} onRetryPreview={onRetryPreview}/><details className="admin-existing-products"><summary>محصولات ثبت‌شده <span>{number(state.products.length)}</span></summary><div className="admin-existing-products-content"><p>فهرست محصولات موجود و ابزار مدیریت نسخه‌ها و قیمت‌ها.</p><div className="admin-actions"><a href={link('seller','variants')}>مدیریت حجم و قیمت</a></div><DataTable label="محصولات ثبت‌شده" rows={state.products.map(product=>({...product,searchCodes:product.variants.map(v=>w.codes.get(v.id)).join(' ')}))} renderCard={product=><SellerProductCard product={product} codes={w.codes}/>}/></div></details></>;
-  case 'product-new':return <SellerDraftEditor editable={w.editable} mockSaveError={route.mockSaveError}/>;
+  case 'products':return <><SellerDrafts canCreate={w.draftAccess.draftPermissions.create} previewState={previewState} onRetryPreview={onRetryPreview}/><details className="admin-existing-products"><summary>محصولات ثبت‌شده <span>{number(state.products.length)}</span></summary><div className="admin-existing-products-content"><p>فهرست محصولات موجود و ابزار مدیریت نسخه‌ها و قیمت‌ها.</p><div className="admin-actions"><a href={link('seller','variants')}>مدیریت حجم و قیمت</a></div><DataTable label="محصولات ثبت‌شده" rows={state.products.map(product=>({...product,searchCodes:product.variants.map(v=>w.codes.get(v.id)).join(' ')}))} renderCard={product=><SellerProductCard product={product} codes={w.codes}/>}/></div></details></>;
+  case 'product-new':return <SellerDraftEditor editable={w.draftAccess.draftPermissions.create} csrfToken={w.draftAccess.csrfToken} mockSaveError={route.mockSaveError}/>;
   case 'product-edit':return state.products.some(product=>product.id===route.id)
    ? <ProductEditor key={route.id} id={route.id} workspace={w} galleryPreview={route.galleryPreview}/>
-   : <SellerDraftEditor key={route.id} id={route.id} editable={w.editable} mockSaveError={route.mockSaveError}/>;
+   : <SellerDraftEditor key={route.id} id={route.id} editable={w.draftAccess.draftPermissions.edit} csrfToken={w.draftAccess.csrfToken} mockSaveError={route.mockSaveError}/>;
   case 'inventory':case 'variants':return <VariantEditor inventory={route.section==='inventory'} stockFilter={route.stockFilter} workspace={w}/>;
   case 'orders':return <DataTable label="سفارش‌ها" rows={state.orders.map(o=>({...o,name:o.id,code:w.codes.get(o.variantId??'')}))} columns={[{key:'id',label:'سفارش',render:o=><a href={link('seller','orders/'+o.id)}>{o.id}</a>},{key:'customer',label:'مشتری',render:o=>o.customer},{key:'total',label:'جمع',render:o=>money(o.total)},statusColumn,{key:'action',label:'عملیات',render:o=><a href={link('seller','orders/'+o.id)}>جزئیات و مراحل</a>}]} />;
   case 'order-detail':return <OrderDetail id={route.id} workspace={w}/>;

@@ -3,10 +3,13 @@ import { Clock3 } from 'lucide-react';
 import { Panel } from './AdminUI';
 
 type SellerRole = 'seller' | 'analyst';
-interface Session {
+export interface DraftAccess {
+  csrfToken: string;
+  draftPermissions: { create: boolean; edit: boolean };
+}
+interface Session extends DraftAccess {
   authenticated: boolean;
   role: SellerRole | null;
-  csrfToken: string;
   expiresAt: string | null;
   lockout?: Lockout | null;
 }
@@ -28,6 +31,7 @@ async function readSession(response: Response): Promise<Session> {
   if (!response.ok) throw new Error('Seller session unavailable');
   const data = await response.json();
   if (typeof data?.csrfToken !== 'string' || typeof data.authenticated !== 'boolean' ||
+      typeof data.draftPermissions?.create !== 'boolean' || typeof data.draftPermissions?.edit !== 'boolean' ||
       (data.role !== null && data.role !== 'seller' && data.role !== 'analyst') ||
       (data.role !== null && (!data.authenticated || !Number.isFinite(Date.parse(data.expiresAt))))) {
     throw new Error('Invalid seller session');
@@ -36,7 +40,7 @@ async function readSession(response: Response): Promise<Session> {
 }
 
 export function SellerSession({ children }: {
-  children: (role: SellerRole, logout: () => Promise<void>) => ReactNode;
+  children: (role: SellerRole, logout: () => Promise<void>, draftAccess: DraftAccess) => ReactNode;
 }) {
   const [session, setSession] = useState<Session>();
   const [retry, setRetry] = useState(0);
@@ -168,7 +172,7 @@ export function SellerSession({ children }: {
   }
 
   if (session?.role) return <>
-    {children(session.role, signOut)}
+    {children(session.role, signOut, session)}
     {error && <div className="admin-session-feedback" dir="rtl" role="alert">{error}</div>}
   </>;
 
