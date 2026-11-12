@@ -11,6 +11,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=180, unique=True)
     name = models.CharField(max_length=180)
     is_published = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Variant(models.Model):

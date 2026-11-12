@@ -43,9 +43,14 @@ class SellerCatalogPermission(BasePermission):
 
 def session_data(request):
     authenticated = request.user.is_authenticated
+    role = seller_role(request.user)
     return {
         "authenticated": authenticated,
-        "role": seller_role(request.user),
+        "role": role,
+        "draftPermissions": {
+            "create": bool(role and request.user.has_perm("catalog.add_product")),
+            "edit": bool(role and request.user.has_perm("catalog.change_product")),
+        },
         "csrfToken": get_token(request),
         "expiresAt": request.session.get_expiry_date().isoformat() if authenticated else None,
     }
