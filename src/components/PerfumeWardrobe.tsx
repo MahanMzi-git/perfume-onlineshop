@@ -1,11 +1,12 @@
 import { useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { brands } from '../data/brands';
 import { fragranceFamilies } from '../data/fragranceFamilies';
+import { noteById } from '../data/scentNotes';
 import type { WardrobePerfume } from '../data/wardrobePerfumes';
-import { defaultCardVariant, priceText } from '../lib/catalog';
+import { defaultCardVariant } from '../lib/catalog';
 import { getBottleScale, getShelfPosition, getWardrobePage } from '../lib/wardrobeLayout';
 import { useCustomer, type CabinetEntry } from './CustomerContext';
-import { useVariantCodes } from './VariantCode';
 
 const formatNumber = new Intl.NumberFormat('fa-IR');
 const experienceChoices = [
@@ -90,11 +91,12 @@ function WardrobeChoices<Value extends string>({ title, options, selected, onSel
 
 function WardrobeDetails({ perfume }: { perfume: WardrobePerfume }) {
   const { customer, setCustomer } = useCustomer();
-  const codes = useVariantCodes();
   const { product } = perfume;
   const variant = defaultCardVariant(product);
-  const code = variant && codes.get(variant.id);
-  const families = fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id));
+  const brand = brands.find(brand => brand.id === product.brandId);
+  const families = fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id))
+    .map(family => family.name).join('، ');
+  const notes = product.scentNoteIds.map(id => noteById(id)?.name).filter(Boolean).join('، ');
   const entry = customer.cabinet[perfume.id];
   const href = '#/product/' + product.slug + (variant && variant !== product.variants[0] ? '?variant=' + variant.id : '');
 
@@ -109,19 +111,20 @@ function WardrobeDetails({ perfume }: { perfume: WardrobePerfume }) {
   }
 
   return <div className="wardrobe-details">
-    <h2 id="wardrobe-selection-title"><bdi>{perfume.name}</bdi></h2>
+    <div className="wardrobe-details-heading">
+      <h2 id="wardrobe-selection-title"><bdi>{perfume.name}</bdi></h2>
+      {brand && <bdi className="wardrobe-brand">{brand.name}</bdi>}
+    </div>
     <dl className="wardrobe-facts">
-      <div><dt>حجم</dt><dd>{variant ? formatNumber.format(variant.volumeMl) + ' میلی‌لیتر' : 'ثبت نشده'}</dd></div>
-      <div><dt>قیمت</dt><dd>{priceText(variant?.price ?? product.price)}</dd></div>
-      <div><dt>کد محصول</dt><dd>{code ? <bdi>{code}</bdi> : 'ثبت نشده'}</dd></div>
-      <div><dt>خانواده‌های رایحه</dt><dd>{families.map(family => family.name).join('، ') || 'ثبت نشده'}</dd></div>
+      <div><dt>خانواده‌های رایحه</dt><dd>{families || 'ثبت نشده'}</dd></div>
+      <div><dt>نت‌های بویایی</dt><dd>{notes || 'ثبت نشده'}</dd></div>
     </dl>
     <WardrobeChoices title="تجربهٔ من" options={experienceChoices} selected={entry?.experience}
       onSelect={experience => updateEntry({ experience })} />
     <WardrobeChoices title="نظر من" options={opinionChoices} selected={entry?.opinion}
       onSelect={opinion => updateEntry({ opinion })} />
     <a className="wardrobe-product-link" href={href}>
-      مشاهدهٔ محصول <ArrowUpLeft size={16} aria-hidden="true" />
+      مشاهدهٔ محصول <ArrowUpLeft size={14} aria-hidden="true" />
     </a>
   </div>;
 }

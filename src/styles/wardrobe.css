@@ -197,22 +197,40 @@
   border-radius:16px;
   background:var(--wardrobe-paper);
 }
-.wardrobe-details h2 {
+.wardrobe-details-heading {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:.2rem .55rem;
+}
+.wardrobe-details-heading h2 {
   min-width:0;
   overflow-wrap:anywhere;
   font:700 clamp(1.25rem, 4vw, 1.65rem)/1.15 var(--font-serif);
   margin:0;
 }
+.wardrobe-brand {
+  min-width:0;
+  overflow-wrap:anywhere;
+  color:var(--wardrobe-muted);
+  font-size:.8125rem;
+  line-height:1.3;
+}
 .wardrobe-facts {
   display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:.25rem .75rem;
+  gap:.2rem;
   margin:0;
   padding:.4rem .6rem;
   border-radius:9px;
   background:#f3ebdf;
   font-size:.875rem;
   line-height:1.45;
+}
+.wardrobe-facts > div {
+  display:grid;
+  grid-template-columns:6.5rem minmax(0, 1fr);
+  align-items:baseline;
+  gap:.35rem;
 }
 .wardrobe-facts dt { color:var(--wardrobe-muted); font-size:.75rem; }
 .wardrobe-facts dd { margin:0; font-weight:650; overflow-wrap:anywhere; }
@@ -265,14 +283,14 @@
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  gap:.4rem;
-  min-height:44px;
-  padding:.35rem .75rem;
-  border-radius:9px;
-  justify-self:start;
+  gap:.3rem;
+  min-height:34px;
+  padding:.25rem .55rem;
+  border-radius:7px;
+  justify-self:end;
   background:#65452f;
   color:#fffaf2;
-  font-size:.875rem;
+  font-size:.8125rem;
   font-weight:600;
   text-decoration:none;
 }
@@ -287,7 +305,6 @@
     display:grid;
     grid-template-columns:minmax(0, .75fr) repeat(2, minmax(0, 1.15fr));
   }
-  .wardrobe-product-link { justify-self:stretch; }
 }
 
 @media (max-height:28rem) {
@@ -309,16 +326,6 @@
     grid-area:1 / 2;
     width:min(100%, calc(clamp(110px, 42dvh, 330px) * var(--bottle-ratio)));
   }
-}
-
-@media (min-width:40rem) and (max-height:26rem) {
-  .wardrobe-details {
-    grid-template-columns:minmax(0, 1fr) auto;
-    align-items:center;
-    padding-block:.625rem;
-  }
-  .wardrobe-details :is(.wardrobe-facts, .wardrobe-choices) { grid-column:1 / -1; }
-  .wardrobe-product-link { grid-area:1 / 2; }
 }
 
 @media (prefers-reduced-motion:no-preference) {
