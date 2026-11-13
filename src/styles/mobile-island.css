@@ -1,7 +1,7 @@
 .mobile-island { @apply tw:hidden; }
 
 @media (max-width:600px) {
-  body { padding-bottom:calc(78px + env(safe-area-inset-bottom)); }
+  body:not(:has(.footer)) { padding-bottom:calc(78px + env(safe-area-inset-bottom)); }
   .mobile-island {
     @apply tw:fixed tw:z-[25];
     left:50%;

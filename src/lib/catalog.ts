@@ -1,5 +1,9 @@
 import type { Filters, Product, ProductVariant, SortOrder } from '../types/product';
 
+export function defaultCardVariant(product: Product): ProductVariant | undefined {
+  return product.variants.find(variant => variant.price === product.price && variant.concentration === product.concentration) ?? product.variants[0];
+}
+
 export function matchingVariant(product: Product, filters: Filters): ProductVariant | undefined {
   return product.variants.find(variant =>
     (!filters.volumeMl || variant.volumeMl === filters.volumeMl) &&

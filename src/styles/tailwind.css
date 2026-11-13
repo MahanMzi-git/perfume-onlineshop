@@ -8,6 +8,7 @@
 /* Preserve the pre-migration CSS evaluation order (App styles, then main). */
 @import "./catalog.css" layer(components);
 @import "./customer.css" layer(components);
+@import "./wardrobe.css" layer(components);
 @import "./tokens.css" layer(components);
 @import "./global.css" layer(components);
 @import "./luxury-select.css" layer(components);
@@ -29,7 +30,8 @@
 @import "./compact-product-grid.css" layer(components);
 @import "./phone-landscape.css" layer(components);
 @import "./homepage-responsive.css" layer(components);
-@import "./admin.css" layer(components);
+@import './footer.css' layer(components);
+@import './admin.css' layer(components);
 
 /* Scan application sources, not experimental previews or generated output. */
 @source "../";

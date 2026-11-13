@@ -85,3 +85,57 @@
 @media (max-width:350px) {
   #journal .journal-back { padding-block:.65rem; }
 }
+
+#main-content:has(> .hero) .mood-filters,
+#main-content #discovery {
+  padding-block:clamp(1.5rem, 4vw, 3rem);
+}
+.mood-filters h2 {
+  margin:0 0 .75rem;
+  font-size:clamp(1.125rem, 1rem + .5vw, 1.4rem);
+}
+.mood-filters .collection-grid {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.mood-filters .collection {
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  min-height:44px;
+  padding:.45rem .8rem;
+  border-radius:999px;
+  font-size:clamp(.8125rem, .77rem + .2vw, .9375rem);
+}
+.mood-filters .collection > svg:only-of-type {
+  position:static;
+  width:1.125rem;
+  height:1.125rem;
+  stroke-width:1.6;
+}
+#main-content #discovery .section-heading { margin-bottom:.45rem; }
+#discovery .section-intro {
+  margin:0 0 clamp(.75rem, 2vw, 1.25rem);
+  font-size:clamp(.875rem, .82rem + .3vw, 1rem);
+  line-height:1.65;
+}
+#discovery .family-grid { gap:clamp(.5rem, 1.5vw, 1.25rem) .375rem; }
+#discovery .family-grid button {
+  gap:clamp(.25rem, 1vw, .65rem);
+  font-size:clamp(.75rem, .7rem + .28vw, .9375rem);
+  line-height:1.35;
+}
+#discovery .family-icon {
+  width:clamp(2.25rem, 10vw, 4.25rem);
+  height:clamp(2.25rem, 10vw, 4.25rem);
+}
+#gifts.gift-banner {
+  background:linear-gradient(120deg,#45202d,#70283e);
+}
+#gifts.gift-banner p:not(.eyebrow) { color:#f3dce2; }
+#gifts.gift-banner .cta { color:#542035; }
+
+@media (max-width:600px) {
+  #discovery .family-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}

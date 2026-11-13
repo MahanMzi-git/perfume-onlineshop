@@ -1,24 +1,57 @@
+import { ArrowUpLeft } from 'lucide-react';
 import { categories } from '../data/categories';
-import { ChevronDown } from 'lucide-react';
-import { AdaptiveDisclosure } from './AdaptiveDisclosure';
+
 export function Footer({ onInfo }: { onInfo: (id: string) => void }) {
-  const title = (text: string) => <><span>{text}</span><ChevronDown size={17} aria-hidden="true" /></>;
-  return <footer className="footer">
-    <div className="container footer-intro">
-      <div className="footer-brand"><p className="logo" dir="ltr">AROMA<span>THE FRAGRANCE EDIT</span></p><span className="badge">فروشگاه اینترنتی آروما</span></div>
-      <p>روایتِ تو، به زبانِ رایحه.<br />فضایی برای شناخت و کشف دنیای عطر.</p>
-    </div>
-    <div className="container foot-grid">
-      <AdaptiveDisclosure className="footer-group" summary={title('دنیای آروما')}>
-        <nav aria-label="خرید"><ul><li><a href="#/catalog">همهٔ عطرها</a></li>{categories.filter(c => !c.scrollTo).map(c => <li key={c.id}><a href={'#/collections/' + c.id}>{c.label}</a></li>)}</ul></nav>
-      </AdaptiveDisclosure>
-      <AdaptiveDisclosure className="footer-group" summary={title('همراه شما')}>
-        <nav aria-label="راهنما"><ul><li><a href="#/families">راهنمای رایحه‌ها</a></li><li><a href="#/collections/gifts">ست‌های آشنایی</a></li><li><a href="#/journal">مجلهٔ آروما</a></li><li><a href="#/about">دربارهٔ ما</a></li><li><button onClick={() => onInfo('shipping')}>ارسال و مرجوعی</button></li><li><button onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li></ul></nav>
-      </AdaptiveDisclosure>
-      <AdaptiveDisclosure className="footer-group" summary={title('در ارتباط بمانیم')}>
-        <p>اطلاعات تماس و شبکه‌های اجتماعی<br />پس از تأیید فروشگاه اضافه می‌شوند.</p><a className="text-link" href="#/contact">ارتباط با ما ↖</a>
-      </AdaptiveDisclosure>
-    </div>
-    <div className="container footer-bottom"><span>آروما · پیش‌نمایش رابط فروشگاه؛ خرید فعال نیست.</span><span dir="ltr">A LITTLE SCENT. A LASTING MEMORY.</span></div>
-  </footer>;
+  return (
+    <footer className="footer aroma-footer">
+      <div className="container aroma-footer-inner">
+        <div className="aroma-footer-identity">
+          <a className="aroma-footer-wordmark" href="#home" aria-label="آروما، خانه" dir="ltr">
+            AROMA
+          </a>
+          <p>روایتِ تو، به زبانِ رایحه.</p>
+          <a className="aroma-footer-contact" href="#/contact">
+            ارتباط با ما <ArrowUpLeft size={16} aria-hidden="true" />
+          </a>
+        </div>
+
+        <a className="aroma-footer-journal" href="#/journal">
+          <img
+            src={import.meta.env.BASE_URL + 'images/journal/how-to-read-notes.png'}
+            alt=""
+            width={1412}
+            height={790}
+            loading="lazy"
+            decoding="async"
+          />
+          <span>مجلهٔ آروما <ArrowUpLeft size={18} aria-hidden="true" /></span>
+        </a>
+
+        <nav className="aroma-footer-nav" aria-label="فروشگاه و راهنما">
+          <div>
+            <h2>کشف عطرها</h2>
+            <ul>
+              <li><a href="#/catalog">همهٔ عطرها</a></li>
+              {categories.filter(category => !category.scrollTo).map(category => (
+                <li key={category.id}>
+                  <a href={'#/collections/' + category.id}>{category.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2>راهنما و پشتیبانی</h2>
+            <ul>
+              <li><a href="#/families">راهنمای رایحه‌ها</a></li>
+              <li><a href="#/about">دربارهٔ ما</a></li>
+              <li><button type="button" onClick={() => onInfo('shipping')}>ارسال و مرجوعی</button></li>
+              <li><button type="button" onClick={() => onInfo('policies')}>حریم خصوصی و شرایط</button></li>
+            </ul>
+          </div>
+        </nav>
+
+        <p className="aroma-footer-status">پیش‌نمایش فروشگاه آروما · خرید فعال نیست.</p>
+      </div>
+    </footer>
+  );
 }
