@@ -52,6 +52,7 @@
 }
 
 .wardrobe-bottle,
+.wardrobe-bottle-art,
 .wardrobe-foreground {
   position:relative;
   display:block;
@@ -60,15 +61,15 @@
 .wardrobe-bottle {
   width:min(94%, calc(15.6cqw * var(--bottle-ratio) * var(--bottle-scale, 1)));
 }
-:is(.wardrobe-bottle, .wardrobe-foreground) > img {
+:is(.wardrobe-bottle-art, .wardrobe-foreground) > img {
   display:block;
   width:100%;
   height:100%;
   object-fit:contain;
   object-position:center bottom;
 }
-:is(.wardrobe-bottle, .wardrobe-foreground)[data-cropped=true] { overflow:hidden; }
-:is(.wardrobe-bottle, .wardrobe-foreground)[data-cropped=true] > img {
+:is(.wardrobe-bottle-art, .wardrobe-foreground)[data-cropped=true] { overflow:hidden; }
+:is(.wardrobe-bottle-art, .wardrobe-foreground)[data-cropped=true] > img {
   position:absolute;
   max-width:none;
   max-height:none;
@@ -132,6 +133,42 @@
   cursor:pointer;
 }
 .wardrobe-artwork[data-lifted=true] .wardrobe-bottle { visibility:hidden; }
+
+@media (hover:hover) and (pointer:fine) {
+  .wardrobe-artwork::after {
+    content:"";
+    position:absolute;
+    inset:8% -6% 0;
+    background:radial-gradient(ellipse at 50% 62%, rgb(221 160 94 / 24%), transparent 68%);
+    opacity:0;
+    pointer-events:none;
+  }
+  .wardrobe-bottle { z-index:1; }
+  .wardrobe-label::before {
+    content:"";
+    position:absolute;
+    inset-inline:0;
+    inset-block-end:100%;
+    height:.65cqw;
+  }
+  .wardrobe-artwork[data-lifted=false]:hover::after { opacity:1; }
+  .wardrobe-artwork[data-lifted=false]:hover::before { background:rgb(20 8 3 / 76%); }
+  .wardrobe-artwork[data-lifted=false]:hover .wardrobe-bottle-art {
+    filter:brightness(1.06) drop-shadow(0 -1px 1px rgb(255 223 180 / 25%)) drop-shadow(0 4px 3px rgb(30 11 20 / 30%));
+  }
+  .wardrobe-artwork[data-lifted=false]:hover .wardrobe-label {
+    box-shadow:0 1px 2px #2d140d90, inset 0 1px #b87949, inset 0 0 0 20px rgb(219 146 87 / 14%);
+  }
+
+  @media (prefers-reduced-motion:no-preference) {
+    .wardrobe-artwork[data-lifted=false] .wardrobe-bottle-art { transition:transform 300ms ease, filter 300ms ease; }
+    .wardrobe-artwork[data-lifted=false] .wardrobe-label { transition:box-shadow 300ms ease; }
+    .wardrobe-artwork[data-lifted=false]::before { transition:background-color 300ms ease; }
+    .wardrobe-artwork[data-lifted=false]::after { transition:opacity 300ms ease; }
+    .wardrobe-artwork[data-lifted=false]:hover .wardrobe-bottle-art { transform:translateY(-5px); }
+  }
+}
+
 .wardrobe-focus {
   inset:0;
   margin:0;

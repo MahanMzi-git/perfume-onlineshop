@@ -40,12 +40,14 @@ function Bottle({ perfume, className }: { perfume: WardrobePerfume; className: s
       top: `${-top / cropHeight * 100}%`,
     };
   }
-  return <span className={className} data-cropped={!!crop} style={{ '--bottle-ratio': ratio } as CSSProperties}>
-    <img src={image} alt="" style={imageStyle} onLoad={event => {
+  const artwork = <img src={image} alt="" style={imageStyle} onLoad={event => {
       const { naturalWidth, naturalHeight } = event.currentTarget;
       if (!crop && naturalHeight) setIntrinsic({ image, ratio: naturalWidth / naturalHeight });
     }}
-      onError={() => { if (!failed && perfume.fallback && perfume.fallback !== perfume.image) setFailedImage(perfume.image); }} />
+      onError={() => { if (!failed && perfume.fallback && perfume.fallback !== perfume.image) setFailedImage(perfume.image); }} />;
+  const onShelf = className === 'wardrobe-bottle';
+  return <span className={className} data-cropped={!onShelf && !!crop} style={{ '--bottle-ratio': ratio } as CSSProperties}>
+    {onShelf ? <span className="wardrobe-bottle-art" data-cropped={!!crop}>{artwork}</span> : artwork}
   </span>;
 }
 
