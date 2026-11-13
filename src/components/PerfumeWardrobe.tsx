@@ -1,10 +1,5 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
-import { brands } from '../data/brands';
-import { fragranceFamilies } from '../data/fragranceFamilies';
-import { noteById } from '../data/scentNotes';
-import { useCustomer, type CabinetEntry } from './CustomerContext';
-import { useStore } from './StoreContext';
+import { ArrowUpLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { WardrobePerfume } from '../data/wardrobePerfumes';
 import { getBottleScale, getShelfPosition, getWardrobePage } from '../lib/wardrobeLayout';
 
@@ -60,54 +55,6 @@ function PerfumeSlot({ perfume, index, pageSize, selected, onPick }: {
       <bdi className="wardrobe-label">{perfume.name}</bdi>
     </button>
   </li>;
-}
-
-function PerfumeDetails({ perfume }: { perfume: WardrobePerfume }) {
-  const { customer, setCustomer } = useCustomer();
-  const store = useStore();
-  const entry = customer.cabinet[perfume.id] ?? {};
-  const product = perfume.product;
-  const favourite = store.favourites.includes(perfume.id);
-  function update(patch: CabinetEntry) {
-    setCustomer(current => ({
-      ...current,
-      cabinet: { ...current.cabinet, [perfume.id]: { ...current.cabinet[perfume.id], ...patch } },
-    }));
-  }
-
-  return <div className="wardrobe-details">
-    <h2 id="wardrobe-selection-title"><bdi>{perfume.name}</bdi></h2>
-    <p>{[
-      brands.find(brand => brand.id === product.brandId)?.name,
-      product.concentration,
-      { women: 'زنانه', men: 'مردانه', unisex: 'یونیسکس' }[product.targetAudience],
-    ].filter(Boolean).join(' · ')}</p>
-    <p>{fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id)).map(family => family.name).join('، ')}</p>
-    <dl className="wardrobe-notes">
-      {([{ key: 'top', label: 'آغازین' }, { key: 'middle', label: 'میانی' }, { key: 'base', label: 'پایه' }] as const).map(({ key, label }) => {
-        const names = product.notePyramid[key].map(id => noteById(id)?.name).filter(Boolean);
-        return names.length > 0 && <div key={key}><dt>{label}</dt><dd>{names.join('، ')}</dd></div>;
-      })}
-    </dl>
-    {product.description && <p>{product.description}</p>}
-    <fieldset>
-      <legend>تجربهٔ من</legend>
-      <button type="button" aria-pressed={entry.experience === 'used'}
-        onClick={() => update({ experience: entry.experience === 'used' ? undefined : 'used' })}>قبلاً استفاده کردم</button>
-      <button type="button" aria-pressed={entry.experience === 'smelled'}
-        onClick={() => update({ experience: entry.experience === 'smelled' ? undefined : 'smelled' })}>فقط بو کردم</button>
-    </fieldset>
-    <fieldset>
-      <legend>نظر من</legend>
-      <button type="button" aria-pressed={entry.opinion === 'liked'} onClick={() => update({ opinion: 'liked' })}>دوستش دارم</button>
-      <button type="button" aria-pressed={entry.opinion === 'disliked'} onClick={() => update({ opinion: 'disliked' })}>دوستش ندارم</button>
-    </fieldset>
-    <button type="button" className="wardrobe-favourite" aria-pressed={favourite}
-      onClick={() => store.toggleFavourite(product.id)}>
-      <Heart size={18} fill={favourite ? 'currentColor' : 'none'} aria-hidden="true" /> علاقه‌مندی
-    </button>
-    <p className="wardrobe-session-note">تجربه و نظر تا پایان این نشست نگه‌داری می‌شوند.</p>
-  </div>;
 }
 
 function bottleMotion(image: HTMLElement, shelf: DOMRect, returning: boolean) {
@@ -218,7 +165,12 @@ export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfu
           <X size={22} aria-hidden="true" />
         </button>
         <Bottle perfume={selection} className="wardrobe-foreground" />
-        <PerfumeDetails perfume={selection} />
+        <div className="wardrobe-details">
+          <h2 id="wardrobe-selection-title"><bdi>{selection.name}</bdi></h2>
+          <a className="wardrobe-product-link" href={'#/product/' + selection.product.slug}>
+            مشاهدهٔ محصول <ArrowUpLeft size={16} aria-hidden="true" />
+          </a>
+        </div>
       </div>}
     </dialog>
   </section>;
