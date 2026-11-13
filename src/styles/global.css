@@ -1207,7 +1207,7 @@ button.note-filter-option { @apply tw:inline-flex tw:items-center tw:gap-[6px] t
     border-color:var(--control-border);
     box-shadow:0 8px 22px rgb(32 29 26 / 10%);
   }
-  button:not(:disabled):hover, .cta:hover {
+  button:not(:disabled):where(:not(.wardrobe-artwork)):hover, .cta:hover {
     background:#D3DACC;
     @apply tw:text-aroma-charcoal;
     box-shadow:none;
