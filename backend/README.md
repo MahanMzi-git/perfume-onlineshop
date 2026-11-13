@@ -45,6 +45,11 @@ Provision a development staff account with Django's user tools and grant
 `catalog.view_product` for read access. Grant `catalog.add_product` to create
 drafts and `catalog.change_product` to edit them. The server checks the
 specific permission for each operation.
+Grant `catalog.view_brand` to list existing brands and `catalog.add_brand`
+to create a new brand while editing a draft. An editor without `add_brand`
+can still select an existing brand. Brand names are matched without case,
+extra whitespace, or Persian/Arabic Yeh and Kaf differences. A draft may
+have no brand until the seller fills it in.
 Set passwords locally using Django's interactive password tooling. New
 passwords require at least eight characters, including a letter, a digit,
 and a symbol. The seller draft form saves product names in PostgreSQL. The
@@ -55,6 +60,8 @@ existing demonstration forms for other product details remain separate.
 | `GET /api/v1/seller/session/` | Returns session identity, role, expiry and a masked CSRF token |
 | `POST /api/v1/seller/login/` | Takes JSON with `username` and `password` and returns fresh session data |
 | `POST /api/v1/seller/logout/` | Invalidates the server session and returns 204 |
+| `GET /api/v1/seller/brands/` | Lists brand names for authorized seller accounts |
+| `PATCH /api/v1/seller/products/draft-<id>/` | Saves a draft name and/or `brandName` |
 
 Send the masked token in `X-CSRFToken` for unsafe methods, including sign-in and
 sign-out. Sign-in starts an eight-hour session and rotates its identifier and

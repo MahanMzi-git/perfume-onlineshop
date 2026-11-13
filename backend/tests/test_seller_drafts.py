@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 
-from catalog.models import Product
+from catalog.models import Brand, Product
 
 
 class SellerDraftTests(TestCase):
@@ -56,3 +56,48 @@ class SellerDraftTests(TestCase):
         Product.objects.filter(pk=draft.pk).update(is_published=True)
         self.assertEqual(self.browser.get(detail).status_code, 404)
         self.assertEqual(self.browser.get(self.url).json(), [])
+
+    def test_brand_link_and_creation_require_separate_permission(self):
+        self.grant("add_product")
+        self.grant("change_product")
+        csrf = self.sign_in()
+        created = self.write("post", self.url, {"name": "Sample"}, csrf)
+        detail = self.url + created.json()["id"] + "/"
+        self.assertEqual(self.write("patch", detail, {"brandName": "  Acme  "}, csrf).status_code, 403)
+        self.assertFalse(Brand.objects.exists())
+        self.assertEqual(Product.objects.get().name, "Sample")
+
+        self.grant("add_brand")
+        linked = self.write("patch", detail, {"brandName": "  Acme  "}, csrf)
+        self.assertEqual(linked.status_code, 200)
+        self.assertEqual(linked.json()["brandName"], "Acme")
+        self.assertEqual(Brand.objects.count(), 1)
+        self.assertEqual(Product.objects.get().brand.name, "Acme")
+
+        self.user.user_permissions.remove(Permission.objects.get(codename="add_brand", content_type__app_label="catalog"))
+        self.user = get_user_model().objects.get(pk=self.user.pk)
+        reused = self.write("patch", detail, {"brandName": "acme"}, csrf)
+        self.assertEqual(reused.status_code, 200)
+        self.assertEqual(reused.json()["brandName"], "Acme")
+        self.assertEqual(Brand.objects.count(), 1)
+        self.assertEqual(self.browser.get(self.url).json()[0]["brandName"], "Acme")
+        self.assertEqual(self.write("patch", detail, {"brandName": ""}, csrf).json()["brandName"], "")
+
+    def test_brand_validation_and_private_listing(self):
+        self.grant("add_brand")
+        csrf = self.sign_in()
+        self.assertEqual(self.browser.get("/api/v1/seller/brands/").status_code, 403)
+        self.grant("view_brand")
+        self.assertEqual(self.browser.get("/api/v1/seller/brands/").json(), [])
+        session = self.browser.get("/api/v1/seller/session/").json()
+        self.assertTrue(session["draftPermissions"]["createBrand"])
+        self.assertTrue(session["draftPermissions"]["viewBrand"])
+        self.grant("add_product")
+        detail = self.url + self.write("post", self.url, {"name": "Sample"}, csrf).json()["id"] + "/"
+        self.grant("change_product")
+        for invalid in ({"brandName": "x"}, {"brandName": "x" * 181}, {"brandName": 5}, {"brandName": "Acme", "is_published": True}):
+            self.assertEqual(self.write("patch", detail, invalid, csrf).status_code, 400)
+        self.assertFalse(Brand.objects.exists())
+        self.assertEqual(self.write("patch", detail, {"brandName": "Acme"}, csrf).status_code, 200)
+        self.assertEqual(self.browser.get("/api/v1/seller/brands/").json(), [{"name": "Acme"}])
+        self.assertEqual(Client().get("/api/v1/seller/brands/").status_code, 403)

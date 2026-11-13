@@ -50,6 +50,8 @@ def session_data(request):
         "draftPermissions": {
             "create": bool(role and request.user.has_perm("catalog.add_product")),
             "edit": bool(role and request.user.has_perm("catalog.change_product")),
+            "createBrand": bool(role and request.user.has_perm("catalog.add_brand")),
+            "viewBrand": bool(role and request.user.has_perm("catalog.view_brand")),
         },
         "csrfToken": get_token(request),
         "expiresAt": request.session.get_expiry_date().isoformat() if authenticated else None,

@@ -7,7 +7,14 @@ class SellerLoginAttempt(models.Model):
     expires_at = models.DateTimeField(db_index=True)
 
 
+class Brand(models.Model):
+    name = models.CharField(max_length=180)
+    key = models.CharField(max_length=180, unique=True)
+    slug = models.SlugField(max_length=180, unique=True)
+
+
 class Product(models.Model):
+    brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name="products", null=True, blank=True)
     slug = models.SlugField(max_length=180, unique=True)
     name = models.CharField(max_length=180)
     is_published = models.BooleanField(default=False)

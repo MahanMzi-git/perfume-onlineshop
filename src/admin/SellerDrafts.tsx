@@ -62,8 +62,11 @@ export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPrevie
   </Panel>;
 }
 
-export function SellerDraftEditor({ id, editable, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; csrfToken: string; mockSaveError?: boolean }) {
+export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; canCreateBrand: boolean; canViewBrand: boolean; csrfToken: string; mockSaveError?: boolean }) {
   const [name, setName] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [brands, setBrands] = useState<{ name: string }[]>([]);
+  const [brandError, setBrandError] = useState('');
   const [loading, setLoading] = useState(!!id);
   const [loadError, setLoadError] = useState('');
   const [saveError, setSaveError] = useState('');
@@ -79,10 +82,19 @@ export function SellerDraftEditor({ id, editable, csrfToken, mockSaveError = fal
       const found = await sellerDraftApi.get(id);
       if (!found) { setLoadError('این پیش‌نویس در فهرست پیدا نشد.'); return; }
       setName(found.name);
+      setBrandName(found.brandName);
     } catch { setLoadError('دریافت پیش‌نویس ناموفق بود. دوباره تلاش کن.'); }
     finally { setLoading(false); }
   }, [id]);
   useEffect(() => { if (id) void load(); }, [id, load]);
+  useEffect(() => {
+    if (!id || !canViewBrand) return;
+    let active = true;
+    void sellerDraftApi.brands().then(value => { if (active) setBrands(value); }).catch(() => {
+      if (active) setBrandError('دریافت فهرست برندها ممکن نبود.');
+    });
+    return () => { active = false; };
+  }, [id, canViewBrand]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,13 +102,19 @@ export function SellerDraftEditor({ id, editable, csrfToken, mockSaveError = fal
     const normalized = name.trim();
     if (!normalized) { setNameError('نام محصول را وارد کن.'); return; }
     if (Array.from(normalized).length > 180) { setNameError('نام محصول نمی‌تواند بیشتر از ۱۸۰ نویسه باشد.'); return; }
+    const normalizedBrand = brandName.trim();
+    if (id && normalizedBrand && (Array.from(normalizedBrand).length < 2 || Array.from(normalizedBrand).length > 180)) {
+      setBrandError('نام برند باید بین ۲ تا ۱۸۰ نویسه باشد.'); return;
+    }
     setNameError('');
+    setBrandError('');
     setSaveError('');
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      const result = await sellerDraftApi.save(normalized, csrfToken, id);
+      const result = await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined);
       setName(result.name);
+      setBrandName(result.brandName);
       setSaved(true);
       if (!id) location.hash = editHref(result.id);
     } catch (cause) {
@@ -110,19 +128,25 @@ export function SellerDraftEditor({ id, editable, csrfToken, mockSaveError = fal
   return <Panel title={id ? 'ویرایش پیش‌نویس' : 'ساخت پیش‌نویس'}>
     <div className="admin-draft-editor-head"><a href={listHref}><ArrowUpLeft size={15} aria-hidden="true" />فهرست پیش‌نویس‌ها</a><AdminBadge>{editable ? 'امکان ویرایش' : 'فقط خواندن'}</AdminBadge></div>
     {saveError && <p className="admin-draft-state admin-draft-error" role="alert"><AlertCircle size={18} aria-hidden="true" />{saveError}</p>}
-    {saved && <p className="admin-draft-saved" role="status"><Check size={16} aria-hidden="true" />نام پیش‌نویس ذخیره شد.</p>}
+    {saved && <p className="admin-draft-saved" role="status"><Check size={16} aria-hidden="true" />پیش‌نویس ذخیره شد.</p>}
     <form className="admin-draft-form" onSubmit={submit} noValidate>
       <div className="admin-draft-field">
         <div className="admin-draft-label-row"><label htmlFor="draft-product-name">نام محصول <span aria-hidden="true">*</span></label><small>{localizedNumber.format(Array.from(name.trim()).length)} / ۱۸۰</small></div>
         <input id="draft-product-name" value={name} onChange={event => { setName(event.currentTarget.value); setNameError(''); setSaveError(''); setSaved(false); }} disabled={!editable || saving} aria-invalid={!!nameError} aria-describedby={nameError ? 'draft-name-error' : 'draft-name-hint'} placeholder="مثلاً عطر چوبی جدید" />
         {nameError ? <p id="draft-name-error" className="admin-error">{nameError}</p> : <p id="draft-name-hint" className="admin-field-hint">نام پس از حذف فاصله‌های ابتدا و انتها ذخیره می‌شود.</p>}
       </div>
+      {id && <div className="admin-draft-field">
+        <label htmlFor="draft-product-brand">برند محصول</label>
+        <input id="draft-product-brand" list={canViewBrand ? 'draft-brand-options' : undefined} value={brandName} onChange={event => { setBrandName(event.currentTarget.value); setBrandError(''); setSaved(false); }} disabled={!editable || saving} aria-invalid={!!brandError} aria-describedby={brandError ? 'draft-brand-error' : 'draft-brand-hint'} placeholder="نام برند را انتخاب یا وارد کن" />
+        {canViewBrand && <datalist id="draft-brand-options">{brands.map(brand => <option key={brand.name} value={brand.name}/>)}</datalist>}
+        {brandError ? <p id="draft-brand-error" className="admin-error">{brandError}</p> : <p id="draft-brand-hint" className="admin-field-hint">{canCreateBrand ? 'برند موجود را انتخاب کن یا نام تازه‌ای بنویس. برند تازه پس از ذخیره ساخته می‌شود.' : 'فقط برندهای موجود قابل انتخاب‌اند؛ برای ساخت برند تازه به مجوز نیاز داری.'}</p>}
+      </div>}
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
-      <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : saved ? <><Check size={16} aria-hidden="true"/>ذخیره شد</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ تغییر نام' : 'ساخت پیش‌نویس'}</>}</button>
+      <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : saved ? <><Check size={16} aria-hidden="true"/>ذخیره شد</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
     </form>
     <section className="admin-draft-next-steps" aria-labelledby="draft-next-title">
-      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند، خانوادهٔ رایحه، نت‌ها و ویژگی‌های مصرف در مرحلهٔ تطبیق با مدل داده هستند.</p></div><AdminBadge>در گام بعد</AdminBadge></div>
+      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند در همین پیش‌نویس ذخیره می‌شود. خانوادهٔ رایحه، نت‌ها و ویژگی‌های مصرف در گام‌های بعدی وصل می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
       <div><span className="admin-draft-step-number">۳</span><div><h3>نسخه، عکس و قیمت</h3><p>نسخه‌ها، تصاویر و قیمت تا آماده‌شدن مسیر ذخیره، جدا از این پیش‌نویس نگه داشته می‌شوند.</p></div><AdminBadge>در گام بعد</AdminBadge></div>
     </section>
   </Panel>;
