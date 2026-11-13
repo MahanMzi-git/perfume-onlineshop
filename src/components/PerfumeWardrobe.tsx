@@ -1,9 +1,22 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUpLeft, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { fragranceFamilies } from '../data/fragranceFamilies';
 import type { WardrobePerfume } from '../data/wardrobePerfumes';
+import { defaultCardVariant, priceText } from '../lib/catalog';
 import { getBottleScale, getShelfPosition, getWardrobePage } from '../lib/wardrobeLayout';
+import { useCustomer, type CabinetEntry } from './CustomerContext';
+import { useVariantCodes } from './VariantCode';
 
 const formatNumber = new Intl.NumberFormat('fa-IR');
+const experienceChoices = [
+  { value: 'unsmelled', label: 'بو نکردم' },
+  { value: 'smelled', label: 'نداشتم ولی بو کردم' },
+  { value: 'used', label: 'داشتم و استفاده کردم' },
+] as const;
+const opinionChoices = [
+  { value: 'liked', label: 'دوستش دارم' },
+  { value: 'disliked', label: 'دوستش ندارم' },
+] as const;
 
 function Bottle({ perfume, className }: { perfume: WardrobePerfume; className: string }) {
   const [failedImage, setFailedImage] = useState<string>();
@@ -55,6 +68,61 @@ function PerfumeSlot({ perfume, index, pageSize, selected, onPick }: {
       <bdi className="wardrobe-label">{perfume.name}</bdi>
     </button>
   </li>;
+}
+
+function WardrobeChoices<Value extends string>({ title, options, selected, onSelect }: {
+  title: string;
+  options: readonly { value: Value; label: string }[];
+  selected?: Value;
+  onSelect: (value: Value) => void;
+}) {
+  const group = useId();
+  return <fieldset className="wardrobe-choices">
+    <legend>{title}</legend>
+    <div>
+      {options.map(({ value, label }) => <label key={value}>
+        <input type="radio" name={group} value={value} checked={selected === value} onChange={() => onSelect(value)} />
+        <span>{label}</span>
+      </label>)}
+    </div>
+  </fieldset>;
+}
+
+function WardrobeDetails({ perfume }: { perfume: WardrobePerfume }) {
+  const { customer, setCustomer } = useCustomer();
+  const codes = useVariantCodes();
+  const { product } = perfume;
+  const variant = defaultCardVariant(product);
+  const code = variant && codes.get(variant.id);
+  const families = fragranceFamilies.filter(family => product.fragranceFamilyIds.includes(family.id));
+  const entry = customer.cabinet[perfume.id];
+  const href = '#/product/' + product.slug + (variant && variant !== product.variants[0] ? '?variant=' + variant.id : '');
+
+  function updateEntry(patch: Pick<CabinetEntry, 'experience' | 'opinion'>) {
+    setCustomer(current => ({
+      ...current,
+      cabinet: {
+        ...current.cabinet,
+        [perfume.id]: { ...current.cabinet[perfume.id], ...patch },
+      },
+    }));
+  }
+
+  return <div className="wardrobe-details">
+    <dl className="wardrobe-facts">
+      <div><dt>حجم</dt><dd>{variant ? formatNumber.format(variant.volumeMl) + ' میلی‌لیتر' : 'ثبت نشده'}</dd></div>
+      <div><dt>قیمت</dt><dd>{priceText(variant?.price ?? product.price)}</dd></div>
+      <div><dt>کد محصول</dt><dd>{code ? <bdi>{code}</bdi> : 'ثبت نشده'}</dd></div>
+      <div><dt>خانواده‌های رایحه</dt><dd>{families.map(family => family.name).join('، ') || 'ثبت نشده'}</dd></div>
+    </dl>
+    <WardrobeChoices title="تجربهٔ من" options={experienceChoices} selected={entry?.experience}
+      onSelect={experience => updateEntry({ experience })} />
+    <WardrobeChoices title="نظر من" options={opinionChoices} selected={entry?.opinion}
+      onSelect={opinion => updateEntry({ opinion })} />
+    <a className="wardrobe-product-link" href={href}>
+      مشاهدهٔ محصول <ArrowUpLeft size={16} aria-hidden="true" />
+    </a>
+  </div>;
 }
 
 function bottleMotion(image: HTMLElement, shelf: DOMRect, returning: boolean) {
@@ -164,13 +232,11 @@ export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfu
         <button type="button" className="wardrobe-close" aria-label="بازگشت عطر به طبقه" autoFocus onClick={closeSelection}>
           <X size={22} aria-hidden="true" />
         </button>
-        <Bottle perfume={selection} className="wardrobe-foreground" />
-        <div className="wardrobe-details">
+        <div className="wardrobe-selection-heading">
+          <Bottle perfume={selection} className="wardrobe-foreground" />
           <h2 id="wardrobe-selection-title"><bdi>{selection.name}</bdi></h2>
-          <a className="wardrobe-product-link" href={'#/product/' + selection.product.slug}>
-            مشاهدهٔ محصول <ArrowUpLeft size={16} aria-hidden="true" />
-          </a>
         </div>
+        <WardrobeDetails perfume={selection} />
       </div>}
     </dialog>
   </section>;

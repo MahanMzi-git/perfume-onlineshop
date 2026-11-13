@@ -144,7 +144,7 @@
   overflow:auto;
   overscroll-behavior:contain;
   background:transparent;
-  color:#fff4e5;
+  color:#32231d;
 }
 .wardrobe-focus[open] {
   display:flex;
@@ -155,51 +155,121 @@
   backdrop-filter:blur(5px);
 }
 .wardrobe-focus-inner {
+  --wardrobe-paper:#fffaf2;
+  --wardrobe-rule:#d6c5b0;
+  --wardrobe-muted:#675443;
   position:relative;
   flex:none;
-  width:min(calc(100% - 1.5rem), 26rem);
+  width:min(calc(100% - 1rem), 34rem);
   margin:auto;
-  padding-block:1rem;
+  padding:clamp(.625rem, 2.5vw, 1rem);
+  border:1px solid var(--wardrobe-rule);
+  border-radius:16px;
+  background:var(--wardrobe-paper);
+}
+.wardrobe-selection-heading {
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) minmax(4.5rem, 24%);
+  align-items:center;
+  gap:.5rem;
+  min-height:44px;
+  padding-inline-end:3rem;
+  margin-block-end:.5rem;
+}
+.wardrobe-selection-heading h2 {
+  grid-row:1;
+  grid-column:1;
+  min-width:0;
+  overflow-wrap:anywhere;
+  font:700 clamp(1.3rem, 4.5vw, 1.9rem)/1.15 var(--font-serif);
+  margin:0;
 }
 .wardrobe-foreground {
-  width:min(60%, calc(clamp(60px, 34dvh, 230px) * var(--bottle-ratio)));
-  margin-inline:auto;
+  grid-row:1;
+  grid-column:2;
+  justify-self:center;
+  width:min(100%, calc(clamp(42px, 16dvh, 105px) * var(--bottle-ratio)));
+  z-index:2;
   transform-origin:top left;
 }
 .wardrobe-close {
   position:absolute;
-  inset-inline-end:0;
-  inset-block-start:1rem;
-  z-index:1;
+  inset-inline-end:.5rem;
+  inset-block-start:.5rem;
+  z-index:3;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   width:44px;
   height:44px;
   padding:0;
-  border:1px solid #a78d70;
+  border:1px solid var(--wardrobe-rule);
   border-radius:9px;
-  background:#392920;
-  color:#fff4e5;
+  background:var(--wardrobe-paper);
+  color:inherit;
 }
 .wardrobe-details {
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:.65rem 1rem;
-  padding:.75rem clamp(.75rem, 3vw, 1rem);
-  background:#32231d;
-  border:1px solid #8f7357;
-  border-radius:16px;
-  margin-block-start:.75rem;
+  display:grid;
+  gap:.5rem;
 }
-.wardrobe-details h2 {
-  flex:1 1 8rem;
-  min-width:0;
-  overflow-wrap:anywhere;
-  font:700 clamp(1.25rem, 4vw, 1.65rem)/1.2 var(--font-serif);
+.wardrobe-facts {
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:.3rem .75rem;
   margin:0;
+  padding:.5rem .65rem;
+  border-radius:9px;
+  background:#f3ebdf;
+  font-size:.875rem;
+  line-height:1.45;
+}
+.wardrobe-facts dt { color:var(--wardrobe-muted); font-size:.75rem; }
+.wardrobe-facts dd { margin:0; font-weight:650; overflow-wrap:anywhere; }
+.wardrobe-choices {
+  --choice-columns:3;
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+.wardrobe-choices + .wardrobe-choices { --choice-columns:2; }
+.wardrobe-choices legend {
+  margin-block-end:.25rem;
+  padding:0;
+  font-size:.8125rem;
+  font-weight:650;
+}
+.wardrobe-choices > div {
+  display:grid;
+  grid-template-columns:repeat(var(--choice-columns), minmax(0, 1fr));
+  gap:.3rem;
+}
+.wardrobe-choices label {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.25rem;
+  min-height:44px;
+  padding:.3rem;
+  border:1px solid var(--wardrobe-rule);
+  border-radius:9px;
+  font-size:clamp(.75rem, 2.8vw, .875rem);
+  line-height:1.4;
+  cursor:pointer;
+}
+.wardrobe-choices input {
+  appearance:auto;
+  flex:none;
+  width:.875rem;
+  height:.875rem;
+  min-height:0;
+  margin:0;
+  padding:0;
+  accent-color:#6c4426;
+}
+.wardrobe-choices label:has(input:checked) {
+  background:#efe1ce;
+  border-color:#9b6b43;
 }
 .wardrobe-product-link {
   display:inline-flex;
@@ -209,20 +279,36 @@
   min-height:44px;
   padding:.35rem .75rem;
   border-radius:9px;
-  background:#e9cea6;
-  color:#32231d;
+  justify-self:start;
+  background:#65452f;
+  color:#fffaf2;
   font-size:.875rem;
   font-weight:600;
   text-decoration:none;
 }
-.wardrobe-product-link:hover { background:#f6dfbc; }
-.wardrobe-focus[data-closing=true] .wardrobe-details { visibility:hidden; }
-.wardrobe-slot button:focus-visible,
-.wardrobe-focus :is(button, a):focus-visible { outline:2px solid #f9d494; outline-offset:2px; }
+.wardrobe-product-link:hover { background:#503321; }
+.wardrobe-focus[data-closing=true] .wardrobe-focus-inner { background:transparent; border-color:transparent; }
+.wardrobe-focus[data-closing=true] :is(.wardrobe-details, .wardrobe-close, .wardrobe-selection-heading h2) { visibility:hidden; }
+.wardrobe-slot button:focus-visible { outline:2px solid #f9d494; outline-offset:2px; }
+.wardrobe-focus :is(button, a):focus-visible,
+.wardrobe-choices label:has(input:focus-visible) { outline:2px solid #835429; outline-offset:2px; }
 
 @media (max-width:23rem) {
-  .wardrobe-details { flex-direction:column; align-items:stretch; text-align:center; }
-  .wardrobe-details h2 { flex:auto; }
+  .wardrobe-product-link { justify-self:stretch; }
+}
+
+@media (max-height:28rem) {
+  .wardrobe-selection-heading { margin-block-end:.35rem; }
+  .wardrobe-foreground { width:min(100%, calc(clamp(38px, 12dvh, 55px) * var(--bottle-ratio))); }
+  .wardrobe-details { gap:.35rem; }
+  .wardrobe-facts { padding-block:.35rem; }
+}
+
+@media (min-width:35rem) and (max-height:26rem) {
+  .wardrobe-focus-inner { width:min(calc(100% - 1rem), 42rem); }
+  .wardrobe-details { grid-template-columns:minmax(0, 2fr) minmax(0, 3fr); column-gap:.75rem; }
+  .wardrobe-facts { grid-row:1 / span 2; align-content:center; }
+  .wardrobe-product-link { grid-column:2; }
 }
 
 @media (prefers-reduced-motion:no-preference) {

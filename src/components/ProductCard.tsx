@@ -11,6 +11,7 @@ import { cardStudyImages, isCardStudy } from '../data/cardStudyImages';
 import { ScentNoteList } from './ScentNoteList';
 import { CardCartControl } from './CardCartControl';
 import { useVariantCodes, VariantCode } from './VariantCode';
+import { defaultCardVariant } from '../lib/catalog';
 export function ProductCard({ product, onNote, selectedNoteIds, displayVariant, favourite: fav, onFavourite }: { product: Product; displayVariant?: ProductVariant; onNote: (id: string) => void; selectedNoteIds: string[]; favourite: boolean; onFavourite: () => void }) {
 
   const store = useStore();
@@ -19,7 +20,7 @@ export function ProductCard({ product, onNote, selectedNoteIds, displayVariant, 
   const brand = brands.find((b) => b.id === product.brandId);
   const photoPreview = isCardStudy;
   const studyImage = photoPreview ? cardStudyImages[product.id] : undefined;
-  const variant = displayVariant ?? product.variants.find(item => item.price === product.price && item.concentration === product.concentration) ?? product.variants[0];
+  const variant = displayVariant ?? defaultCardVariant(product);
   const detailHref = '#/product/' + product.slug + (variant && variant !== product.variants[0] ? '?variant=' + variant.id : '');
   const information = <>
     <p className="brand card-brand-row" dir="ltr"><span>{brand?.name}</span><AudienceIcon audience={product.targetAudience} /></p>
