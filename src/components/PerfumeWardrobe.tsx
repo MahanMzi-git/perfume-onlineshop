@@ -109,6 +109,7 @@ function WardrobeDetails({ perfume }: { perfume: WardrobePerfume }) {
   }
 
   return <div className="wardrobe-details">
+    <h2 id="wardrobe-selection-title"><bdi>{perfume.name}</bdi></h2>
     <dl className="wardrobe-facts">
       <div><dt>حجم</dt><dd>{variant ? formatNumber.format(variant.volumeMl) + ' میلی‌لیتر' : 'ثبت نشده'}</dd></div>
       <div><dt>قیمت</dt><dd>{priceText(variant?.price ?? product.price)}</dd></div>
@@ -232,10 +233,7 @@ export function PerfumeWardrobe({ perfumes }: { perfumes: readonly WardrobePerfu
         <button type="button" className="wardrobe-close" aria-label="بازگشت عطر به طبقه" autoFocus onClick={closeSelection}>
           <X size={22} aria-hidden="true" />
         </button>
-        <div className="wardrobe-selection-heading">
-          <Bottle perfume={selection} className="wardrobe-foreground" />
-          <h2 id="wardrobe-selection-title"><bdi>{selection.name}</bdi></h2>
-        </div>
+        <Bottle perfume={selection} className="wardrobe-foreground" />
         <WardrobeDetails perfume={selection} />
       </div>}
     </dialog>

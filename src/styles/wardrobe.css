@@ -162,33 +162,13 @@
   flex:none;
   width:min(calc(100% - 1rem), 34rem);
   margin:auto;
-  padding:clamp(.625rem, 2.5vw, 1rem);
-  border:1px solid var(--wardrobe-rule);
-  border-radius:16px;
-  background:var(--wardrobe-paper);
-}
-.wardrobe-selection-heading {
   display:grid;
-  grid-template-columns:minmax(0, 1fr) minmax(4.5rem, 24%);
-  align-items:center;
-  gap:.5rem;
-  min-height:44px;
-  padding-inline-end:3rem;
-  margin-block-end:.5rem;
-}
-.wardrobe-selection-heading h2 {
-  grid-row:1;
-  grid-column:1;
-  min-width:0;
-  overflow-wrap:anywhere;
-  font:700 clamp(1.3rem, 4.5vw, 1.9rem)/1.15 var(--font-serif);
-  margin:0;
+  gap:.65rem;
+  padding-block:.5rem;
 }
 .wardrobe-foreground {
-  grid-row:1;
-  grid-column:2;
   justify-self:center;
-  width:min(100%, calc(clamp(42px, 16dvh, 105px) * var(--bottle-ratio)));
+  width:min(55%, calc(clamp(48px, 19dvh, 135px) * var(--bottle-ratio)));
   z-index:2;
   transform-origin:top left;
 }
@@ -211,6 +191,16 @@
 .wardrobe-details {
   display:grid;
   gap:.5rem;
+  padding:clamp(.625rem, 2.5vw, 1rem);
+  border:1px solid var(--wardrobe-rule);
+  border-radius:16px;
+  background:var(--wardrobe-paper);
+}
+.wardrobe-details h2 {
+  min-width:0;
+  overflow-wrap:anywhere;
+  font:700 clamp(1.3rem, 4.5vw, 1.9rem)/1.15 var(--font-serif);
+  margin:0;
 }
 .wardrobe-facts {
   display:grid;
@@ -226,42 +216,40 @@
 .wardrobe-facts dt { color:var(--wardrobe-muted); font-size:.75rem; }
 .wardrobe-facts dd { margin:0; font-weight:650; overflow-wrap:anywhere; }
 .wardrobe-choices {
-  --choice-columns:3;
   min-width:0;
   margin:0;
   padding:0;
   border:0;
 }
-.wardrobe-choices + .wardrobe-choices { --choice-columns:2; }
 .wardrobe-choices legend {
-  margin-block-end:.25rem;
+  margin-block-end:.2rem;
   padding:0;
   font-size:.8125rem;
   font-weight:650;
 }
 .wardrobe-choices > div {
-  display:grid;
-  grid-template-columns:repeat(var(--choice-columns), minmax(0, 1fr));
-  gap:.3rem;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.25rem;
 }
 .wardrobe-choices label {
   display:flex;
   align-items:center;
   justify-content:center;
   gap:.25rem;
-  min-height:44px;
-  padding:.3rem;
+  min-height:34px;
+  padding:.2rem .45rem;
   border:1px solid var(--wardrobe-rule);
-  border-radius:9px;
-  font-size:clamp(.75rem, 2.8vw, .875rem);
-  line-height:1.4;
+  border-radius:7px;
+  font-size:clamp(.75rem, 2.55vw, .8125rem);
+  line-height:1.35;
   cursor:pointer;
 }
 .wardrobe-choices input {
   appearance:auto;
   flex:none;
-  width:.875rem;
-  height:.875rem;
+  width:.75rem;
+  height:.75rem;
   min-height:0;
   margin:0;
   padding:0;
@@ -287,27 +275,35 @@
   text-decoration:none;
 }
 .wardrobe-product-link:hover { background:#503321; }
-.wardrobe-focus[data-closing=true] .wardrobe-focus-inner { background:transparent; border-color:transparent; }
-.wardrobe-focus[data-closing=true] :is(.wardrobe-details, .wardrobe-close, .wardrobe-selection-heading h2) { visibility:hidden; }
+.wardrobe-focus[data-closing=true] :is(.wardrobe-details, .wardrobe-close) { visibility:hidden; }
 .wardrobe-slot button:focus-visible { outline:2px solid #f9d494; outline-offset:2px; }
 .wardrobe-focus :is(button, a):focus-visible,
 .wardrobe-choices label:has(input:focus-visible) { outline:2px solid #835429; outline-offset:2px; }
 
 @media (max-width:23rem) {
+  .wardrobe-choices:first-of-type > div {
+    display:grid;
+    grid-template-columns:minmax(0, .75fr) repeat(2, minmax(0, 1.15fr));
+  }
   .wardrobe-product-link { justify-self:stretch; }
 }
 
 @media (max-height:28rem) {
-  .wardrobe-selection-heading { margin-block-end:.35rem; }
-  .wardrobe-foreground { width:min(100%, calc(clamp(38px, 12dvh, 55px) * var(--bottle-ratio))); }
+  .wardrobe-focus-inner { gap:.4rem; }
+  .wardrobe-foreground { width:min(55%, calc(clamp(38px, 15dvh, 64px) * var(--bottle-ratio))); }
   .wardrobe-details { gap:.35rem; }
   .wardrobe-facts { padding-block:.35rem; }
 }
 
 @media (min-width:35rem) and (max-height:26rem) {
   .wardrobe-focus-inner { width:min(calc(100% - 1rem), 42rem); }
-  .wardrobe-details { grid-template-columns:minmax(0, 2fr) minmax(0, 3fr); column-gap:.75rem; }
-  .wardrobe-facts { grid-row:1 / span 2; align-content:center; }
+  .wardrobe-details {
+    grid-template-columns:minmax(0, 2fr) minmax(0, 3fr);
+    column-gap:.75rem;
+    padding-block:.625rem;
+  }
+  .wardrobe-details h2 { grid-column:1 / -1; }
+  .wardrobe-facts { grid-row:2 / span 2; align-content:center; }
   .wardrobe-product-link { grid-column:2; }
 }
 
