@@ -546,3 +546,10 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-app .admin-note-dialog label.admin-note-choice:has(input:checked) { background:#dce8d9; border-color:#71876b; }
 .admin-app .admin-note-dialog label.admin-note-choice:has(input:focus-visible) { outline:2px solid #345842; outline-offset:1px; }
 .admin-note-dialog .dialog-content > .cta { width:100%; min-height:44px; }
+.admin-note-dialog .admin-note-summary { margin:0 0 12px; }
+.admin-app .admin-note-summary button {
+ min-height:44px; padding:5px 10px; border-radius:999px; background:#e7efe3; color:#345842;
+ max-width:100%; overflow-wrap:anywhere;
+}
+.admin-note-summary button > svg { width:15px; height:15px; flex:none; }
+.admin-note-summary button:focus-visible { outline:2px solid #345842; outline-offset:2px; }
