@@ -1,6 +1,6 @@
 import { FragranceFamilyPicker } from './FragranceFamilyPicker';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
-import { AlertCircle, ArrowUpLeft, Check, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ArrowUpLeft, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
 import { AdminBadge, Panel } from './AdminUI';
 import { sellerDraftApi, type FamilyOption, type SellerProductDraft } from './sellerDraftApi';
 
@@ -51,12 +51,12 @@ export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPrevie
       : drafts.length === 0 ? <DraftEmptyState canCreate={canCreate} />
       : <>
         <ul className="admin-draft-list" aria-label="فهرست پیش‌نویس‌ها">{drafts.map(draft => <li key={draft.id}>
-          <article className="admin-draft-row">
+          <a className="admin-draft-row" href={editHref(draft.id)}>
             <span className="admin-draft-mark"><Package size={19} aria-hidden="true" /></span>
-            <div className="admin-draft-copy"><h3><a href={editHref(draft.id)}>{draft.name}</a></h3><p><span dir="ltr">{draft.id}</span><span><Clock3 size={13} aria-hidden="true" />آخرین تغییر {date.format(draft.updatedAt)}</span></p></div>
+            <div className="admin-draft-copy"><h3>{draft.name}</h3><p><span dir="ltr">{draft.id}</span><span><Clock3 size={13} aria-hidden="true" />آخرین تغییر {date.format(draft.updatedAt)}</span></p></div>
             <AdminBadge>پیش‌نویس</AdminBadge>
-            <a className="admin-draft-open" href={editHref(draft.id)}>باز کردن پیش‌نویس <ArrowUpLeft size={15} aria-hidden="true" /></a>
-          </article>
+            <span className="admin-draft-open" aria-hidden="true">باز کردن پیش‌نویس <ArrowUpLeft size={15} aria-hidden="true" /></span>
+          </a>
         </li>)}</ul>
         <p className="admin-draft-count"><span>{localizedNumber.format(drafts.length)} پیش‌نویس</span></p>
       </>}
@@ -91,7 +91,6 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
   const [saveError, setSaveError] = useState('');
   const [nameError, setNameError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -132,13 +131,8 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      const result = await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined);
-      setName(result.name);
-      setFamilyId(result.familyId ?? "");
-      setFamilyChanged(false);
-      setBrandName(result.brandName);
-      setSaved(true);
-      if (!id) location.hash = editHref(result.id);
+      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined);
+      location.hash = listHref;
     } catch (cause) {
       setSaveError(cause instanceof Error ? cause.message : 'ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
     } finally { setSaving(false); }
@@ -150,16 +144,15 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
   return <Panel title={id ? 'ویرایش پیش‌نویس' : 'ساخت پیش‌نویس'}>
     <div className="admin-draft-editor-head"><a href={listHref}><ArrowUpLeft size={15} aria-hidden="true" />فهرست پیش‌نویس‌ها</a><AdminBadge>{editable ? 'امکان ویرایش' : 'فقط خواندن'}</AdminBadge></div>
     {saveError && <p className="admin-draft-state admin-draft-error" role="alert"><AlertCircle size={18} aria-hidden="true" />{saveError}</p>}
-    {saved && <p className="admin-draft-saved" role="status"><Check size={16} aria-hidden="true" />پیش‌نویس ذخیره شد.</p>}
     <form className="admin-draft-form" onSubmit={submit} noValidate>
       <div className="admin-draft-field">
         <div className="admin-draft-label-row"><label htmlFor="draft-product-name">نام محصول <span aria-hidden="true">*</span></label><small>{localizedNumber.format(Array.from(name.trim()).length)} / ۱۸۰</small></div>
-        <input id="draft-product-name" value={name} onChange={event => { setName(event.currentTarget.value); setNameError(''); setSaveError(''); setSaved(false); }} disabled={!editable || saving} aria-invalid={!!nameError} aria-describedby={nameError ? 'draft-name-error' : 'draft-name-hint'} placeholder="مثلاً عطر چوبی جدید" />
+        <input id="draft-product-name" value={name} onChange={event => { setName(event.currentTarget.value); setNameError(''); setSaveError(''); }} disabled={!editable || saving} aria-invalid={!!nameError} aria-describedby={nameError ? 'draft-name-error' : 'draft-name-hint'} placeholder="مثلاً عطر چوبی جدید" />
         {nameError ? <p id="draft-name-error" className="admin-error">{nameError}</p> : <p id="draft-name-hint" className="admin-field-hint">نام پس از حذف فاصله‌های ابتدا و انتها ذخیره می‌شود.</p>}
       </div>
       {id && <div className="admin-draft-field">
         <label htmlFor="draft-product-brand">برند محصول</label>
-        <input id="draft-product-brand" list={canViewBrand ? 'draft-brand-options' : undefined} value={brandName} onChange={event => { setBrandName(event.currentTarget.value); setBrandError(''); setSaved(false); }} disabled={!editable || saving} aria-invalid={!!brandError} aria-describedby={brandError ? 'draft-brand-error' : 'draft-brand-hint'} placeholder="نام برند را انتخاب یا وارد کن" />
+        <input id="draft-product-brand" list={canViewBrand ? 'draft-brand-options' : undefined} value={brandName} onChange={event => { setBrandName(event.currentTarget.value); setBrandError(''); }} disabled={!editable || saving} aria-invalid={!!brandError} aria-describedby={brandError ? 'draft-brand-error' : 'draft-brand-hint'} placeholder="نام برند را انتخاب یا وارد کن" />
         {canViewBrand && <datalist id="draft-brand-options">{brands.map(brand => <option key={brand.name} value={brand.name}/>)}</datalist>}
         {brandError ? <p id="draft-brand-error" className="admin-error">{brandError}</p> : <p id="draft-brand-hint" className="admin-field-hint">{canCreateBrand ? 'برند موجود را انتخاب کن یا نام تازه‌ای بنویس. برند تازه پس از ذخیره ساخته می‌شود.' : 'فقط برندهای موجود قابل انتخاب‌اند؛ برای ساخت برند تازه به مجوز نیاز داری.'}</p>}
       </div>}
@@ -170,7 +163,6 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             setFamilyId(value);
             setFamilyChanged(true);
             setSaveError('');
-            setSaved(false);
           }} />
         {familyState === 'loading' && <p role="status">در حال دریافت خانواده‌های رایحه…</p>}
         {familyState === 'ready' && families.length === 0 && <p>هنوز خانوادهٔ رایحه‌ای ثبت نشده است.</p>}
@@ -178,7 +170,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
       </div>
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
-      <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : saved ? <><Check size={16} aria-hidden="true"/>ذخیره شد</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
+      <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
     </form>
     <section className="admin-draft-next-steps" aria-labelledby="draft-next-title">
       <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند و خانوادهٔ رایحه در پیش‌نویس ذخیره می‌شوند. نت‌ها و ویژگی‌های مصرف در گام‌های بعدی وصل می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
