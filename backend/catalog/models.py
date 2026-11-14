@@ -13,7 +13,13 @@ class Brand(models.Model):
     slug = models.SlugField(max_length=180, unique=True)
 
 
+class ScentNote(models.Model):
+    slug = models.SlugField(unique=True)
+    name = models.CharField(max_length=180)
+
+
 class FragranceFamily(models.Model):
+    notes = models.ManyToManyField(ScentNote, through="FamilyNote", related_name="families")
     name = models.CharField(max_length=180)
     slug = models.SlugField(unique=True)
 
@@ -25,6 +31,22 @@ class Product(models.Model):
     name = models.CharField(max_length=180)
     is_published = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class FamilyNote(models.Model):
+    family = models.ForeignKey(FragranceFamily, on_delete=models.CASCADE)
+    note = models.ForeignKey(ScentNote, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=("family", "note"), name="unique_family_note")]
+
+
+class ProductFamilyNote(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="family_notes")
+    family_note = models.ForeignKey(FamilyNote, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=("product", "family_note"), name="unique_product_family_note")]
 
 
 class Variant(models.Model):

@@ -1,3 +1,4 @@
+import { NotePicker } from './NotePicker';
 import { FragranceFamilyPicker } from './FragranceFamilyPicker';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { AlertCircle, ArrowUpLeft, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
@@ -65,6 +66,9 @@ export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPrevie
 
 export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; canCreateBrand: boolean; canViewBrand: boolean; csrfToken: string; mockSaveError?: boolean }) {
   const [name, setName] = useState('');
+  const [noteIds, setNoteIds] = useState<string[]>([]);
+  const [notesChanged, setNotesChanged] = useState(false);
+  const [removedNotes, setRemovedNotes] = useState<string[]>([]);
   const [familyId, setFamilyId] = useState('');
   const [familyChanged, setFamilyChanged] = useState(false);
   const [families, setFamilies] = useState<FamilyOption[]>([]);
@@ -100,6 +104,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
       const found = await sellerDraftApi.get(id);
       if (!found) { setLoadError('این پیش‌نویس در فهرست پیدا نشد.'); return; }
       setName(found.name);
+      setNoteIds(found.noteIds);
       setFamilyId(found.familyId ?? "");
       setBrandName(found.brandName);
     } catch { setLoadError('دریافت پیش‌نویس ناموفق بود. دوباره تلاش کن.'); }
@@ -115,9 +120,15 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     return () => { active = false; };
   }, [id, canViewBrand]);
 
+  const familyNotes = families.find(family => family.id === familyId)?.notes ?? [];
+  const noteNames = new Map(families.flatMap(family => family.notes.map(note => [note.id, note.name] as const)));
+  const nameToId = new Map([...noteNames].map(([noteId, noteName]) => [noteName, noteId]));
+  const incompatibleNotes = familyState === 'ready' && (familyChanged || notesChanged)
+    && noteIds.some(noteId => !familyNotes.some(note => note.id === noteId));
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!editable || saving) return;
+    if (!editable || saving || incompatibleNotes) return;
     const normalized = name.trim();
     if (!normalized) { setNameError('نام محصول را وارد کن.'); return; }
     if (Array.from(normalized).length > 180) { setNameError('نام محصول نمی‌تواند بیشتر از ۱۸۰ نویسه باشد.'); return; }
@@ -131,7 +142,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined);
+      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined, notesChanged ? noteIds : undefined);
       location.hash = listHref;
     } catch (cause) {
       setSaveError(cause instanceof Error ? cause.message : 'ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
@@ -160,6 +171,15 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         <FragranceFamilyPicker options={families} value={familyId}
           disabled={!editable || saving || familyState !== 'ready' || families.length === 0}
           onChange={value => {
+            if (value === familyId) return;
+            const allowed = new Set(families.find(family => family.id === value)?.notes.map(note => note.id));
+            const retained = noteIds.filter(noteId => allowed.has(noteId));
+            const removed = noteIds.filter(noteId => !allowed.has(noteId));
+            setRemovedNotes(removed.map(noteId => noteNames.get(noteId) ?? noteId));
+            if (removed.length) {
+              setNoteIds(retained);
+              setNotesChanged(true);
+            }
             setFamilyId(value);
             setFamilyChanged(true);
             setSaveError('');
@@ -168,12 +188,35 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         {familyState === 'ready' && families.length === 0 && <p>هنوز خانوادهٔ رایحه‌ای ثبت نشده است.</p>}
         {familyState === 'error' && <p role="alert">دریافت خانواده‌های رایحه ناموفق بود. <button type="button" onClick={() => setFamilyRetry(value => value + 1)}>تلاش دوباره</button></p>}
       </div>
+      <div className="admin-draft-field">
+        <NotePicker label="نت‌های بویایی" inputId="draft-product-notes" required={false}
+          value={noteIds.map(noteId => noteNames.get(noteId) ?? noteId).join('، ')}
+          options={familyNotes.map(note => note.name)}
+          disabled={!editable || saving || familyState !== 'ready'}
+          invalid={incompatibleNotes} describedBy="draft-notes-hint"
+          onChange={value => {
+            setNoteIds(value.split('،').map(name => name.trim()).filter(Boolean).map(name => nameToId.get(name) ?? name));
+            setNotesChanged(true);
+            setSaveError('');
+          }} />
+        {removedNotes.length > 0 && <p className="admin-field-hint" role="status">
+          نت‌های ناسازگار با خانوادهٔ جدید از انتخاب حذف شدند: {removedNotes.join('، ')}
+        </p>}
+        <p id="draft-notes-hint" className="admin-field-hint" role={incompatibleNotes ? 'alert' : undefined}>
+          {incompatibleNotes ? 'با تغییر خانواده، بعضی نت‌ها دیگر مجاز نیستند. پیش از ذخیره آن‌ها را حذف کن.'
+            : familyState === 'loading' ? 'در حال دریافت نت‌های بویایی…'
+            : familyState === 'error' ? 'دریافت نت‌ها ناموفق بود. از دکمهٔ تلاش دوباره استفاده کن.'
+            : !familyId ? 'برای دیدن نت‌های مجاز یک خانواده انتخاب کن.'
+            : !familyNotes.length ? 'برای این خانواده هنوز نتی ثبت نشده است.'
+            : 'تا ۴ نت از خانوادهٔ انتخاب‌شده را می‌توانی انتخاب کنی.'}
+        </p>
+      </div>
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
-      <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
+      <button className="admin-primary" type="submit" disabled={!editable || saving || incompatibleNotes}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
     </form>
     <section className="admin-draft-next-steps" aria-labelledby="draft-next-title">
-      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند و خانوادهٔ رایحه در پیش‌نویس ذخیره می‌شوند. نت‌ها و ویژگی‌های مصرف در گام‌های بعدی وصل می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
+      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند، خانوادهٔ رایحه و نت‌ها در پیش‌نویس ذخیره می‌شوند. ویژگی‌های مصرف در گام بعدی اضافه می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
       <div><span className="admin-draft-step-number">۳</span><div><h3>نسخه، عکس و قیمت</h3><p>نسخه‌ها، تصاویر و قیمت تا آماده‌شدن مسیر ذخیره، جدا از این پیش‌نویس نگه داشته می‌شوند.</p></div><AdminBadge>در گام بعد</AdminBadge></div>
     </section>
   </Panel>;
