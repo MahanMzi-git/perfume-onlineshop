@@ -1,3 +1,5 @@
+import { UsageChoices } from './UsageChoices';
+import { usageCodes, usageFields, usageLabel, type UsageAttributes } from './usageOptions';
 import { NotePicker } from './NotePicker';
 import { FragranceFamilyPicker } from './FragranceFamilyPicker';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
@@ -65,6 +67,7 @@ export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPrevie
 }
 
 export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; canCreateBrand: boolean; canViewBrand: boolean; csrfToken: string; mockSaveError?: boolean }) {
+  const [usage, setUsage] = useState<UsageAttributes>({ seasons: [], occasions: [], dayTimes: [] });
   const [name, setName] = useState('');
   const [noteIds, setNoteIds] = useState<string[]>([]);
   const [notesChanged, setNotesChanged] = useState(false);
@@ -104,6 +107,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
       const found = await sellerDraftApi.get(id);
       if (!found) { setLoadError('این پیش‌نویس در فهرست پیدا نشد.'); return; }
       setName(found.name);
+      setUsage({ seasons: found.seasons, occasions: found.occasions, dayTimes: found.dayTimes });
       setNoteIds(found.noteIds);
       setFamilyId(found.familyId ?? "");
       setBrandName(found.brandName);
@@ -142,7 +146,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined, notesChanged ? noteIds : undefined);
+      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined, notesChanged ? noteIds : undefined, usage);
       location.hash = listHref;
     } catch (cause) {
       setSaveError(cause instanceof Error ? cause.message : 'ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
@@ -211,12 +215,21 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             : 'تا ۴ نت از خانوادهٔ انتخاب‌شده را می‌توانی انتخاب کنی.'}
         </p>
       </div>
+      {usageFields.map(({ key, label, options }) =>
+        <UsageChoices key={key} label={label} options={options}
+          value={usage[key].map(code => usageLabel(key, code)).join('، ')}
+          disabled={!editable || saving}
+          onChange={value => {
+            setUsage(current => ({ ...current, [key]: usageCodes(key, value) }));
+            setSaveError('');
+          }} />
+      )}
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
       <button className="admin-primary" type="submit" disabled={!editable || saving || incompatibleNotes}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
     </form>
     <section className="admin-draft-next-steps" aria-labelledby="draft-next-title">
-      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند، خانوادهٔ رایحه و نت‌ها در پیش‌نویس ذخیره می‌شوند. ویژگی‌های مصرف در گام بعدی اضافه می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
+      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند، خانوادهٔ رایحه و نت‌ها در پیش‌نویس ذخیره می‌شوند. فصل، موقعیت و زمان استفاده را هم می‌توانی مشخص کنی.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
       <div><span className="admin-draft-step-number">۳</span><div><h3>نسخه، عکس و قیمت</h3><p>نسخه‌ها، تصاویر و قیمت تا آماده‌شدن مسیر ذخیره، جدا از این پیش‌نویس نگه داشته می‌شوند.</p></div><AdminBadge>در گام بعد</AdminBadge></div>
     </section>
   </Panel>;
