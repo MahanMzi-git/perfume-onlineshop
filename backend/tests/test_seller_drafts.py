@@ -101,3 +101,33 @@ class SellerDraftTests(TestCase):
         self.assertEqual(self.write("patch", detail, {"brandName": "Acme"}, csrf).status_code, 200)
         self.assertEqual(self.browser.get("/api/v1/seller/brands/").json(), [{"name": "Acme"}])
         self.assertEqual(Client().get("/api/v1/seller/brands/").status_code, 403)
+
+    def test_fragrance_family_round_trip(self):
+        from catalog.models import FragranceFamily
+
+        self.grant("add_product")
+        self.grant("change_product")
+        csrf = self.sign_in()
+        options = self.browser.get("/api/v1/seller/fragrance-families/")
+        self.assertEqual(options.status_code, 200)
+        self.assertEqual(len(options.json()), 13)
+        invalid = self.write("post", self.url, {"name": "Sample", "familyId": "missing"}, csrf)
+        self.assertEqual(invalid.status_code, 400)
+        self.assertFalse(Product.objects.exists())
+        created = self.write("post", self.url, {"name": "Sample", "familyId": "woody"}, csrf)
+        self.assertEqual(created.status_code, 201, created.content)
+        detail = self.url + created.json()["id"] + "/"
+        self.assertEqual(self.browser.get(detail).json()["familyId"], "woody")
+        updated = self.write("patch", detail, {"familyId": "floral"}, csrf)
+        self.assertEqual(updated.status_code, 200, updated.content)
+        self.assertEqual(updated.json()["familyId"], "floral")
+        self.assertEqual(self.browser.get(detail).json()["familyId"], "floral")
+        self.assertEqual(self.write("patch", detail, {"familyId": False}, csrf).status_code, 400)
+        product = Product.objects.get()
+        self.assertEqual(list(product.fragrance_families.values_list("slug", flat=True)), ["floral"])
+        self.assertEqual(Client().get(f"/api/v1/products/{product.slug}/").status_code, 404)
+        product.fragrance_families.add(FragranceFamily.objects.get(slug="woody"))
+        self.write("patch", detail, {"name": "Renamed"}, csrf)
+        self.assertEqual(product.fragrance_families.count(), 2)
+        self.assertIsNone(self.write("patch", detail, {"familyId": None}, csrf).json()["familyId"])
+        self.assertFalse(product.fragrance_families.exists())
