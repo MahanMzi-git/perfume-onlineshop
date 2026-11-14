@@ -518,7 +518,11 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-app .admin-note-dialog > h2 { margin:0 0 8px; padding-left:48px; min-height:36px; }
 .admin-app .admin-note-dialog > .dialog-close { top:9px; left:9px; }
 .admin-note-dialog .dialog-content > p { margin:0 0 10px; font-size:14px; line-height:1.6; }
-.admin-note-dialog .admin-note-library { display:grid; gap:8px; max-height:36dvh; margin:10px 0; padding:3px; }
+.admin-note-dialog .admin-note-library { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; max-height:36dvh; margin:10px 0; padding:3px; }
+.admin-note-dialog .admin-note-choice:last-child:nth-child(odd) { grid-column:1 / -1; }
+@media (max-width:380px) {
+ .admin-note-dialog .admin-note-library { grid-template-columns:minmax(0,1fr); }
+}
 .admin-app .admin-note-dialog label.admin-note-choice {
  display:grid !important; grid-template-columns:18px minmax(0,1fr) 22px;
  width:100%; min-height:48px; margin:0; padding:6px 10px;
