@@ -215,8 +215,10 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             : 'تا ۴ نت از خانوادهٔ انتخاب‌شده را می‌توانی انتخاب کنی.'}
         </p>
       </div>
+      <div className="admin-usage-scenes">
+      <p>هرجا مناسب است، می‌توانی چند گزینه انتخاب کنی.</p>
       {usageFields.map(({ key, label, options }) =>
-        <UsageChoices key={key} label={label} options={options}
+        <UsageChoices key={key} scene={key} label={label} options={options}
           value={usage[key].map(code => usageLabel(key, code)).join('، ')}
           disabled={!editable || saving}
           onChange={value => {
@@ -224,6 +226,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             setSaveError('');
           }} />
       )}
+      </div>
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
       <button className="admin-primary" type="submit" disabled={!editable || saving || incompatibleNotes}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>

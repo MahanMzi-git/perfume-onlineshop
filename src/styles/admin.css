@@ -553,3 +553,28 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 }
 .admin-note-summary button > svg { width:15px; height:15px; flex:none; }
 .admin-note-summary button:focus-visible { outline:2px solid #345842; outline-offset:2px; }
+
+.admin-usage-scenes { display:grid; gap:14px; min-width:0; }
+.admin-usage-scenes > p { margin:0; font-size:13px; color:#505e54; }
+.admin-usage-scenes .admin-usage {
+ --scene-ink:#345842; --scene-bg:#eef3e9; --scene-selected:#dcead8; --scene-line:#738d6e;
+ border:1px solid #dfddd2; border-radius:16px; padding:10px 12px 12px; background:var(--scene-bg);
+}
+.admin-usage-scenes [data-scene="occasions"] {
+ --scene-ink:#744b28; --scene-bg:#f6efe5; --scene-selected:#f0dfc9; --scene-line:#a4815d;
+}
+.admin-usage-scenes [data-scene="dayTimes"] {
+ --scene-ink:#29536c; --scene-bg:#edf3f6; --scene-selected:#daeaf2; --scene-line:#6b8fa6;
+}
+.admin-usage-scenes legend {
+ display:flex; align-items:center; gap:7px; margin:0; padding:4px 8px; border-radius:10px;
+ background:var(--scene-bg); color:var(--scene-ink); font-weight:700; font-size:14px;
+}
+.admin-usage-scenes .admin-usage-context { margin:0 0 10px; color:#424e45; font-size:13px; }
+.admin-usage-scenes .admin-usage button { background:#fffdfa; color:var(--scene-ink); padding-inline:10px; }
+.admin-usage-scenes .admin-usage button[aria-pressed=true] {
+ background:var(--scene-selected); color:var(--scene-ink); border-color:var(--scene-line); font-weight:650;
+}
+.admin-usage-scenes button:focus-visible { outline:2px solid var(--scene-ink); outline-offset:2px; }
+.admin-usage-scenes .admin-usage-check { visibility:hidden; flex:none; }
+.admin-usage-scenes [aria-pressed=true] .admin-usage-check { visibility:visible; }
