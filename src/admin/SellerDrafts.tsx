@@ -68,6 +68,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
   const [name, setName] = useState('');
   const [noteIds, setNoteIds] = useState<string[]>([]);
   const [notesChanged, setNotesChanged] = useState(false);
+  const [removedNotes, setRemovedNotes] = useState<string[]>([]);
   const [familyId, setFamilyId] = useState('');
   const [familyChanged, setFamilyChanged] = useState(false);
   const [families, setFamilies] = useState<FamilyOption[]>([]);
@@ -170,6 +171,15 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         <FragranceFamilyPicker options={families} value={familyId}
           disabled={!editable || saving || familyState !== 'ready' || families.length === 0}
           onChange={value => {
+            if (value === familyId) return;
+            const allowed = new Set(families.find(family => family.id === value)?.notes.map(note => note.id));
+            const retained = noteIds.filter(noteId => allowed.has(noteId));
+            const removed = noteIds.filter(noteId => !allowed.has(noteId));
+            setRemovedNotes(removed.map(noteId => noteNames.get(noteId) ?? noteId));
+            if (removed.length) {
+              setNoteIds(retained);
+              setNotesChanged(true);
+            }
             setFamilyId(value);
             setFamilyChanged(true);
             setSaveError('');
@@ -189,6 +199,9 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             setNotesChanged(true);
             setSaveError('');
           }} />
+        {removedNotes.length > 0 && <p className="admin-field-hint" role="status">
+          نت‌های ناسازگار با خانوادهٔ جدید از انتخاب حذف شدند: {removedNotes.join('، ')}
+        </p>}
         <p id="draft-notes-hint" className="admin-field-hint" role={incompatibleNotes ? 'alert' : undefined}>
           {incompatibleNotes ? 'با تغییر خانواده، بعضی نت‌ها دیگر مجاز نیستند. پیش از ذخیره آن‌ها را حذف کن.'
             : familyState === 'loading' ? 'در حال دریافت نت‌های بویایی…'
