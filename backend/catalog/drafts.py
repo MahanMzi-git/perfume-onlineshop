@@ -10,7 +10,7 @@ from rest_framework.renderers import JSONRenderer
 
 from aroma.seller_auth import SellerCatalogPermission
 
-from .models import Brand, FragranceFamily, Product
+from .models import Brand, FamilyNote, FragranceFamily, Product, ProductFamilyNote, ScentNote
 
 
 def brand_key(name):
@@ -23,6 +23,8 @@ class DraftSerializer(serializers.ModelSerializer):
     updatedAt = serializers.SerializerMethodField()
     brandName = serializers.CharField(required=False, allow_blank=True, max_length=180)
 
+    noteIds = serializers.ListField(child=serializers.SlugField(max_length=50), required=False, write_only=True)
+
     familyId = serializers.SlugRelatedField(
         source="selected_family", slug_field="slug", queryset=FragranceFamily.objects.all(),
         required=False, allow_null=True,
@@ -30,13 +32,14 @@ class DraftSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id", "name", "brandName", "familyId", "status", "updatedAt")
+        fields = ("id", "name", "brandName", "familyId", "noteIds", "status", "updatedAt")
 
     def to_representation(self, product):
         data = super().to_representation(product)
         data["brandName"] = product.brand.name if product.brand_id else ""
         family = next(iter(product.fragrance_families.all()), None)
         data["familyId"] = family.slug if family else None
+        data["noteIds"] = sorted({link.family_note.note.slug for link in product.family_notes.all()})
         return data
 
     def get_id(self, product):
@@ -49,8 +52,8 @@ class DraftSerializer(serializers.ModelSerializer):
         return int(product.updated_at.timestamp() * 1000)
 
     def to_internal_value(self, data):
-        if not hasattr(data, "keys") or not data or set(data) - {"name", "brandName", "familyId"}:
-            raise serializers.ValidationError({"detail": "Send only product name, brand name and fragrance family ID."})
+        if not hasattr(data, "keys") or not data or set(data) - {"name", "brandName", "familyId", "noteIds"}:
+            raise serializers.ValidationError({"detail": "Send only draft fields."})
         if self.instance is None and ("name" not in data or "brandName" in data):
             raise serializers.ValidationError({"name": "Send a product name as text."})
         if "name" in data and not isinstance(data["name"], str):
@@ -61,14 +64,50 @@ class DraftSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"brandName": "Brand name must have at least two characters."})
         if "familyId" in data and data["familyId"] is not None and (not isinstance(data["familyId"], str) or not data["familyId"]):
             raise serializers.ValidationError({"familyId": "Select a valid fragrance family."})
+        if "noteIds" in data and (
+            not isinstance(data["noteIds"], list) or any(not isinstance(note, str) for note in data["noteIds"])
+        ):
+            raise serializers.ValidationError({"noteIds": "Send a list of note IDs."})
         return super().to_internal_value(data)
+
+    def validate(self, attrs):
+        if "noteIds" not in attrs and "selected_family" not in attrs:
+            return attrs
+        if "selected_family" in attrs:
+            family = attrs["selected_family"]
+            families = [family] if family else []
+        else:
+            families = list(self.instance.fragrance_families.all()) if self.instance else []
+        if "noteIds" in attrs:
+            slugs = set(attrs.pop("noteIds"))
+        else:
+            slugs = {link.family_note.note.slug for link in self.instance.family_notes.all()} if self.instance else set()
+        if len(slugs) > 4:
+            raise serializers.ValidationError({"noteIds": "Select at most four notes."})
+        compatible = {}
+        for link in FamilyNote.objects.filter(family__in=families, note__slug__in=slugs).select_related("note").order_by("family_id"):
+            compatible.setdefault(link.note.slug, link)
+        if compatible.keys() != slugs:
+            raise serializers.ValidationError({"noteIds": "Select notes associated with the chosen fragrance families."})
+        attrs["note_links"] = list(compatible.values())
+        return attrs
+
+    def save_notes(self, product, links):
+        product.family_notes.all().delete()
+        ProductFamilyNote.objects.bulk_create([
+            ProductFamilyNote(product=product, family_note=link) for link in links
+        ])
+        if hasattr(product, "_prefetched_objects_cache"):
+            product._prefetched_objects_cache.pop("family_notes", None)
 
     @transaction.atomic
     def create(self, validated_data):
         family = validated_data.pop("selected_family", None)
+        notes = validated_data.pop("note_links", [])
         product = Product.objects.create(slug=f"product-{uuid4().hex}", **validated_data)
         if family:
             product.fragrance_families.add(family)
+        self.save_notes(product, notes)
         return product
 
     def update(self, instance, validated_data):
@@ -94,6 +133,8 @@ class DraftSerializer(serializers.ModelSerializer):
         if "selected_family" in validated_data:
             family = validated_data["selected_family"]
             instance.fragrance_families.set([family] if family else [])
+        if "note_links" in validated_data:
+            self.save_notes(instance, validated_data["note_links"])
         return instance
 
 
@@ -102,7 +143,7 @@ class DraftView(generics.GenericAPIView):
     permission_classes = [SellerCatalogPermission]
     renderer_classes = [JSONRenderer]
     serializer_class = DraftSerializer
-    queryset = Product.objects.filter(is_published=False).select_related("brand").prefetch_related("fragrance_families").order_by("-updated_at", "-pk")
+    queryset = Product.objects.filter(is_published=False).select_related("brand").prefetch_related("fragrance_families", "family_notes__family_note__note").order_by("-updated_at", "-pk")
 
     @property
     def seller_permission(self):
@@ -120,6 +161,12 @@ class DraftList(DraftView, generics.ListCreateAPIView):
 
 class DraftDetail(DraftView, generics.RetrieveUpdateAPIView):
     http_method_names = ["get", "head", "patch"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.method == "PATCH":
+            return queryset.select_for_update(of=("self",))
+        return queryset
 
     @transaction.atomic
     def patch(self, request, *args, **kwargs):
@@ -141,12 +188,22 @@ class BrandList(generics.ListAPIView):
     serializer_class = BrandSerializer
 
 
-class FragranceFamilySerializer(serializers.ModelSerializer):
+class ScentNoteSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="slug")
 
     class Meta:
-        model = FragranceFamily
+        model = ScentNote
         fields = ("id", "name")
+
+
+class FragranceFamilySerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source="slug")
+
+    notes = ScentNoteSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = FragranceFamily
+        fields = ("id", "name", "notes")
 
 
 @method_decorator(never_cache, name="dispatch")
@@ -155,4 +212,4 @@ class FragranceFamilyList(generics.ListAPIView):
     renderer_classes = [JSONRenderer]
     seller_permission = "catalog.view_product"
     serializer_class = FragranceFamilySerializer
-    queryset = FragranceFamily.objects.order_by("name")
+    queryset = FragranceFamily.objects.prefetch_related("notes").order_by("name")

@@ -131,3 +131,22 @@ class SellerDraftTests(TestCase):
         self.assertEqual(product.fragrance_families.count(), 2)
         self.assertIsNone(self.write("patch", detail, {"familyId": None}, csrf).json()["familyId"])
         self.assertFalse(product.fragrance_families.exists())
+    def test_scent_notes_round_trip_and_validation(self):
+        self.grant("add_product")
+        self.grant("change_product")
+        csrf = self.sign_in()
+        options = self.browser.get("/api/v1/seller/fragrance-families/").json()
+        floral = next(f for f in options if f["id"] == "floral")
+        self.assertIn("tuberose", [n["id"] for n in floral["notes"]])
+        data = {"name": "Notes test", "familyId": "floral", "noteIds": ["jasmine", "tuberose", "jasmine"]}
+        result = self.write("post", self.url, data, csrf)
+        self.assertEqual(result.status_code, 201)
+        detail = self.url + result.json()["id"] + "/"
+        self.assertEqual(self.browser.get(detail).json()["noteIds"], ["jasmine", "tuberose"])
+        for notes in (["cedar"], ["unknown"], [False], ["rose", "jasmine", "tuberose", "iris", "cedar"]):
+            self.assertEqual(self.write("patch", detail, {"noteIds": notes}, csrf).status_code, 400)
+        self.assertEqual(self.write("patch", detail, {"familyId": "woody"}, csrf).status_code, 400)
+        self.assertEqual(self.write("patch", detail, {"familyId": "woody", "noteIds": ["cedar"]}, csrf).status_code, 200)
+        self.assertEqual(self.browser.get(detail).json()["noteIds"], ["cedar"])
+        self.assertEqual(self.write("patch", detail, {"noteIds": []}, csrf).status_code, 200)
+        self.assertEqual(self.browser.get(detail).json()["noteIds"], [])
