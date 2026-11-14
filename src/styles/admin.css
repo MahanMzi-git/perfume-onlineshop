@@ -529,8 +529,8 @@ html:has(.admin-app) { scroll-padding-top:90px; }
  gap:10px; border:1px solid #dedbd1; border-radius:12px; background:#f8f6ef; cursor:pointer;
 }
 .admin-app .admin-note-dialog .admin-note-choice input[type=checkbox] {
- appearance:auto; position:static; width:16px !important; height:16px !important;
- min-height:0 !important; padding:0; margin:0; opacity:1; clip-path:none; accent-color:#53654b;
+ position:absolute; width:1px !important; height:1px !important;
+ min-height:0 !important; padding:0; margin:0; opacity:0; clip-path:inset(50%);
 }
 .admin-app .admin-note-dialog .admin-note-choice > .note-icon,
 .admin-app .admin-note-dialog .admin-note-choice > svg:not(.admin-note-selected) {
@@ -540,7 +540,9 @@ html:has(.admin-app) { scroll-padding-top:90px; }
  grid-column:2; grid-row:1; display:grid; gap:2px; min-width:0; line-height:1.3; overflow-wrap:anywhere;
 }
 .admin-app .admin-note-dialog .admin-note-name bdi { margin:0; text-align:right; font-size:12px; }
-.admin-note-dialog .admin-note-selected { display:none; }
-.admin-app .admin-note-dialog label.admin-note-choice:has(input:checked) { background:#e7efe3; border-color:#829779; }
+.admin-app .admin-note-dialog .admin-note-selected {
+ position:static; grid-column:1; grid-row:1; width:15px; height:15px; color:#36563c;
+}
+.admin-app .admin-note-dialog label.admin-note-choice:has(input:checked) { background:#dce8d9; border-color:#71876b; }
 .admin-app .admin-note-dialog label.admin-note-choice:has(input:focus-visible) { outline:2px solid #345842; outline-offset:1px; }
 .admin-note-dialog .dialog-content > .cta { width:100%; min-height:44px; }
