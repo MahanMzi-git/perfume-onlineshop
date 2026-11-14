@@ -5,7 +5,7 @@ import { Panel } from './AdminUI';
 type SellerRole = 'seller' | 'analyst';
 export interface DraftAccess {
   csrfToken: string;
-  draftPermissions: { create: boolean; edit: boolean };
+  draftPermissions: { create: boolean; edit: boolean; createBrand: boolean; viewBrand: boolean };
 }
 interface Session extends DraftAccess {
   authenticated: boolean;
@@ -32,6 +32,7 @@ async function readSession(response: Response): Promise<Session> {
   const data = await response.json();
   if (typeof data?.csrfToken !== 'string' || typeof data.authenticated !== 'boolean' ||
       typeof data.draftPermissions?.create !== 'boolean' || typeof data.draftPermissions?.edit !== 'boolean' ||
+      typeof data.draftPermissions?.createBrand !== 'boolean' || typeof data.draftPermissions?.viewBrand !== 'boolean' ||
       (data.role !== null && data.role !== 'seller' && data.role !== 'analyst') ||
       (data.role !== null && (!data.authenticated || !Number.isFinite(Date.parse(data.expiresAt))))) {
     throw new Error('Invalid seller session');

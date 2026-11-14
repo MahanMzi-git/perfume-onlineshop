@@ -1,6 +1,7 @@
 export interface SellerProductDraft {
   id: string;
   name: string;
+  brandName: string;
   status: 'پیش‌نویس';
   updatedAt: number;
 }
@@ -25,12 +26,17 @@ export const sellerDraftApi = {
     if (!response.ok) throw new Error('دریافت پیش‌نویس ناموفق بود.');
     return response.json();
   },
-  async save(name: string, csrfToken: string, id?: string): Promise<SellerProductDraft> {
+  async brands(): Promise<{ name: string }[]> {
+    const response = await request(import.meta.env.BASE_URL + 'api/v1/seller/brands/');
+    if (!response.ok) throw new Error('دریافت برندها ناموفق بود.');
+    return response.json();
+  },
+  async save(name: string, csrfToken: string, id?: string, brandName?: string): Promise<SellerProductDraft> {
     const url = id ? endpoint + encodeURIComponent(id) + '/' : endpoint;
     const response = await request(url, {
       method: id ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(brandName === undefined ? { name } : { name, brandName }),
     });
     if (response.status === 404) throw new Error('این پیش‌نویس دیگر در دسترس نیست.');
     if (!response.ok) throw new Error('ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
