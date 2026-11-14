@@ -150,3 +150,21 @@ class SellerDraftTests(TestCase):
         self.assertEqual(self.browser.get(detail).json()["noteIds"], ["cedar"])
         self.assertEqual(self.write("patch", detail, {"noteIds": []}, csrf).status_code, 200)
         self.assertEqual(self.browser.get(detail).json()["noteIds"], [])
+
+    def test_usage_attributes_round_trip(self):
+        self.grant("add_product")
+        self.grant("change_product")
+        token = self.sign_in()
+        fields = {"seasons": ["spring", "winter"], "occasions": ["date"], "dayTimes": ["night", "morning"]}
+        created = self.write("post", self.url, {"name": "Usage", **fields, "seasons": ["spring", "winter", "spring"]}, token)
+        self.assertEqual(created.status_code, 201, created.content)
+        detail = self.url + created.json()["id"] + "/"
+        self.assertEqual({key: self.browser.get(detail).json()[key] for key in fields}, fields)
+        for key in fields:
+            for invalid in (["unknown"], ["daily" if key != "occasions" else "spring"], "spring", [False], None):
+                self.assertEqual(self.write("patch", detail, {key: invalid}, token).status_code, 400)
+            fields[key] = []
+            updated = self.write("patch", detail, {key: []}, token)
+            self.assertEqual(updated.status_code, 200)
+            self.assertEqual({field: updated.json()[field] for field in fields}, fields)
+        self.assertEqual(Client().get(f"/api/v1/products/{Product.objects.get().slug}/").status_code, 404)

@@ -1,6 +1,8 @@
+import type { UsageAttributes } from './usageOptions';
+
 export interface FamilyOption { id: string; name: string; notes: { id: string; name: string }[] }
 
-export interface SellerProductDraft {
+export interface SellerProductDraft extends UsageAttributes {
   id: string;
   name: string;
   brandName: string;
@@ -40,15 +42,19 @@ export const sellerDraftApi = {
     if (!response.ok) throw new Error('دریافت خانواده‌های رایحه ناموفق بود.');
     return response.json();
   },
-  async save(name: string, csrfToken: string, id?: string, brandName?: string, familyId?: string | null, noteIds?: string[]): Promise<SellerProductDraft> {
+  async save(name: string, csrfToken: string, id?: string, brandName?: string, familyId?: string | null, noteIds?: string[], usage?: UsageAttributes): Promise<SellerProductDraft> {
     const url = id ? endpoint + encodeURIComponent(id) + '/' : endpoint;
     const response = await request(url, {
       method: id ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body: JSON.stringify({ name, brandName, familyId, noteIds }),
+      body: JSON.stringify({ name, brandName, familyId, noteIds, ...usage }),
     });
     if (response.status === 400) {
       const errors = await response.json();
+      if (errors.seasons || errors.occasions || errors.dayTimes) {
+        const invalid = [errors.seasons && 'فصل مناسب', errors.occasions && 'موقعیت استفاده', errors.dayTimes && 'زمان استفاده'].filter(Boolean);
+        throw new Error('گزینه‌های این بخش‌ها معتبر نیستند: ' + invalid.join('، '));
+      }
       if (errors.familyId) throw new Error('خانوادهٔ رایحهٔ انتخاب‌شده معتبر نیست.');
       if (errors.noteIds) throw new Error(errors.noteIds.includes('Select at most four notes.')
         ? 'برای هر محصول حداکثر ۴ نت انتخاب کن.'
