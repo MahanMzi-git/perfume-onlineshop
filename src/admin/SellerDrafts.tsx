@@ -1,3 +1,4 @@
+import { FragranceFamilyPicker } from './FragranceFamilyPicker';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { AlertCircle, ArrowUpLeft, Check, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
 import { AdminBadge, Panel } from './AdminUI';
@@ -163,17 +164,14 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         {brandError ? <p id="draft-brand-error" className="admin-error">{brandError}</p> : <p id="draft-brand-hint" className="admin-field-hint">{canCreateBrand ? 'برند موجود را انتخاب کن یا نام تازه‌ای بنویس. برند تازه پس از ذخیره ساخته می‌شود.' : 'فقط برندهای موجود قابل انتخاب‌اند؛ برای ساخت برند تازه به مجوز نیاز داری.'}</p>}
       </div>}
       <div className="admin-draft-field">
-        <label htmlFor="draft-product-family">خانوادهٔ رایحه</label>
-        <select id="draft-product-family" value={familyId} disabled={!editable || saving || familyState !== 'ready' || families.length === 0} onChange={event => {
-          setFamilyId(event.currentTarget.value);
-          setFamilyChanged(true);
-          setSaveError('');
-          setSaved(false);
-        }}>
-          <option value="">بدون خانوادهٔ رایحه</option>
-          {familyId && !families.some(family => family.id === familyId) && <option value={familyId}>{familyId}</option>}
-          {families.map(family => <option key={family.id} value={family.id}>{family.name}</option>)}
-        </select>
+        <FragranceFamilyPicker options={families} value={familyId}
+          disabled={!editable || saving || familyState !== 'ready' || families.length === 0}
+          onChange={value => {
+            setFamilyId(value);
+            setFamilyChanged(true);
+            setSaveError('');
+            setSaved(false);
+          }} />
         {familyState === 'loading' && <p role="status">در حال دریافت خانواده‌های رایحه…</p>}
         {familyState === 'ready' && families.length === 0 && <p>هنوز خانوادهٔ رایحه‌ای ثبت نشده است.</p>}
         {familyState === 'error' && <p role="alert">دریافت خانواده‌های رایحه ناموفق بود. <button type="button" onClick={() => setFamilyRetry(value => value + 1)}>تلاش دوباره</button></p>}

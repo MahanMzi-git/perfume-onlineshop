@@ -483,3 +483,30 @@ html:has(.admin-app) { scroll-padding-top:90px; }
  .admin-draft-next-steps { grid-template-columns:1fr; }
  .admin-draft-next-steps > div { grid-template-columns:auto minmax(0,1fr) auto; padding:11px; }
 }
+
+.admin-family-picker { display:grid; gap:7px; min-width:0; }
+.admin-family-picker :is(.admin-family-trigger,.admin-family-options button) {
+ display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:10px;
+ width:100%; min-height:52px; padding:5px 10px; text-align:start; font:inherit; color:#26392d;
+ border:1px solid #c6d4c2; border-radius:14px; cursor:pointer;
+}
+.admin-family-picker .admin-family-trigger { background:linear-gradient(110deg,#f7f4e8,#e9f1e7); font-weight:650; }
+.admin-family-trigger[aria-expanded=true] > svg { transform:rotate(180deg); }
+.admin-family-trigger:disabled { opacity:.7; cursor:not-allowed; }
+.admin-family-picture { display:grid; place-items:center; width:44px; height:44px; object-fit:cover; border-radius:10px; background:#e2ebdf; color:#446249; }
+.admin-family-menu { background:#fffef9; border:1px solid #d8dfd4; border-radius:16px; padding:9px; box-shadow:0 8px 22px #25392a14; }
+.admin-family-search { position:relative; margin-bottom:8px; }
+.admin-family-search > svg { position:absolute; inset-inline-start:12px; top:16px; color:#45634e; pointer-events:none; }
+.admin-family-picker .admin-family-search input { padding-inline-start:39px; font-size:16px; }
+.admin-family-options { display:grid; gap:5px; max-height:min(290px,42dvh); overflow:auto; overscroll-behavior:contain; padding:4px; }
+.admin-family-picker .admin-family-options button { background:#fffdf7; border-color:#e4e1d6; }
+.admin-family-picker .admin-family-options button[aria-pressed=true] { background:#e2eee2; border-color:#67876c; font-weight:650; }
+.admin-family-picker :is(button,input):focus-visible { outline:2px solid #345842; outline-offset:2px; }
+.admin-family-picker button span { overflow-wrap:anywhere; }
+@media (hover:hover) {
+ .admin-family-picker .admin-family-options button:hover { border-color:#628264; background:#edf4e9; }
+}
+@media (max-width:420px) {
+ .admin-family-picker .admin-family-picture { width:38px; height:38px; }
+ .admin-family-picker :is(.admin-family-trigger,.admin-family-options button) { gap:7px; }
+}
