@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { AlertCircle, ArrowUpLeft, Check, Clock3, FilePlus2, Package, RefreshCw, Save, ShieldCheck } from 'lucide-react';
 import { AdminBadge, Panel } from './AdminUI';
-import { sellerDraftApi, type SellerProductDraft } from './sellerDraftApi';
+import { sellerDraftApi, type FamilyOption, type SellerProductDraft } from './sellerDraftApi';
 
 const listHref = '#/seller/products';
 const createHref = '#/seller/product-new';
@@ -64,6 +64,24 @@ export function SellerDrafts({ canCreate, previewState = 'normal', onRetryPrevie
 
 export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, csrfToken, mockSaveError = false }: { id?: string; editable: boolean; canCreateBrand: boolean; canViewBrand: boolean; csrfToken: string; mockSaveError?: boolean }) {
   const [name, setName] = useState('');
+  const [familyId, setFamilyId] = useState('');
+  const [familyChanged, setFamilyChanged] = useState(false);
+  const [families, setFamilies] = useState<FamilyOption[]>([]);
+  const [familyState, setFamilyState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [familyRetry, setFamilyRetry] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setFamilyState('loading');
+    void sellerDraftApi.families(controller.signal).then(options => {
+      if (controller.signal.aborted) return;
+      setFamilies(options);
+      setFamilyState('ready');
+    }).catch(() => {
+      if (!controller.signal.aborted) setFamilyState('error');
+    });
+    return () => controller.abort();
+  }, [familyRetry]);
+
   const [brandName, setBrandName] = useState('');
   const [brands, setBrands] = useState<{ name: string }[]>([]);
   const [brandError, setBrandError] = useState('');
@@ -82,6 +100,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
       const found = await sellerDraftApi.get(id);
       if (!found) { setLoadError('این پیش‌نویس در فهرست پیدا نشد.'); return; }
       setName(found.name);
+      setFamilyId(found.familyId ?? "");
       setBrandName(found.brandName);
     } catch { setLoadError('دریافت پیش‌نویس ناموفق بود. دوباره تلاش کن.'); }
     finally { setLoading(false); }
@@ -112,8 +131,10 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      const result = await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined);
+      const result = await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined);
       setName(result.name);
+      setFamilyId(result.familyId ?? "");
+      setFamilyChanged(false);
       setBrandName(result.brandName);
       setSaved(true);
       if (!id) location.hash = editHref(result.id);
@@ -141,12 +162,28 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         {canViewBrand && <datalist id="draft-brand-options">{brands.map(brand => <option key={brand.name} value={brand.name}/>)}</datalist>}
         {brandError ? <p id="draft-brand-error" className="admin-error">{brandError}</p> : <p id="draft-brand-hint" className="admin-field-hint">{canCreateBrand ? 'برند موجود را انتخاب کن یا نام تازه‌ای بنویس. برند تازه پس از ذخیره ساخته می‌شود.' : 'فقط برندهای موجود قابل انتخاب‌اند؛ برای ساخت برند تازه به مجوز نیاز داری.'}</p>}
       </div>}
+      <div className="admin-draft-field">
+        <label htmlFor="draft-product-family">خانوادهٔ رایحه</label>
+        <select id="draft-product-family" value={familyId} disabled={!editable || saving || familyState !== 'ready' || families.length === 0} onChange={event => {
+          setFamilyId(event.currentTarget.value);
+          setFamilyChanged(true);
+          setSaveError('');
+          setSaved(false);
+        }}>
+          <option value="">بدون خانوادهٔ رایحه</option>
+          {familyId && !families.some(family => family.id === familyId) && <option value={familyId}>{familyId}</option>}
+          {families.map(family => <option key={family.id} value={family.id}>{family.name}</option>)}
+        </select>
+        {familyState === 'loading' && <p role="status">در حال دریافت خانواده‌های رایحه…</p>}
+        {familyState === 'ready' && families.length === 0 && <p>هنوز خانوادهٔ رایحه‌ای ثبت نشده است.</p>}
+        {familyState === 'error' && <p role="alert">دریافت خانواده‌های رایحه ناموفق بود. <button type="button" onClick={() => setFamilyRetry(value => value + 1)}>تلاش دوباره</button></p>}
+      </div>
       <div className="admin-draft-status"><span>وضعیت انتشار</span><AdminBadge>پیش‌نویس</AdminBadge><small>این مرحله فقط پیش‌نویس می‌سازد؛ انتشار در گام جداگانه انجام می‌شود.</small></div>
       {!editable && <p className="admin-draft-readonly-note"><ShieldCheck size={17} aria-hidden="true" />این نقش فقط اجازهٔ مشاهدهٔ پیش‌نویس را دارد.</p>}
       <button className="admin-primary" type="submit" disabled={!editable || saving}>{saving ? <><span className="admin-draft-spinner" aria-hidden="true"/>در حال ذخیره…</> : saved ? <><Check size={16} aria-hidden="true"/>ذخیره شد</> : <><Save size={16} aria-hidden="true"/>{id ? 'ذخیرهٔ پیش‌نویس' : 'ساخت پیش‌نویس'}</>}</button>
     </form>
     <section className="admin-draft-next-steps" aria-labelledby="draft-next-title">
-      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند در همین پیش‌نویس ذخیره می‌شود. خانوادهٔ رایحه، نت‌ها و ویژگی‌های مصرف در گام‌های بعدی وصل می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
+      <div><span className="admin-draft-step-number">۲</span><div><h3 id="draft-next-title">اطلاعات تکمیلی محصول</h3><p>برند و خانوادهٔ رایحه در پیش‌نویس ذخیره می‌شوند. نت‌ها و ویژگی‌های مصرف در گام‌های بعدی وصل می‌شوند.</p></div><AdminBadge>در حال تکمیل</AdminBadge></div>
       <div><span className="admin-draft-step-number">۳</span><div><h3>نسخه، عکس و قیمت</h3><p>نسخه‌ها، تصاویر و قیمت تا آماده‌شدن مسیر ذخیره، جدا از این پیش‌نویس نگه داشته می‌شوند.</p></div><AdminBadge>در گام بعد</AdminBadge></div>
     </section>
   </Panel>;

@@ -13,7 +13,13 @@ class Brand(models.Model):
     slug = models.SlugField(max_length=180, unique=True)
 
 
+class FragranceFamily(models.Model):
+    name = models.CharField(max_length=180)
+    slug = models.SlugField(unique=True)
+
+
 class Product(models.Model):
+    fragrance_families = models.ManyToManyField(FragranceFamily, blank=True, related_name="products")
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name="products", null=True, blank=True)
     slug = models.SlugField(max_length=180, unique=True)
     name = models.CharField(max_length=180)

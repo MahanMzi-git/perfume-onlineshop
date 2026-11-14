@@ -338,10 +338,10 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 .admin-draft-label-row label { font-weight:650; }
 .admin-draft-label-row label span { color:#A23C4E; }
 .admin-draft-label-row small { color:#777064; font-variant-numeric:tabular-nums; }
-.admin-draft-form input { display:block; width:100%; min-height:48px; padding:10px 13px; border:1px solid #D6D9CE; border-radius:13px; background:#fff; color:#2D3829; font:inherit; }
-.admin-draft-form input:focus-visible { outline:3px solid #53654B55; border-color:var(--admin-sage); }
+.admin-draft-form :is(input, select) { display:block; width:100%; min-height:48px; padding:10px 13px; border:1px solid #D6D9CE; border-radius:13px; background:#fff; color:#2D3829; font:inherit; }
+.admin-draft-form :is(input, select):focus-visible { outline:3px solid #53654B55; border-color:var(--admin-sage); }
 .admin-draft-form input[aria-invalid=true] { border-color:#A23C4E; }
-.admin-draft-form input:disabled { opacity:.65; background:#F0EFEA; cursor:not-allowed; }
+.admin-draft-form :is(input, select):disabled { opacity:.65; background:#F0EFEA; cursor:not-allowed; }
 .admin-draft-form .admin-field-hint { margin:6px 0 0; color:#726B60; font-size:12px; }
 .admin-draft-status { display:grid; grid-template-columns:1fr auto; align-items:center; gap:8px 12px; padding:13px 14px; border:1px solid #E0DBD1; border-radius:13px; background:#F6F4EE; }
 .admin-draft-status > span { font-size:13px; font-weight:600; }

@@ -1,7 +1,10 @@
+export interface FamilyOption { id: string; name: string }
+
 export interface SellerProductDraft {
   id: string;
   name: string;
   brandName: string;
+  familyId: string | null;
   status: 'پیش‌نویس';
   updatedAt: number;
 }
@@ -31,13 +34,19 @@ export const sellerDraftApi = {
     if (!response.ok) throw new Error('دریافت برندها ناموفق بود.');
     return response.json();
   },
-  async save(name: string, csrfToken: string, id?: string, brandName?: string): Promise<SellerProductDraft> {
+  async families(signal?: AbortSignal): Promise<FamilyOption[]> {
+    const response = await request(import.meta.env.BASE_URL + 'api/v1/seller/fragrance-families/', { signal });
+    if (!response.ok) throw new Error('دریافت خانواده‌های رایحه ناموفق بود.');
+    return response.json();
+  },
+  async save(name: string, csrfToken: string, id?: string, brandName?: string, familyId?: string | null): Promise<SellerProductDraft> {
     const url = id ? endpoint + encodeURIComponent(id) + '/' : endpoint;
     const response = await request(url, {
       method: id ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body: JSON.stringify(brandName === undefined ? { name } : { name, brandName }),
+      body: JSON.stringify({ name, brandName, familyId }),
     });
+    if (response.status === 400 && (await response.json()).familyId) throw new Error('خانوادهٔ رایحهٔ انتخاب‌شده معتبر نیست.');
     if (response.status === 404) throw new Error('این پیش‌نویس دیگر در دسترس نیست.');
     if (!response.ok) throw new Error('ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
     return response.json();

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from catalog.drafts import BrandList, DraftDetail, DraftList
+from catalog.drafts import BrandList, DraftDetail, DraftList, FragranceFamilyList
 from catalog.views import ProductDetail
 
 from . import health
@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/v1/seller/logout/", seller_logout),
     path("api/v1/seller/products/", DraftList.as_view()),
     path("api/v1/seller/products/draft-<int:pk>/", DraftDetail.as_view()),
+    path("api/v1/seller/fragrance-families/", FragranceFamilyList.as_view()),
     path("api/v1/seller/brands/", BrandList.as_view()),
     path("api/v1/products/<slug:slug>/", ProductDetail.as_view()),
     path("health/live/", health.live),
