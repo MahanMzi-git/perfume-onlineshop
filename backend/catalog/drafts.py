@@ -17,6 +17,13 @@ def brand_key(name):
     return " ".join(unicodedata.normalize("NFKC", name).replace("ي", "ی").replace("ك", "ک").casefold().split())
 
 
+USAGE_CHOICES = {
+    "seasons": ("spring", "summer", "autumn", "winter"),
+    "occasions": ("daily", "work", "date", "formal"),
+    "dayTimes": ("morning", "evening", "night"),
+}
+
+
 class DraftSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
@@ -25,6 +32,10 @@ class DraftSerializer(serializers.ModelSerializer):
 
     noteIds = serializers.ListField(child=serializers.SlugField(max_length=50), required=False, write_only=True)
 
+    seasons = serializers.ListField(child=serializers.ChoiceField(USAGE_CHOICES["seasons"]), required=False)
+    occasions = serializers.ListField(child=serializers.ChoiceField(USAGE_CHOICES["occasions"]), required=False)
+    dayTimes = serializers.ListField(source="day_times", child=serializers.ChoiceField(USAGE_CHOICES["dayTimes"]), required=False)
+
     familyId = serializers.SlugRelatedField(
         source="selected_family", slug_field="slug", queryset=FragranceFamily.objects.all(),
         required=False, allow_null=True,
@@ -32,7 +43,7 @@ class DraftSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ("id", "name", "brandName", "familyId", "noteIds", "status", "updatedAt")
+        fields = ("id", "name", "brandName", "familyId", "noteIds", "seasons", "occasions", "dayTimes", "status", "updatedAt")
 
     def to_representation(self, product):
         data = super().to_representation(product)
@@ -52,7 +63,7 @@ class DraftSerializer(serializers.ModelSerializer):
         return int(product.updated_at.timestamp() * 1000)
 
     def to_internal_value(self, data):
-        if not hasattr(data, "keys") or not data or set(data) - {"name", "brandName", "familyId", "noteIds"}:
+        if not hasattr(data, "keys") or not data or set(data) - ({"name", "brandName", "familyId", "noteIds"} | USAGE_CHOICES.keys()):
             raise serializers.ValidationError({"detail": "Send only draft fields."})
         if self.instance is None and ("name" not in data or "brandName" in data):
             raise serializers.ValidationError({"name": "Send a product name as text."})
@@ -68,9 +79,16 @@ class DraftSerializer(serializers.ModelSerializer):
             not isinstance(data["noteIds"], list) or any(not isinstance(note, str) for note in data["noteIds"])
         ):
             raise serializers.ValidationError({"noteIds": "Send a list of note IDs."})
+        for field in USAGE_CHOICES.keys() & data.keys():
+            values = data[field]
+            if not isinstance(values, list) or any(not isinstance(value, str) for value in values):
+                raise serializers.ValidationError({field: "Send a list of usage codes."})
         return super().to_internal_value(data)
 
     def validate(self, attrs):
+        for field in ("seasons", "occasions", "day_times"):
+            if field in attrs:
+                attrs[field] = list(dict.fromkeys(attrs[field]))
         if "noteIds" not in attrs and "selected_family" not in attrs:
             return attrs
         if "selected_family" in attrs:
@@ -112,9 +130,10 @@ class DraftSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         fields = ["updated_at"]
-        if "name" in validated_data:
-            instance.name = validated_data["name"]
-            fields.append("name")
+        for field in ("name", "seasons", "occasions", "day_times"):
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
+                fields.append(field)
         if "brandName" in validated_data:
             name = " ".join(validated_data["brandName"].split())
             key = brand_key(name)

@@ -25,6 +25,9 @@ class FragranceFamily(models.Model):
 
 
 class Product(models.Model):
+    seasons = models.JSONField(default=list, blank=True)
+    occasions = models.JSONField(default=list, blank=True)
+    day_times = models.JSONField(default=list, blank=True)
     fragrance_families = models.ManyToManyField(FragranceFamily, blank=True, related_name="products")
     brand = models.ForeignKey(Brand, on_delete=models.PROTECT, related_name="products", null=True, blank=True)
     slug = models.SlugField(max_length=180, unique=True)

@@ -4,8 +4,9 @@ import path from 'node:path';
 import vm from 'node:vm';
 import {test} from 'node:test';
 import ts from 'typescript';
+let fetchResponse;
 const root=path.resolve('src'),cache=new Map();
-function load(relative){const filename=path.resolve(root,relative);assert.ok(filename.startsWith(root+path.sep));if(cache.has(filename))return cache.get(filename).exports;const module={exports:{}};cache.set(filename,module);const {outputText}=ts.transpileModule(fs.readFileSync(filename,'utf8').replaceAll('import.meta.env',JSON.stringify({BASE_URL:'/perfume-onlineshop/'})),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}});vm.runInNewContext(outputText,{module,exports:module.exports,URLSearchParams,require:s=>{assert.ok(s.startsWith('.'));return load(path.relative(root,path.resolve(path.dirname(filename),s+'.ts')));}},{filename});return module.exports;}
+function load(relative){const filename=path.resolve(root,relative);assert.ok(filename.startsWith(root+path.sep));if(cache.has(filename))return cache.get(filename).exports;const module={exports:{}};cache.set(filename,module);const {outputText}=ts.transpileModule(fs.readFileSync(filename,'utf8').replaceAll('import.meta.env',JSON.stringify({BASE_URL:'/perfume-onlineshop/'})),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}});vm.runInNewContext(outputText,{module,exports:module.exports,URLSearchParams,fetch:(...args)=>fetchResponse(...args),require:s=>{assert.ok(s.startsWith('.'));return load(path.relative(root,path.resolve(path.dirname(filename),s+'.ts')));}},{filename});return module.exports;}
 const m=load('admin/model.ts'),{parseRoute}=load('lib/routes.ts'),{products}=load('data/products.ts');
 test('Seller variant codes encode volume and concentration and resolve prefix collisions',()=>{
  const variant=(volume,concentration)=>({volume,concentration,price:100,stock:1});
@@ -63,4 +64,24 @@ test('Admin form rules reject incomplete products and unsafe integer inputs',()=
  assert.equal(Object.keys(m.validateAdminProduct({name:' ',brand:'',family:'',notes:''})).length,4);
  assert.equal(Object.keys(m.validateAdminProduct({name:'عطر نمونه',brand:'برند',family:'گلی',notes:'یاس'})).length,0);
  assert.equal(m.validInteger('12',0,100),true);for(const v of ['-1','1.2','1e2','','9007199254740992'])assert.equal(m.validInteger(v,0,100),false);
+});
+
+test('Draft usage uses independent stable codes and surfaces server validation', async () => {
+ const {usageFields,usageCodes,usageLabel}=load('admin/usageOptions.ts');
+ const {sellerDraftApi}=load('admin/sellerDraftApi.ts');
+ const labels=['بهار، زمستان','محیط کار','صبح، عصر'];
+ const usage=Object.fromEntries(usageFields.map(({key},i)=>[key,usageCodes(key,labels[i])]));
+ const expected={seasons:['spring','winter'],occasions:['work'],dayTimes:['morning','evening']};
+ fetchResponse=async(url,init)=>{
+  assert.equal(init.method,'PATCH');
+  const body=JSON.parse(init.body);
+  for(const key of Object.keys(expected))assert.deepEqual(body[key],expected[key]);
+  return {ok:true,status:200,json:async()=>body};
+ };
+ const saved=await sellerDraftApi.save('Usage','csrf','draft-7',undefined,undefined,undefined,usage);
+ for(const [i,{key}] of usageFields.entries())assert.equal(saved[key].map(code=>usageLabel(key,code)).join('، '),labels[i]);
+ fetchResponse=async()=>({ok:false,status:400,json:async()=>({dayTimes:['Invalid choice']})});
+ await assert.rejects(sellerDraftApi.save('Usage','csrf','draft-7',undefined,undefined,undefined,usage),/زمان استفاده/);
+ fetchResponse=async()=>({ok:false,status:503});
+ await assert.rejects(sellerDraftApi.get('draft-7'),/دریافت پیش‌نویس ناموفق بود/);
 });

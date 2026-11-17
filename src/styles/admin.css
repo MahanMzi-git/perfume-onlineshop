@@ -490,14 +490,33 @@ html:has(.admin-app) { scroll-padding-top:90px; }
  width:100%; min-height:52px; padding:5px 10px; text-align:start; font:inherit; color:#26392d;
  border:1px solid #c6d4c2; border-radius:14px; cursor:pointer;
 }
-.admin-family-picker .admin-family-trigger { background:linear-gradient(110deg,#f7f4e8,#e9f1e7); font-weight:650; }
+.admin-app .admin-family-picker .admin-family-trigger {
+ width:100%; min-height:56px; padding:7px 10px; gap:12px;
+ background:linear-gradient(110deg,#fffdf8,#f0f4ed); border-color:#ccd7c7;
+ box-shadow:0 2px 6px #26392d06; font-weight:650;
+}
+.admin-family-trigger .admin-family-picture { width:38px; height:38px; border-radius:50%; background:#fffdf8; border:1px solid #e0e6d9; }
+.admin-family-trigger > svg { box-sizing:content-box; padding:6px; border-radius:50%; background:#e6edde; color:#496044; }
+.admin-family-picker .admin-family-trigger[aria-expanded=true] { border-color:#78916e; background:#edf3e7; }
+@media (hover:hover) {
+ .admin-family-picker .admin-family-trigger:not(:disabled):hover { border-color:#8da181; background:#f0f5eb; }
+}
 .admin-family-trigger[aria-expanded=true] > svg { transform:rotate(180deg); }
 .admin-family-trigger:disabled { opacity:.7; cursor:not-allowed; }
 .admin-family-picture { display:grid; place-items:center; width:44px; height:44px; object-fit:cover; border-radius:10px; background:#e2ebdf; color:#446249; }
 .admin-family-menu { background:#fffef9; border:1px solid #d8dfd4; border-radius:16px; padding:9px; box-shadow:0 8px 22px #25392a14; }
 .admin-family-search { position:relative; margin-bottom:8px; }
-.admin-family-search > svg { position:absolute; inset-inline-start:12px; top:16px; color:#45634e; pointer-events:none; }
-.admin-family-picker .admin-family-search input { padding-inline-start:39px; font-size:16px; }
+.admin-family-search > svg { position:absolute; inset-inline-start:14px; top:50%; transform:translateY(-50%); color:#71806a; pointer-events:none; }
+.admin-app .admin-draft-form .admin-family-picker .admin-family-search input {
+ min-height:46px; padding:9px 42px 9px 12px; padding-inline:42px 12px;
+ border:1px solid #dbe2d4; border-radius:11px; background:#f6f8f2;
+ color:#26392d; font-size:16px; line-height:1.5; box-shadow:none;
+}
+.admin-app .admin-draft-form .admin-family-picker .admin-family-search input:focus {
+ outline:2px solid #78916e; outline-offset:1px; border-color:transparent;
+ box-shadow:none; background:#fffefb;
+}
+.admin-family-search input::placeholder { color:#78816f; opacity:1; }
 .admin-family-options { display:grid; gap:5px; max-height:min(290px,42dvh); overflow:auto; overscroll-behavior:contain; padding:4px; }
 .admin-family-picker .admin-family-options button { background:#fffdf7; border-color:#e4e1d6; }
 .admin-family-picker .admin-family-options button[aria-pressed=true] { background:#e2eee2; border-color:#67876c; font-weight:650; }
@@ -553,3 +572,28 @@ html:has(.admin-app) { scroll-padding-top:90px; }
 }
 .admin-note-summary button > svg { width:15px; height:15px; flex:none; }
 .admin-note-summary button:focus-visible { outline:2px solid #345842; outline-offset:2px; }
+
+.admin-usage-scenes { display:grid; gap:8px; min-width:0; }
+.admin-usage-scenes > p { margin:0; font-size:13px; color:#505e54; }
+.admin-usage-scenes .admin-usage {
+ --scene-ink:#345842; --scene-bg:#eef3e9; --scene-selected:#dcead8; --scene-line:#738d6e;
+ border:1px solid #dfddd2; border-radius:16px; padding:4px 10px 8px; background:var(--scene-bg);
+}
+.admin-usage-scenes [data-scene="occasions"] {
+ --scene-ink:#744b28; --scene-bg:#f6efe5; --scene-selected:#f0dfc9; --scene-line:#a4815d;
+}
+.admin-usage-scenes [data-scene="dayTimes"] {
+ --scene-ink:#29536c; --scene-bg:#edf3f6; --scene-selected:#daeaf2; --scene-line:#6b8fa6;
+}
+.admin-usage-scenes legend {
+ display:flex; align-items:center; gap:6px; margin:0; padding:2px 7px; border-radius:10px;
+ background:var(--scene-bg); color:var(--scene-ink); font-weight:700; font-size:14px;
+}
+.admin-usage-scenes .admin-usage-context { margin:0 0 5px; color:#424e45; font-size:12px; line-height:1.7; }
+.admin-usage-scenes .admin-usage button { background:#fffdfa; color:var(--scene-ink); min-height:44px; padding:4px 9px; font-size:13px; gap:5px; }
+.admin-usage-scenes .admin-usage button[aria-pressed=true] {
+ background:var(--scene-selected); color:var(--scene-ink); border-color:var(--scene-line); font-weight:650;
+}
+.admin-usage-scenes button:focus-visible { outline:2px solid var(--scene-ink); outline-offset:2px; }
+.admin-usage-scenes .admin-usage-check { visibility:hidden; flex:none; }
+.admin-usage-scenes [aria-pressed=true] .admin-usage-check { visibility:visible; }
