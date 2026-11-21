@@ -6,7 +6,7 @@ export interface SellerProductDraft extends UsageAttributes {
   id: string;
   name: string;
   brandName: string;
-  familyId: string | null;
+  familyIds: string[];
   noteIds: string[];
   status: 'پیش‌نویس';
   updatedAt: number;
@@ -42,12 +42,12 @@ export const sellerDraftApi = {
     if (!response.ok) throw new Error('دریافت خانواده‌های رایحه ناموفق بود.');
     return response.json();
   },
-  async save(name: string, csrfToken: string, id?: string, brandName?: string, familyId?: string | null, noteIds?: string[], usage?: UsageAttributes): Promise<SellerProductDraft> {
+  async save(name: string, csrfToken: string, id?: string, brandName?: string, familyIds?: string[], noteIds?: string[], usage?: UsageAttributes): Promise<SellerProductDraft> {
     const url = id ? endpoint + encodeURIComponent(id) + '/' : endpoint;
     const response = await request(url, {
       method: id ? 'PATCH' : 'POST',
       headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
-      body: JSON.stringify({ name, brandName, familyId, noteIds, ...usage }),
+      body: JSON.stringify({ name, brandName, familyIds, noteIds, ...usage }),
     });
     if (response.status === 400) {
       const errors = await response.json();
@@ -55,10 +55,10 @@ export const sellerDraftApi = {
         const invalid = [errors.seasons && 'فصل مناسب', errors.occasions && 'موقعیت استفاده', errors.dayTimes && 'زمان استفاده'].filter(Boolean);
         throw new Error('گزینه‌های این بخش‌ها معتبر نیستند: ' + invalid.join('، '));
       }
-      if (errors.familyId) throw new Error('خانوادهٔ رایحهٔ انتخاب‌شده معتبر نیست.');
+      if (errors.familyIds || errors.familyId) throw new Error('خانواده‌های رایحهٔ انتخاب‌شده معتبر نیستند.');
       if (errors.noteIds) throw new Error(errors.noteIds.includes('Select at most four notes.')
         ? 'برای هر محصول حداکثر ۴ نت انتخاب کن.'
-        : 'بعضی نت‌ها برای خانوادهٔ رایحهٔ انتخاب‌شده معتبر نیستند.');
+        : 'بعضی نت‌ها برای خانواده‌های رایحهٔ انتخاب‌شده معتبر نیستند.');
     }
     if (response.status === 404) throw new Error('این پیش‌نویس دیگر در دسترس نیست.');
     if (!response.ok) throw new Error('ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');

@@ -40,16 +40,21 @@ class DraftSerializer(serializers.ModelSerializer):
         source="selected_family", slug_field="slug", queryset=FragranceFamily.objects.all(),
         required=False, allow_null=True,
     )
+    familyIds = serializers.SlugRelatedField(
+        source="fragrance_families", slug_field="slug", queryset=FragranceFamily.objects.all(),
+        many=True, required=False,
+    )
 
     class Meta:
         model = Product
-        fields = ("id", "name", "brandName", "familyId", "noteIds", "seasons", "occasions", "dayTimes", "status", "updatedAt")
+        fields = ("id", "name", "brandName", "familyId", "familyIds", "noteIds", "seasons", "occasions", "dayTimes", "status", "updatedAt")
 
     def to_representation(self, product):
         data = super().to_representation(product)
         data["brandName"] = product.brand.name if product.brand_id else ""
         family = next(iter(product.fragrance_families.all()), None)
         data["familyId"] = family.slug if family else None
+        data["familyIds"] = sorted(family.slug for family in product.fragrance_families.all())
         data["noteIds"] = sorted({link.family_note.note.slug for link in product.family_notes.all()})
         return data
 
@@ -63,7 +68,7 @@ class DraftSerializer(serializers.ModelSerializer):
         return int(product.updated_at.timestamp() * 1000)
 
     def to_internal_value(self, data):
-        if not hasattr(data, "keys") or not data or set(data) - ({"name", "brandName", "familyId", "noteIds"} | USAGE_CHOICES.keys()):
+        if not hasattr(data, "keys") or not data or set(data) - ({"name", "brandName", "familyId", "familyIds", "noteIds"} | USAGE_CHOICES.keys()):
             raise serializers.ValidationError({"detail": "Send only draft fields."})
         if self.instance is None and ("name" not in data or "brandName" in data):
             raise serializers.ValidationError({"name": "Send a product name as text."})
@@ -75,6 +80,11 @@ class DraftSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"brandName": "Brand name must have at least two characters."})
         if "familyId" in data and data["familyId"] is not None and (not isinstance(data["familyId"], str) or not data["familyId"]):
             raise serializers.ValidationError({"familyId": "Select a valid fragrance family."})
+        if "familyIds" in data:
+            if "familyId" in data:
+                raise serializers.ValidationError({"familyIds": "Send familyIds or familyId, not both."})
+            if not isinstance(data["familyIds"], list) or any(not isinstance(family, str) or not family for family in data["familyIds"]):
+                raise serializers.ValidationError({"familyIds": "Send a list of fragrance family IDs."})
         if "noteIds" in data and (
             not isinstance(data["noteIds"], list) or any(not isinstance(note, str) for note in data["noteIds"])
         ):
@@ -86,14 +96,19 @@ class DraftSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def validate(self, attrs):
+        # Keep single-family clients compatible while sharing the same validation and writes.
+        if "selected_family" in attrs:
+            family = attrs.pop("selected_family")
+            attrs["fragrance_families"] = [family] if family else []
+        if "fragrance_families" in attrs:
+            attrs["fragrance_families"] = list(dict.fromkeys(attrs["fragrance_families"]))
         for field in ("seasons", "occasions", "day_times"):
             if field in attrs:
                 attrs[field] = list(dict.fromkeys(attrs[field]))
-        if "noteIds" not in attrs and "selected_family" not in attrs:
+        if "noteIds" not in attrs and "fragrance_families" not in attrs:
             return attrs
-        if "selected_family" in attrs:
-            family = attrs["selected_family"]
-            families = [family] if family else []
+        if "fragrance_families" in attrs:
+            families = attrs["fragrance_families"]
         else:
             families = list(self.instance.fragrance_families.all()) if self.instance else []
         if "noteIds" in attrs:
@@ -120,11 +135,10 @@ class DraftSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        family = validated_data.pop("selected_family", None)
+        families = validated_data.pop("fragrance_families", [])
         notes = validated_data.pop("note_links", [])
         product = Product.objects.create(slug=f"product-{uuid4().hex}", **validated_data)
-        if family:
-            product.fragrance_families.add(family)
+        product.fragrance_families.set(families)
         self.save_notes(product, notes)
         return product
 
@@ -149,9 +163,8 @@ class DraftSerializer(serializers.ModelSerializer):
             instance.brand = brand
             fields.append("brand")
         instance.save(update_fields=fields)
-        if "selected_family" in validated_data:
-            family = validated_data["selected_family"]
-            instance.fragrance_families.set([family] if family else [])
+        if "fragrance_families" in validated_data:
+            instance.fragrance_families.set(validated_data["fragrance_families"])
         if "note_links" in validated_data:
             self.save_notes(instance, validated_data["note_links"])
         return instance

@@ -4,7 +4,6 @@ import { fragranceFamilies } from '../data/fragranceFamilies';
 import { familyImageUrl } from '../data/fragranceImages';
 import type { FamilyOption } from './sellerDraftApi';
 
-const emptyFamily = { id: '', name: 'بدون خانوادهٔ رایحه' };
 const normalize = (text: string) => text.trim().toLocaleLowerCase('fa').replace(/ي/g, 'ی').replace(/ك/g, 'ک');
 const picturedFamilies = new Set(fragranceFamilies.map(family => family.slug));
 
@@ -16,9 +15,9 @@ function FamilyPicture({ id }: { id: string }) {
 
 export function FragranceFamilyPicker({ options, value, disabled, onChange }: {
   options: FamilyOption[];
-  value: string;
+  value: string[];
   disabled: boolean;
-  onChange: (id: string) => void;
+  onChange: (ids: string[]) => void;
 }) {
   const labelId = useId();
   const choiceId = useId();
@@ -26,9 +25,9 @@ export function FragranceFamilyPicker({ options, value, disabled, onChange }: {
   const trigger = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const selected = options.find(option => option.id === value) ?? (value ? { id: value, name: value } : emptyFamily);
+  const selected = value.map(id => options.find(option => option.id === id) ?? { id, name: id });
   const normalizedQuery = normalize(query);
-  const visibleOptions = [emptyFamily, ...options].filter(option => normalize(option.name).includes(normalizedQuery));
+  const visibleOptions = options.filter(option => normalize(option.name).includes(normalizedQuery));
 
   function close(restoreFocus: boolean) {
     setOpen(false);
@@ -45,14 +44,15 @@ export function FragranceFamilyPicker({ options, value, disabled, onChange }: {
       }
       if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault();
     }}>
-    <label id={labelId} htmlFor="draft-product-family">خانوادهٔ رایحه</label>
+    <label id={labelId} htmlFor="draft-product-family">خانواده‌های رایحه</label>
     <button id="draft-product-family" type="button" ref={trigger} className="admin-family-trigger" disabled={disabled}
       aria-labelledby={labelId + ' ' + choiceId} aria-expanded={open && !disabled} aria-controls={panelId}
       onClick={() => open ? close(false) : setOpen(true)}>
-      <FamilyPicture id={selected.id} />
-      <span id={choiceId}>{selected.name}</span>
+      <FamilyPicture id={selected[0]?.id ?? ''} />
+      <span id={choiceId}>{selected.length ? selected.map(family => family.name).join('، ') : 'انتخاب خانواده‌های رایحه'}</span>
       <ChevronDown size={18} aria-hidden="true" />
     </button>
+    <p className="admin-field-hint">می‌توانی چند خانواده انتخاب کنی؛ برای حذف هر انتخاب دوباره روی آن بزن.</p>
     <div id={panelId} hidden={!open || disabled} className="admin-family-menu">
       {open && !disabled && <>
         <div className="admin-family-search">
@@ -61,14 +61,15 @@ export function FragranceFamilyPicker({ options, value, disabled, onChange }: {
             placeholder="جست‌وجوی خانوادهٔ رایحه" onChange={event => setQuery(event.currentTarget.value)} />
         </div>
         <div className="admin-family-options">
-          {visibleOptions.map(option => <button key={option.id} type="button" aria-pressed={value === option.id}
-            onClick={() => { onChange(option.id); close(true); }}>
+          {visibleOptions.map(option => <button key={option.id} type="button" aria-pressed={value.includes(option.id)}
+            onClick={() => onChange(value.includes(option.id) ? value.filter(id => id !== option.id) : [...value, option.id])}>
             <FamilyPicture id={option.id} />
             <span>{option.name}</span>
-            {value === option.id && <Check size={18} aria-hidden="true" />}
+            {value.includes(option.id) && <Check size={18} aria-hidden="true" />}
           </button>)}
           {visibleOptions.length === 0 && <p role="status">خانواده‌ای با این نام پیدا نشد.</p>}
         </div>
+        <button type="button" className="admin-primary" onClick={() => close(true)}>تأیید انتخاب خانواده‌ها</button>
       </>}
     </div>
   </div>;
