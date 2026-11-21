@@ -72,7 +72,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
   const [noteIds, setNoteIds] = useState<string[]>([]);
   const [notesChanged, setNotesChanged] = useState(false);
   const [removedNotes, setRemovedNotes] = useState<string[]>([]);
-  const [familyId, setFamilyId] = useState('');
+  const [familyIds, setFamilyIds] = useState<string[]>([]);
   const [familyChanged, setFamilyChanged] = useState(false);
   const [families, setFamilies] = useState<FamilyOption[]>([]);
   const [familyState, setFamilyState] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -109,7 +109,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
       setName(found.name);
       setUsage({ seasons: found.seasons, occasions: found.occasions, dayTimes: found.dayTimes });
       setNoteIds(found.noteIds);
-      setFamilyId(found.familyId ?? "");
+      setFamilyIds(found.familyIds);
       setBrandName(found.brandName);
     } catch { setLoadError('دریافت پیش‌نویس ناموفق بود. دوباره تلاش کن.'); }
     finally { setLoading(false); }
@@ -124,7 +124,8 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     return () => { active = false; };
   }, [id, canViewBrand]);
 
-  const familyNotes = families.find(family => family.id === familyId)?.notes ?? [];
+  const familyNotes = [...new Map(families.filter(family => familyIds.includes(family.id))
+    .flatMap(family => family.notes).map(note => [note.id, note])).values()];
   const noteNames = new Map(families.flatMap(family => family.notes.map(note => [note.id, note.name] as const)));
   const nameToId = new Map([...noteNames].map(([noteId, noteName]) => [noteName, noteId]));
   const incompatibleNotes = familyState === 'ready' && (familyChanged || notesChanged)
@@ -146,7 +147,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
     setSaving(true);
     try {
       if (import.meta.env.DEV && mockSaveError) throw new Error('خطای آزمایشی ذخیره. ورودی شما حفظ شده است.');
-      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyId || null : undefined, notesChanged ? noteIds : undefined, usage);
+      await sellerDraftApi.save(normalized, csrfToken, id, id ? normalizedBrand : undefined, familyChanged ? familyIds : undefined, notesChanged ? noteIds : undefined, usage);
       location.hash = listHref;
     } catch (cause) {
       setSaveError(cause instanceof Error ? cause.message : 'ذخیرهٔ پیش‌نویس ناموفق بود. ورودی شما حفظ شده است.');
@@ -172,11 +173,10 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
         {brandError ? <p id="draft-brand-error" className="admin-error">{brandError}</p> : <p id="draft-brand-hint" className="admin-field-hint">{canCreateBrand ? 'برند موجود را انتخاب کن یا نام تازه‌ای بنویس. برند تازه پس از ذخیره ساخته می‌شود.' : 'فقط برندهای موجود قابل انتخاب‌اند؛ برای ساخت برند تازه به مجوز نیاز داری.'}</p>}
       </div>}
       <div className="admin-draft-field">
-        <FragranceFamilyPicker options={families} value={familyId}
+        <FragranceFamilyPicker options={families} value={familyIds}
           disabled={!editable || saving || familyState !== 'ready' || families.length === 0}
           onChange={value => {
-            if (value === familyId) return;
-            const allowed = new Set(families.find(family => family.id === value)?.notes.map(note => note.id));
+            const allowed = new Set(families.filter(family => value.includes(family.id)).flatMap(family => family.notes.map(note => note.id)));
             const retained = noteIds.filter(noteId => allowed.has(noteId));
             const removed = noteIds.filter(noteId => !allowed.has(noteId));
             setRemovedNotes(removed.map(noteId => noteNames.get(noteId) ?? noteId));
@@ -184,7 +184,7 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
               setNoteIds(retained);
               setNotesChanged(true);
             }
-            setFamilyId(value);
+            setFamilyIds(value);
             setFamilyChanged(true);
             setSaveError('');
           }} />
@@ -204,15 +204,15 @@ export function SellerDraftEditor({ id, editable, canCreateBrand, canViewBrand, 
             setSaveError('');
           }} />
         {removedNotes.length > 0 && <p className="admin-field-hint" role="status">
-          نت‌های ناسازگار با خانوادهٔ جدید از انتخاب حذف شدند: {removedNotes.join('، ')}
+          نت‌های ناسازگار با خانواده‌های انتخاب‌شده از انتخاب حذف شدند: {removedNotes.join('، ')}
         </p>}
         <p id="draft-notes-hint" className="admin-field-hint" role={incompatibleNotes ? 'alert' : undefined}>
-          {incompatibleNotes ? 'با تغییر خانواده، بعضی نت‌ها دیگر مجاز نیستند. پیش از ذخیره آن‌ها را حذف کن.'
+          {incompatibleNotes ? 'با تغییر خانواده‌ها، بعضی نت‌ها دیگر مجاز نیستند. پیش از ذخیره آن‌ها را حذف کن.'
             : familyState === 'loading' ? 'در حال دریافت نت‌های بویایی…'
             : familyState === 'error' ? 'دریافت نت‌ها ناموفق بود. از دکمهٔ تلاش دوباره استفاده کن.'
-            : !familyId ? 'برای دیدن نت‌های مجاز یک خانواده انتخاب کن.'
-            : !familyNotes.length ? 'برای این خانواده هنوز نتی ثبت نشده است.'
-            : 'تا ۴ نت از خانوادهٔ انتخاب‌شده را می‌توانی انتخاب کنی.'}
+            : familyIds.length === 0 ? 'برای دیدن نت‌های مجاز، خانواده‌های رایحه را انتخاب کن.'
+            : !familyNotes.length ? 'برای این خانواده‌ها هنوز نتی ثبت نشده است.'
+            : 'در مجموع تا ۴ نت از خانواده‌های انتخاب‌شده را می‌توانی انتخاب کنی.'}
         </p>
       </div>
       <div className="admin-usage-scenes">

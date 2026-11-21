@@ -83,6 +83,25 @@ immediate peer address.
 
 ## Product detail API preview
 
+### Multiple fragrance families on seller drafts
+
+Seller draft POST and PATCH accept `familyIds`, an array of existing family slugs,
+for example `{"familyIds":["floral","woody"],"noteIds":["rose","cedar"]}`.
+Draft responses include the complete `familyIds` array sorted by slug. Duplicate
+family IDs and note IDs are saved once. Omitting `familyIds` on PATCH preserves
+the existing families. An empty array clears the selected families.
+
+Choose up to four distinct notes across the selected families. Removing a family
+requires also removing notes that have no association with any remaining family.
+The seller form removes those incompatible selections and shows the removed names.
+The API rejects incompatible notes and leaves the draft intact. Shared notes stay
+selected when another remaining family supports them.
+
+The earlier `familyId` field remains accepted for single-family clients and is
+included in responses. Send either `familyIds` or `familyId` in a write. Sending
+both returns 400. Existing permissions, CSRF requirements and draft privacy apply.
+The existing many-to-many schema supports this change without a migration.
+
 The public read endpoint is `GET /api/v1/products/<slug>/`. It returns a published
 product and its active variants ordered by volume, concentration, and ID. Missing
 or unpublished products return 404. Published products without active variants

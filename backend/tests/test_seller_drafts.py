@@ -151,6 +151,93 @@ class SellerDraftTests(TestCase):
         self.assertEqual(self.write("patch", detail, {"noteIds": []}, csrf).status_code, 200)
         self.assertEqual(self.browser.get(detail).json()["noteIds"], [])
 
+    def test_multiple_families_and_notes_round_trip(self):
+        from catalog.models import ProductFamilyNote
+
+        self.grant("add_product")
+        self.grant("change_product")
+        token = self.sign_in()
+        created = self.write("post", self.url, {
+            "name": "Multiple families", "familyIds": ["woody", "floral", "woody"],
+            "noteIds": ["cedar", "rose"],
+        }, token)
+        self.assertEqual(created.status_code, 201, created.content)
+        detail = self.url + created.json()["id"] + "/"
+        self.assertEqual(self.browser.get(detail).json()["familyIds"], ["floral", "woody"])
+        self.assertEqual(self.browser.get(detail).json()["noteIds"], ["cedar", "rose"])
+        self.assertEqual(self.browser.get(self.url).json()[0]["familyIds"], ["floral", "woody"])
+        renamed = self.write("patch", detail, {"name": "Renamed"}, token)
+        self.assertEqual(renamed.json()["familyIds"], ["floral", "woody"])
+        self.assertEqual(ProductFamilyNote.objects.count(), 2)
+        self.assertEqual(self.write("patch", detail, {"familyIds": ["floral"]}, token).status_code, 400)
+        self.assertEqual(Product.objects.get().fragrance_families.count(), 2)
+        updated = self.write("patch", detail, {"familyIds": ["floral"], "noteIds": ["rose"]}, token)
+        self.assertEqual(updated.status_code, 200, updated.content)
+        self.assertEqual(updated.json()["familyIds"], ["floral"])
+        self.assertEqual(updated.json()["noteIds"], ["rose"])
+        cleared = self.write("patch", detail, {"familyIds": [], "noteIds": []}, token)
+        self.assertEqual(cleared.status_code, 200)
+        self.assertEqual(cleared.json()["familyIds"], [])
+        self.assertIsNone(cleared.json()["familyId"])
+        self.assertFalse(ProductFamilyNote.objects.exists())
+
+    def test_multiple_family_validation_is_atomic(self):
+        self.grant("add_product")
+        self.grant("change_product")
+        token = self.sign_in()
+        created = self.write("post", self.url, {"name": "Original", "familyId": "floral", "noteIds": ["rose"]}, token)
+        detail = self.url + created.json()["id"] + "/"
+        invalid_families = [None, "floral", [False], [1], [""], ["missing"], ["floral", "missing"], {}]
+        for families in invalid_families:
+            with self.subTest(families=families):
+                result = self.write("patch", detail, {"name": "Bad edit", "familyIds": families}, token)
+                self.assertEqual(result.status_code, 400)
+        for data in (
+            {"familyId": "floral", "familyIds": ["woody"]},
+            {"familyIds": [], "noteIds": ["rose"]},
+            {"familyIds": ["floral", "woody"], "noteIds": ["rose", "jasmine", "tuberose", "iris", "cedar"]},
+        ):
+            self.assertEqual(self.write("patch", detail, data, token).status_code, 400)
+        saved = self.browser.get(detail).json()
+        self.assertEqual(saved["name"], "Original")
+        self.assertEqual(saved["familyIds"], ["floral"])
+        self.assertEqual(saved["noteIds"], ["rose"])
+        self.assertEqual(self.write("post", self.url, {"name": "Invalid", "familyIds": ["missing"]}, token).status_code, 400)
+        self.assertEqual(Product.objects.count(), 1)
+
+    def test_shared_note_relinks_to_remaining_family(self):
+        from catalog.models import FamilyNote, FragranceFamily, ProductFamilyNote, ScentNote
+
+        self.grant("add_product")
+        self.grant("change_product")
+        token = self.sign_in()
+        rose = ScentNote.objects.get(slug="rose")
+        woody = FragranceFamily.objects.get(slug="woody")
+        FamilyNote.objects.get_or_create(family=woody, note=rose)
+        created = self.write("post", self.url, {
+            "name": "Shared note", "familyIds": ["floral", "woody"], "noteIds": ["rose", "rose"],
+        }, token)
+        self.assertEqual(created.status_code, 201, created.content)
+        self.assertEqual(ProductFamilyNote.objects.count(), 1)
+        detail = self.url + created.json()["id"] + "/"
+        updated = self.write("patch", detail, {"familyIds": ["woody"]}, token)
+        self.assertEqual(updated.status_code, 200, updated.content)
+        self.assertEqual(updated.json()["noteIds"], ["rose"])
+        self.assertEqual(ProductFamilyNote.objects.get().family_note.family_id, woody.pk)
+        self.assertEqual(self.write("patch", detail, {"familyId": "floral"}, token).json()["familyIds"], ["floral"])
+
+    def test_multiple_families_enforce_permissions_csrf_and_privacy(self):
+        draft = Product.objects.create(name="Protected", slug="protected")
+        detail = self.url + f"draft-{draft.pk}/"
+        token = self.sign_in()
+        self.assertEqual(self.browser.get(detail).json()["familyIds"], [])
+        data = {"familyIds": ["floral", "woody"]}
+        self.assertEqual(self.write("patch", detail, data, token).status_code, 403)
+        self.grant("change_product")
+        self.assertEqual(self.write("patch", detail, data, "").status_code, 403)
+        self.assertEqual(self.write("patch", detail, data, token).status_code, 200)
+        self.assertEqual(Client().get(f"/api/v1/products/{draft.slug}/").status_code, 404)
+
     def test_usage_attributes_round_trip(self):
         self.grant("add_product")
         self.grant("change_product")

@@ -85,3 +85,20 @@ test('Draft usage uses independent stable codes and surfaces server validation',
  fetchResponse=async()=>({ok:false,status:503});
  await assert.rejects(sellerDraftApi.get('draft-7'),/دریافت پیش‌نویس ناموفق بود/);
 });
+
+test('Draft API sends all selected families and reports invalid family selections', async () => {
+ const {sellerDraftApi}=load('admin/sellerDraftApi.ts');
+ fetchResponse=async(url,init)=>{
+  assert.equal(url,'/perfume-onlineshop/api/v1/seller/products/draft-7/');
+  assert.equal(init.headers['X-CSRFToken'],'csrf');
+  const body=JSON.parse(init.body);
+  assert.deepEqual(body.familyIds,['floral','woody']);
+  assert.equal('familyId' in body,false);
+  assert.deepEqual(body.noteIds,['rose','cedar']);
+  return {ok:true,status:200,json:async()=>body};
+ };
+ const saved=await sellerDraftApi.save('Multi','csrf','draft-7',undefined,['floral','woody'],['rose','cedar']);
+ assert.deepEqual(saved.familyIds,['floral','woody']);
+ fetchResponse=async()=>({ok:false,status:400,json:async()=>({familyIds:['Invalid choice']})});
+ await assert.rejects(sellerDraftApi.save('Multi','csrf','draft-7',undefined,['missing']),/خانواده‌های رایحه/);
+});
